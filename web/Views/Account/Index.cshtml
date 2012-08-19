@@ -1,0 +1,36 @@
+﻿@using HomeTrack
+@model IEnumerable<HomeTrack.Account>
+
+@{
+	ViewBag.Title = "Accounts";
+}
+
+<h2>Accounts</h2>
+
+<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+			<td colspan="2">Type</td>
+			<td>Balance</td>
+		</tr>
+	</thead>
+	@foreach (var account in Model)
+	{
+		<tr>
+			<td>@account.Name</td>
+			<td>@account.Type</td>
+			<td>@account.Type.ToCrDrString()</td>
+			<td class="amount">@account.Balance.AsAmount()</td>
+			<td>@Html.ActionLink("view", "details", new { account.Id })</td>
+			<td>@Html.ActionLink("edit", "edit", new { account.Id })</td>
+			<td>@Html.ActionLink("transactions", "index", new{ controller="transaction", account.Id})</td>
+			<td>@Html.ActionLink("new", "create", new{ controller="transaction", account.Id})</td>
+		</tr>
+	}
+</table>
+	
+	
+<p>
+	@Html.ActionLink("Create", "create")
+ </p>

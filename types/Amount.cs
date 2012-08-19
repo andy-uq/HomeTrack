@@ -10,7 +10,7 @@ namespace HomeTrack
 			Ensure.That(() => value).IsGt(0M);
 
 			Account = account;
-			Type = entryType;
+			Direction = entryType;
 			Value = value;
 		}
 
@@ -23,28 +23,33 @@ namespace HomeTrack
 
 			if ( value >= 0M )
 			{
-				Type = account.Type;
+				Direction = account.Direction;
 				Value = value;
 			}
 			else
 			{
-				Type = account.Type.Invert();
+				Direction = account.Direction.Invert();
 				Value = -value;
 			}
 		}
 
 		public Account Account { get; set; }
-		public EntryType Type { get; set; }
+		public EntryType Direction { get; set; }
 		public decimal Value { get; set; }
 
 		public decimal DebitValue
 		{
-			get { return Type == EntryType.Debit ? Value : -Value; }
+			get { return Direction == EntryType.Debit ? Value : -Value; }
 		}
 
 		public decimal CreditValue
 		{
-			get { return Type == EntryType.Credit ? Value : -Value; }
+			get { return Direction == EntryType.Credit ? Value : -Value; }
+		}
+
+		public void Post()
+		{
+			Account.Post(Value, Direction);
 		}
 	}
 }

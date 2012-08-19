@@ -1,0 +1,51 @@
+﻿@model Account
+
+@functions 
+{
+	private SelectListItem ToSelectItem(AccountType x)
+	{
+		return new SelectListItem
+			   	{
+					Text = x.ToString(), Value = x.ToString()
+				};
+	}
+
+}
+
+@{
+	ViewBag.Title = "Create account";
+
+	var accountTypeValues = Enum
+		.GetValues(typeof (AccountType))
+		.Cast<AccountType>()
+		.Select(ToSelectItem);
+}
+
+<h2>Create account</h2>
+@using ( Html.BeginForm() )
+{
+	@Html.ValidationSummary(true)
+
+	<fieldset>
+		<legend>
+			Account details
+		</legend>
+       <div class="editor-label"> 
+            @Html.LabelFor(model => model.Name) 
+        </div> 
+        <div class="editor-field"> 
+            @Html.TextBoxFor(model => model.Name) 
+            @Html.ValidationMessageFor(model => model.Name) 
+        </div> 
+       <div class="editor-label"> 
+            @Html.LabelFor(model => model.Type) 
+        </div> 
+		<div class="editor-field"> 
+			@Html.DropDownListFor(model => model.Type, accountTypeValues)) 
+			@Html.ValidationMessageFor(model => model.Type) 
+		</div>
+		<p> 
+            <input type="submit" value="Send" /> 
+        </p> 
+	</fieldset>
+}

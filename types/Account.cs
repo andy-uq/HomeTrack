@@ -7,16 +7,23 @@ namespace HomeTrack
 	{
 		private decimal _balance;
 
-		public Account(string name, EntryType entryType)
+		public Account()
+		{
+		}
+
+		public Account(string name, AccountType type)
 		{
 			Ensure.That(() => name).IsNotNullOrEmpty();
 
 			Name = name;
-			Type = entryType;
+			Type = type;
 		}
 
+		public int Id { get; set; }
 		public string Name { get; set; }
-		public EntryType Type { get; set; }
+		public AccountType Type { get; set; }
+
+		public EntryType Direction { get { return Type.IsDebitOrCredit(); } }
 
 		public decimal Balance
 		{
@@ -25,7 +32,7 @@ namespace HomeTrack
 
 		public void Post(decimal amount, EntryType entryType)
 		{
-			_balance += (entryType == Type) 
+			_balance += (entryType == Direction) 
 				? amount 
 				: -amount;
 		}

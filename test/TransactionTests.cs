@@ -45,6 +45,15 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void TransactionIs()
+		{
+			var t = new Transaction(_bank, _cashOnHand, -10M);
+			Assert.That(t.Is(_bank));
+			Assert.That(t.Is(_cashOnHand));
+			Assert.That(t.Is(_mortgage), Is.False);
+		}
+
+		[Test]
 		public void CreateTransactionWithObjectInitialiser()
 		{
 			new Transaction
@@ -73,6 +82,13 @@ namespace HomeTrack.Tests
 		public void CheckTransaction()
 		{
 			Assert.That(_transaction.Check(), Is.True);
+		}
+
+		[Test]
+		public void PostTransaction()
+		{
+			var generalLedger = new GeneralLedger();
+			Assert.That(generalLedger.Post(_transaction), Is.True);
 		}
 	}
 }

@@ -11,12 +11,12 @@ namespace HomeTrack
 
 		public IEnumerable<Account> DebitAccounts
 		{
-			get { return _accounts.Where(x => x.Type == EntryType.Debit); }
+			get { return _accounts.Where(x => x.Direction == EntryType.Debit); }
 		}
 
 		public IEnumerable<Account> CreditAccounts
 		{
-			get { return _accounts.Where(x => x.Type == EntryType.Credit); }
+			get { return _accounts.Where(x => x.Direction == EntryType.Credit); }
 		}
 
 		public GeneralLedger()
@@ -50,6 +50,17 @@ namespace HomeTrack
 		public Account this[string name]
 		{
 			get { return _accounts.Single(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)); }
+		}
+
+		public bool Post(Transaction transaction)
+		{
+			foreach (var debitAmount in transaction.Debit)
+				debitAmount.Post();
+
+			foreach (var creditAmount in transaction.Credit)
+				creditAmount.Post();
+
+			return true;
 		}
 	}
 }

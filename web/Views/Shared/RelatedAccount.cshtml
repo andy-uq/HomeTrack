@@ -1,0 +1,14 @@
+﻿@using System.Globalization
+@model EditRelatedAccount
+
+<div>
+	<div class="editor-label"> 
+		@Html.LabelFor(x => x.AccountId, "Account") 
+	</div> 
+	<div class="editor-field">
+		@Html.DropDownListFor(x => x.AccountId, Model.Accounts.Select(x => new SelectListItem() { Selected = x.Id == Model.AccountId, Text = x.Name, Value = x.Id.ToString(CultureInfo.InvariantCulture) })) 
+		@Html.TextBoxFor(x => x.Amount, new { value = Model.Amount.ToString("n2") })
+		@Html.ValidationMessageFor(x => x.AccountId) 
+		<a data-action="delete" data-id="@Model.AccountId">delete</a>
+	</div>
+</div>

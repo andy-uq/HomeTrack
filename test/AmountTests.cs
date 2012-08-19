@@ -21,7 +21,7 @@ namespace HomeTrack.Tests
 		{
 			var amt = new Amount(_bank, EntryType.Credit, 10M);
 			Assert.That(amt.Account, Is.EqualTo(_bank));
-			Assert.That(amt.Type, Is.EqualTo(EntryType.Credit));
+			Assert.That(amt.Direction, Is.EqualTo(EntryType.Credit));
 			Assert.That(amt.Value, Is.EqualTo(10M));
 		}
 
@@ -30,7 +30,7 @@ namespace HomeTrack.Tests
 		{
 			var amt = new Amount(_bank, 10M);
 			Assert.That(amt.Account, Is.EqualTo(_bank));
-			Assert.That(amt.Type, Is.EqualTo(EntryType.Debit));
+			Assert.That(amt.Direction, Is.EqualTo(EntryType.Debit));
 			Assert.That(amt.Value, Is.EqualTo(10M));
 		}
 
@@ -39,7 +39,7 @@ namespace HomeTrack.Tests
 		{
 			var amt = new Amount(_bank, -10M);
 			Assert.That(amt.Account, Is.EqualTo(_bank));
-			Assert.That(amt.Type, Is.EqualTo(EntryType.Credit));
+			Assert.That(amt.Direction, Is.EqualTo(EntryType.Credit));
 			Assert.That(amt.Value, Is.EqualTo(10M));
 		}
 

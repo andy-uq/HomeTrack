@@ -38,13 +38,13 @@ namespace HomeTrack.Tests
 		[Test]
 		public void CreditAccountsAreCredit()
 		{
-			Assert.That(_ledger.CreditAccounts, Has.All.Matches<Account>(x => x.Type == EntryType.Credit));
+			Assert.That(_ledger.CreditAccounts, Has.All.Matches<Account>(x => x.Direction == EntryType.Credit));
 		}
 
 		[Test]
 		public void DebitAccountsAreDebit()
 		{
-			Assert.That(_ledger.DebitAccounts, Has.All.Matches<Account>(x => x.Type == EntryType.Debit));
+			Assert.That(_ledger.DebitAccounts, Has.All.Matches<Account>(x => x.Direction == EntryType.Debit));
 		}
 
 		[Test]

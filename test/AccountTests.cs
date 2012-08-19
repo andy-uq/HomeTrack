@@ -19,7 +19,7 @@ namespace HomeTrack.Tests
 		[Test, ExpectedException(typeof(ArgumentException), ExpectedMessage = "The string can't be null or empty.\r\nParameter name: name")]
 		public void CreateAccountWithNoName()
 		{
-			new Account(null, EntryType.Debit);
+			new Account(null, AccountType.Asset);
 		}
 
 		[Test]
@@ -27,7 +27,8 @@ namespace HomeTrack.Tests
 		{
 			var account = _debitAccount;
 			Assert.That(account.Name, Is.EqualTo("Bank"));
-			Assert.That(account.Type, Is.EqualTo(EntryType.Debit));
+			Assert.That(account.Type, Is.EqualTo(AccountType.Asset));
+			Assert.That(account.Direction, Is.EqualTo(EntryType.Debit));
 		}
 
 		[Test]
@@ -35,7 +36,8 @@ namespace HomeTrack.Tests
 		{
 			var account = _creditAccount;
 			Assert.That(account.Name, Is.EqualTo("Mortgage"));
-			Assert.That(account.Type, Is.EqualTo(EntryType.Credit));
+			Assert.That(account.Type, Is.EqualTo(AccountType.Liability));
+			Assert.That(account.Direction, Is.EqualTo(EntryType.Credit));
 		}
 
 		[Test]
@@ -46,13 +48,27 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
-		public void PostAmount()
+		public void PostAmountDirect()
 		{
 			var account = _debitAccount;
 			account.Post(10M, EntryType.Debit);
 			Assert.That(account.Balance, Is.EqualTo(10M));
 
 			account.Post(10M, EntryType.Credit);
+			Assert.That(account.Balance, Is.EqualTo(0M));
+		}
+
+		[Test]
+		public void PostAmount()
+		{
+			var account = _debitAccount;
+			var amount = new Amount(account, 10M);
+			amount.Post();
+
+			Assert.That(account.Balance, Is.EqualTo(10M));
+
+			amount = new Amount(account, -10M);
+			amount.Post();
 			Assert.That(account.Balance, Is.EqualTo(0M));
 		}
 

@@ -4,12 +4,12 @@
 	{
 		public static Account Debit(string name)
 		{
-			return new Account(name, EntryType.Debit);
+			return new Account(name, AccountType.Asset);
 		}
 
 		public static Account Credit(string name)
 		{
-			return new Account(name, EntryType.Credit);
+			return new Account(name, AccountType.Liability);
 		}
 	}
 }

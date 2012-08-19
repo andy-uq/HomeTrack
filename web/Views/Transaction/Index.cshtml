@@ -1,0 +1,69 @@
+﻿@model AccountViewModel
+
+@{
+	var renderFunc = (Model.Account.Direction == EntryType.Debit) 
+		? (Func<HomeTrack.Transaction, HelperResult> )RenderDebitAccount 
+		: RenderDebitAccount;
+}
+
+@helper RenderCreditAccount(HomeTrack.Transaction transaction)
+{
+	<tr>
+		<td>@transaction.Date.ToString("d MMM")</td>
+		<td>@transaction.Description</td>
+		<td></td>
+		<td>@transaction.CreditAmount.AsAmount()</td>
+	</tr>
+	foreach (var rhs in transaction.RightHandSide())
+	{
+		<tr>
+			<td></td>
+			<td>@rhs.Account.Name</td>
+			<td class="amount">@rhs.Value.AsAmount()</td>
+			<td></td>
+		</tr>
+	}
+}
+
+@helper RenderDebitAccount(HomeTrack.Transaction transaction)
+{
+	<tr>
+		<td>@transaction.Date.ToString("d MMM")</td>
+		<td>@transaction.Description</td>
+		<td class="amount">@transaction.DebitAmount.AsAmount()</td>
+		<td></td>
+	</tr>
+	foreach (var rhs in transaction.RightHandSide())
+	{
+		<tr>
+			<td></td>
+			<td>@rhs.Account.Name</td>
+			<td></td>
+			<td class="amount">@rhs.Value.AsAmount()</td>
+		</tr>
+	}
+}
+
+<h2>Transactions</h2>
+
+<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+
+			<td>Dr</td>
+			<td>Cr</td>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach ( var transaction in Model.Transactions )
+	{
+		@renderFunc(transaction);
+	}
+	</tbody>
+</table>
+	
+	
+<p>
+	@Html.ActionLink("Create", "create", new { Model.Id })
+ </p>

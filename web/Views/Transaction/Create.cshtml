@@ -1,0 +1,143 @@
+﻿@using System.Globalization
+@model HomeTrack.Web.ViewModels.Transaction
+
+<form method="post" data-bind="submit: save">
+	@Html.ValidationSummary(true)
+	@Html.Hidden("AccountId", Model.Account.Id)
+	<fieldset>
+		<legend>
+			New Transaction
+		</legend>
+		<div class="editor-label"> 
+			@Html.LabelFor(model => model.Date) 
+		</div> 
+		<div class="editor-field"> 
+			<input type="text" name="Date" data-bind="value: date"/> 
+			@Html.ValidationMessageFor(model => model.Date) 
+		</div> 
+		<div class="editor-label">
+			@Html.LabelFor(model => model.Description) 
+		</div> 
+		<div class="editor-field"> 
+			<input type="text" name="Description" data-bind="value: description"/> 
+			@Html.ValidationMessageFor(model => model.Description) 
+		</div>
+		<div class="editor-label"> 
+			@Html.LabelFor(model => model.Amount) 
+		</div> 
+		<div class="editor-field"> 
+			<input type="text" name="Amount" data-bind="value: amount"/> 
+			@Html.ValidationMessageFor(model => model.Amount) 
+		</div>
+		<div>
+			<table>
+				<tbody data-bind="foreach: accounts">
+					<tr>
+						<td><select data-bind="options: $root.availableAccounts, value: account, optionsText: 'name'"></select></td>
+						<td><input type="text" data-bind="value: amount"/></td>
+						<td><a href="#" data-bind="click: $root.removeAccount">X</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<a data-bind="click: addAccount">Add</a>
+		</div>
+		
+		<h3 data-bind="visible: balance() != 0">
+			Outstanding: $<span data-bind="text: balance().toFixed(2)"></span>
+		</h3>
+		<p> 
+			<input type="submit" value="Send" data-bind="enable: balance() == 0 && amount() > 0" /> 
+		</p> 
+	</fieldset>
+</form>
+
+<script type="text/javascript">
+	var accounts = [
+		@foreach (var account in Model.Accounts)
+		{
+			<text>{ name: "@Html.Raw(account.Name)", id: @account.Id },</text>
+		}
+	];
+	
+	// Class to represent a row in the related accounts
+	function RelatedAccount(accountId, initialAmount) {
+		var self = this;
+		self.account = { name: '', id: 0 };
+		for (var i = 0; i < accounts.length; i++) {
+			if (accountId == accounts[i].id)
+				self.account = accounts[i];
+		}
+
+		self.amount = ko.observable(initialAmount);
+	}
+
+	// Overall viewmodel for this screen, along with initial state
+	function TransactionViewModel() {
+		var self = this;
+
+		// Non-editable account data - from the server
+		self.availableAccounts = accounts;
+
+		// Editable data
+		self.accounts = ko.observableArray([
+				@foreach (var account in Model.Related)
+			{
+				<text>new RelatedAccount(@account.AccountId, @account.Amount),</text>
+			}
+			]);
+		self.date = ko.observable('@Model.Date');
+		self.description = ko.observable('@Model.Description');
+		self.amount = ko.observable('@Model.Amount');
+
+		// Operations
+		self.addAccount = function() {
+			self.accounts.push(new RelatedAccount(31, 0));
+		};
+		self.removeAccount = function(account) {
+			self.accounts.remove(account);
+		};
+
+		self.balance = ko.computed(function() {
+			var total = 0;
+			for (var i = 0; i < self.accounts().length; i++)
+				total += parseFloat(self.accounts()[i].amount());
+			return parseFloat(self.amount()) - total;
+		});
+
+		self.save = function() {
+
+			var relatedAccounts = new Array();
+			for(var i=0; i < self.accounts().length; i++)
+				relatedAccounts.push({ AccountId: self.accounts()[i].account.id, amount: self.accounts()[i].amount() });
+
+			$.ajax({
+				url: location.href,
+				contentType: 'application/json; charset=utf-8',
+				type: "POST",
+				data: JSON.stringify({
+					newTransaction: {
+						AccountId: @Model.Account.Id,
+						Amount: self.amount(),
+						Description: self.description(),
+						Date: self.date(),
+						Related: relatedAccounts
+					}
+				}),
+				dataType: 'json',
+				success: function(result) {
+					if (result && result.redirectUrl) {
+						window.location = result.redirectUrl;
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					$('#exception').html(xhr.responseText);
+					alert(xhr.statusText);
+				}
+			});
+		};
+	}
+
+	ko.applyBindings(new TransactionViewModel());
+</script>
