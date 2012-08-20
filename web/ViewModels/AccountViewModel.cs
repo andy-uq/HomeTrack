@@ -7,7 +7,7 @@ namespace HomeTrack.Web.ViewModels
 		public Account Account { get; set; }
 		public IEnumerable<HomeTrack.Transaction> Transactions { get; set; }
 
-		public int Id
+		public string Id
 		{
 			get { return Account.Id; }
 		}

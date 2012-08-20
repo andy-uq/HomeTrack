@@ -1,38 +1,17 @@
 ﻿using HomeTrack.RavenStore;
 using NUnit.Framework;
-using Raven.Client.Embedded;
 
 namespace HomeTrack.Tests
 {
 	[TestFixture]
-	public class AccountRepositoryTests
+	public class AccountRepositoryTests : RavenRepositoryTests
 	{
-		private Account _bank;
-		private EmbeddableDocumentStore _store;
-
-		[SetUp]
-		public void SetUp()
-		{
-			_store = new EmbeddableDocumentStore { RunInMemory = true };
-			_store.Initialize();
-
-			_bank = AccountFactory.Debit("Bank");
-		}
-
 		[Test]
 		public void AddAccount()
 		{
-			var repository = new RavenRepository(_store);
-			using (var u = repository.CreateUnitOfWork())
-			{
-				u.Add(_bank);
-				u.SaveChanges();
-			}
-
-			using ( var s = _store.OpenSession() )
-			{
-				Assert.That(s.Query<Account>(), Is.Not.Empty);
-			}
+			var bank = AccountFactory.Debit("Bank");
+			GeneralLedger.Add(bank);
+			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Account>(), Is.Not.Empty));
 		}
 	}
 }

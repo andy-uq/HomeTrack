@@ -1,30 +1,31 @@
 ﻿using System.Web.Mvc;
+using HomeTrack.RavenStore;
 
 namespace HomeTrack.Web.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly IUnitOfWork _unitOfWork;
+		private readonly GeneralLedger _generalLedger;
 
-		public AccountController(IUnitOfWork unitOfWork)
+		public AccountController(GeneralLedger generalLedger)
 		{
-			_unitOfWork = unitOfWork;
+			_generalLedger = generalLedger;
 		}
-		
+
 		//
 		// GET: /Account/
 
 		public ActionResult Index()
 		{
-			return View(_unitOfWork.GetAll<Account>());
+			return View(_generalLedger);
 		}
 
 		//
 		// GET: /Account/Details/5
 
-		public ActionResult Details(int id)
+		public ActionResult Details(string id)
 		{
-			return View(_unitOfWork.GetById<Account>(id));
+			return View(_generalLedger[id]);
 		}
 
 		//
@@ -43,9 +44,7 @@ namespace HomeTrack.Web.Controllers
 		{
 			try
 			{
-				_unitOfWork.Add(account);
-				_unitOfWork.SaveChanges();
-
+				_generalLedger.Add(account);
 				return RedirectToAction("Index");
 			}
 			catch
@@ -56,24 +55,21 @@ namespace HomeTrack.Web.Controllers
 		
 		//
 		// GET: /Account/Edit/5
- 
-		public ActionResult Edit(int id)
+
+		public ActionResult Edit(string id)
 		{
-			return View(_unitOfWork.GetById<Account>(id));
+			return View(_generalLedger[id]);
 		}
 
 		//
 		// POST: /Account/Edit/5
 
 		[HttpPost]
-		public ActionResult Edit(int id, Account account)
+		public ActionResult Edit(Account account)
 		{
 			try
 			{
-				account.Id = id;
-				_unitOfWork.Attach(account);
-				_unitOfWork.SaveChanges();
- 
+				_generalLedger.Add(account);
 				return RedirectToAction("Index");
 			}
 			catch

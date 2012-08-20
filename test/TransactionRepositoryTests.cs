@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 using Raven.Client.Embedded;
@@ -6,63 +7,49 @@ using Raven.Client.Embedded;
 namespace HomeTrack.Tests
 {
 	[TestFixture]
-	public class TransactionRepositoryTests
+	public class TransactionRepositoryTests : RavenRepositoryTests
 	{
 		private Account _bank;
 		private Account _mortgage;
 		private Account _cashOnHand;
-		private EmbeddableDocumentStore _store;
 
 		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			_store = new EmbeddableDocumentStore { RunInMemory = true };
-			_store.Initialize();
+			base.SetUp();
 
 			_bank = AccountFactory.Debit("Bank");
 			_cashOnHand = AccountFactory.Debit("Bank");
 			_mortgage = AccountFactory.Credit("Mortgage");
+
+			GeneralLedger.Add(_bank);
+			GeneralLedger.Add(_cashOnHand);
+			GeneralLedger.Add(_mortgage);
 		}
 
 		[Test]
 		public void AddTransaction()
 		{
-			var repository = new RavenRepository(_store);
-			using (var u = repository.CreateUnitOfWork())
-			{
-				u.Add(new Transaction());
-				u.SaveChanges();
-			}
-
-			using ( var s = _store.OpenSession() )
-			{
-				Assert.That(s.Query<Transaction>(), Is.Not.Empty);
-			}
+			var t1 = new Transaction(_bank, _mortgage, 10M);
+			GeneralLedger.Post(t1);
+			
+			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Transaction>(), Is.Not.Empty));
 		}
 
 		[Test]
 		public void SearchAccountTransactions()
 		{
-			var repository = new RavenRepository(_store);
+			var t1 = new Transaction(_mortgage, _bank, 10M) { Description = "Pay back mortgage" };
+			GeneralLedger.Post(t1);
 
-			var t1 = new Transaction(_bank, _mortgage, 10M);
-			var t2 = new Transaction(_bank, _cashOnHand, 10M);
+			var t2 = new Transaction(_cashOnHand, _bank, 10M) { Description = "Withdraw money" };
+			GeneralLedger.Post(t2);
 
-			using ( var u = repository.CreateUnitOfWork() )
-			{
-				u.Add(t1);
-				u.Add(t2);
-				u.SaveChanges();
-			}
-			
-			using (var u = repository.CreateUnitOfWork())
-			{
-				var q = u.GetTransactions(_bank);
-				Assert.That(q, Is.EquivalentTo(new[] { t1, t2 }).Using(new TransactionComparer()));
+			var q = GeneralLedger.GetTransactions(_bank.Id);
+			Assert.That(q, Is.EquivalentTo(new[] {t1, t2}).Using(new TransactionComparer()));
 
-				q = u.GetTransactions(_mortgage);
-				Assert.That(q, Is.EquivalentTo(new[] { t1 }).Using(new TransactionComparer()));
-			}
+			q = GeneralLedger.GetTransactions(_mortgage.Id);
+			Assert.That(q, Is.EquivalentTo(new[] {t1}).Using(new TransactionComparer()));
 		}
 
 		public class TransactionComparer : IEqualityComparer<Transaction>

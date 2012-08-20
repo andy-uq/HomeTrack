@@ -12,7 +12,7 @@
 		<td>@transaction.Date.ToString("d MMM")</td>
 		<td>@transaction.Description</td>
 		<td></td>
-		<td>@transaction.CreditAmount.AsAmount()</td>
+		<td>@transaction.Amount.AsAmount()</td>
 	</tr>
 	foreach (var rhs in transaction.RightHandSide())
 	{
@@ -30,7 +30,7 @@
 	<tr>
 		<td>@transaction.Date.ToString("d MMM")</td>
 		<td>@transaction.Description</td>
-		<td class="amount">@transaction.DebitAmount.AsAmount()</td>
+		<td class="amount">@transaction.Amount.AsAmount()</td>
 		<td></td>
 	</tr>
 	foreach (var rhs in transaction.RightHandSide())

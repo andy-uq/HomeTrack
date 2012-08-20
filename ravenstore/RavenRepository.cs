@@ -55,6 +55,12 @@ namespace HomeTrack.RavenStore
 			return Session.Load<T>(id);
 		}
 
+		public T GetById<T>(string id)
+		{
+			var qualifiedId = string.Concat(typeof (T).Name.ToLower(), "s/", id);
+			return Session.Load<T>(qualifiedId);
+		}
+
 		public IEnumerable<T> GetAll<T>()
 		{
 			return Session.Query<T>();
@@ -71,8 +77,8 @@ namespace HomeTrack.RavenStore
 				(
 					from t in Session.Query<Transaction>()
 					where
-						System.Linq.Enumerable.Any(t.Credit, x => x.Account.Id == account.Id)
-						|| System.Linq.Enumerable.Any(t.Debit, x => x.Account.Id == account.Id)
+						System.Linq.Enumerable.Any(t.Credit, x => x.AccountId == account.Id)
+						|| System.Linq.Enumerable.Any(t.Debit, x => x.AccountId == account.Id)
 					select t
 				);
 		}
@@ -82,4 +88,22 @@ namespace HomeTrack.RavenStore
 			Session.Dispose();
 		}
 	}
+
+	public interface IUnitOfWork : IDisposable
+	{
+		void Add<T>(T value);
+		T GetById<T>(int id);
+		T GetById<T>(string id);
+		IEnumerable<T> GetAll<T>();
+		void Attach<T>(T value);
+		void SaveChanges();
+
+		IEnumerable<Transaction> GetTransactions(Account account);
+	}
+
+	public interface IRepository : IDisposable
+	{
+		IUnitOfWork CreateUnitOfWork();
+	}
+
 }

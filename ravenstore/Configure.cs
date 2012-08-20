@@ -1,7 +1,9 @@
-﻿using Autofac;
+﻿using AutoMapper;
+using Autofac;
 using Newtonsoft.Json;
 using Raven.Client;
 using Raven.Client.Embedded;
+using Raven.Database.Server;
 
 namespace HomeTrack.RavenStore
 {
@@ -18,10 +20,15 @@ namespace HomeTrack.RavenStore
 				.As<IDocumentStore>()
 				.SingleInstance();
 
-			containerBuilder.Register(c => c.Resolve<IRepository>().CreateUnitOfWork());
+			var configuration = new RegisterMappings().GetMappings();
+			var mappingEngine = new MappingEngine(configuration);
+			containerBuilder.RegisterInstance<IMappingEngine>(mappingEngine);
+
+			containerBuilder.RegisterType<GeneralLedgerRepository>()
+				.As<IGeneralLedgerRepository>()
+				.SingleInstance();
 			
 			containerBuilder.RegisterType<RavenRepository>()
-				.AsImplementedInterfaces()
 				.SingleInstance();
 		}
 
@@ -31,6 +38,8 @@ namespace HomeTrack.RavenStore
 			documentStore.DataDirectory = DataDirectory;
 			documentStore.DefaultDatabase = "HomeTrack";
 			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
+
+			NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
 
 			documentStore.Initialize();
 		}

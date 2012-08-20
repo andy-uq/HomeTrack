@@ -37,11 +37,13 @@ namespace HomeTrack.Web
 			RegisterRoutes(RouteTable.Routes);
 
 			var builder = new ContainerBuilder();
-
+			
 			var raven = new RavenStore.Configure { DataDirectory = Server.MapPath("~/App_Data/RavenDb") };
 			raven.Build(builder);
 
+			builder.Register(r => new GeneralLedger(r.Resolve<IGeneralLedgerRepository>()));
 			builder.RegisterControllers(typeof(MvcApplication).Assembly);
+
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 		}

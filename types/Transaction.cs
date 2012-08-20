@@ -8,13 +8,12 @@ namespace HomeTrack
 {
 	public class Transaction
 	{
-		private readonly ISet<Amount> _debit;
-		private readonly ISet<Amount> _credit;
-
 		public Transaction()
 		{
-			_debit = new HashSet<Amount>();
-			_credit = new HashSet<Amount>();
+			Debit = new HashSet<Amount>();
+			Credit = new HashSet<Amount>();
+
+			Date = DateTime.Now;
 		}
 
 		public Transaction(Account debit, Account credit, decimal amount) : this()
@@ -22,39 +21,31 @@ namespace HomeTrack
 			Ensure.That(() => debit).IsNotNull();
 			Ensure.That(() => credit).IsNotNull();
 			
-			_debit.Add(new Amount(debit, amount));
-			_credit.Add(new Amount(credit, amount));
+			Debit.Add(new Amount(debit, amount));
+			Credit.Add(new Amount(credit, amount));
+
+			Amount = Math.Abs(amount);
 		}
 
-		public ISet<Amount> Debit
-		{
-			get { return _debit; }
-		}
-
-		public ISet<Amount> Credit
-		{
-			get { return _credit; }
-		}
+		public ISet<Amount> Debit { get; set; }
+		public ISet<Amount> Credit { get; set; }
 
 		public int Id { get; set; }
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
+		public decimal Amount { get; set; }
 
-		public decimal CreditAmount
+		public override string ToString()
 		{
-			get { return _credit.Sum(x => x.CreditValue); }
+			return string.Format("{0} - {1} ({2:n2})", Date, Description, Amount);
 		}
 
-		public decimal DebitAmount
-		{
-			get { return _debit.Sum(x => x.DebitValue); }
-		}
 		public bool Check()
 		{
-			var debit = DebitAmount;
-			var credit = CreditAmount;
+			var debit = Debit.Sum(x => x.DebitValue);
+			var credit = Credit.Sum(x => x.CreditValue);
 
-			return credit == debit;
+			return Amount == Math.Abs(credit) && Amount == Math.Abs(debit);
 		}
 
 		public bool Is(Account account)
@@ -64,10 +55,10 @@ namespace HomeTrack
 
 		public IEnumerable<Amount> RightHandSide()
 		{
-			if (_debit.Count <= _credit.Count)
-				return _credit;
+			if (Debit.Count <= Credit.Count)
+				return Credit;
 
-			return _debit;
+			return Debit;
 		}
 	}
 }
