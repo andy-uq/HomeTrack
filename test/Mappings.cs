@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 
@@ -28,7 +29,7 @@ namespace HomeTrack.Tests
 			Assert.That(raven.Description, Is.EqualTo(account.Description));
 			Assert.That(raven.Type, Is.EqualTo(account.Type));
 			Assert.That(raven.Balance, Is.EqualTo(account.Balance));
-			Assert.That(raven.Id, Is.EqualTo(account.Name.ToLower()));
+			Assert.That(raven.Id, Is.EqualTo("accounts/bank"));
 		}
 
 		[Test]
@@ -71,6 +72,21 @@ namespace HomeTrack.Tests
 			Assert.That(raven.Debit[0].Direction, Is.EqualTo(EntryType.Debit));
 			Assert.That(raven.Debit[0].Value, Is.EqualTo(100M));
 		}
+
+		[Test]
+		public void RavenTransactionToEntity()
+		{
+			var transaction = new HomeTrack.RavenStore.Transaction
+			{
+				Amount = 100M,
+				Debit = new[] {new HomeTrack.RavenStore.Amount { AccountId = "accounts/bank", Direction = EntryType.Credit, Value = 50M }, new HomeTrack.RavenStore.Amount { AccountId = "accounts/cashonhand", Direction = EntryType.Credit, Value = 50M }  },
+				Credit = new[] {new HomeTrack.RavenStore.Amount { AccountId = "accounts/mortgage",Direction = EntryType.Debit, Value = 100M } }
+			};
+
+			var entity = _mappingEngine.Map<HomeTrack.Transaction>(transaction);
+
+		}
+
 
 		[Test]
 		public void RavenAmountToEntity()

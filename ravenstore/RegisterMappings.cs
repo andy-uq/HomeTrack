@@ -22,7 +22,10 @@ namespace HomeTrack.RavenStore
 			map.CreateMap<HomeTrack.Amount, Amount>()
 				.ForMember(x => x.AccountId, m => m.ResolveUsing(GetRavenId));
 
-			map.CreateMap<Transaction, HomeTrack.Transaction>();
+			map.CreateMap<Transaction, HomeTrack.Transaction>()
+				.ForMember(x => x.Credit, m => m.MapFrom(x => x.Credit))
+				.ForMember(x => x.Debit, m => m.MapFrom(x => x.Debit));
+			
 			map.CreateMap<HomeTrack.Transaction, Transaction>();
 
 			return map;
@@ -44,9 +47,7 @@ namespace HomeTrack.RavenStore
 
 		private object GetRavenId(HomeTrack.Account x)
 		{
-			return (x.Id == null)
-			       	? Regex.Replace(x.Name, @"\W+", string.Empty).ToLower()
-			       	: string.Concat("accounts/", x.Id);
+			return string.Concat("accounts/", x.Id ?? Regex.Replace(x.Name, @"\W+", string.Empty).ToLowerInvariant());
 		}
 
 		private object GetEntityId(Account x)

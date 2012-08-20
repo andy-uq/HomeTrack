@@ -70,13 +70,23 @@ namespace HomeTrack.RavenStore
 			{
 				using (var session = _repository.DocumentStore.OpenSession())
 				{
-					var accountIds = transaction.Credit.Concat(transaction.Debit).Select(x => QualifiedId("accounts", x.Account.Id)).ToArray();
+					var accountIds = transaction.Credit
+						.Concat(transaction.Debit)
+						.Select(x => QualifiedId("accounts", x.Account.Id))
+						.Distinct()
+						.ToArray();
+
 					var accounts = session.Load<Account>(accountIds).ToArray();
 					
 					for (var i = 0; i < accountIds.Length; i++)
 					{
-						if (accounts[i] == null)
-							throw new InvalidOperationException("Cannot find account " + accountIds[i]);
+						if ( accounts[i] == null )
+						{
+							var allAccounts = session.Query<Account>().Select(x => x.Id);
+							throw new InvalidOperationException(string.Format("Cannot find account {0} from ({1})",
+							                                                  accountIds[i],
+							                                                  string.Join(", ", allAccounts)));
+						}
 					}
 
 					var accountLookup = accounts.ToDictionary(x => FromQualifiedId(x.Id));
@@ -107,7 +117,6 @@ namespace HomeTrack.RavenStore
 
 		public IEnumerable<HomeTrack.Transaction> GetTransactions(string accountId)
 		{
-
 			accountId = QualifiedId("accounts", accountId);
 
 			using ( var session = _repository.DocumentStore.OpenSession() )
@@ -121,7 +130,9 @@ namespace HomeTrack.RavenStore
 						select t
 					);
 
-				return query.Hydrate<HomeTrack.Transaction>(_mappingEngine);
+				return query
+					.Hydrate<HomeTrack.Transaction>(_mappingEngine)
+					.ToArray();
 			}
 		}
 	}
