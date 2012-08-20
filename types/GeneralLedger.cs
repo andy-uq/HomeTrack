@@ -7,7 +7,7 @@ namespace HomeTrack
 {
 	public class GeneralLedger : IEnumerable<Account>
 	{
-		private IGeneralLedgerRepository _repository;
+		private readonly IGeneralLedgerRepository _repository;
 
 		public GeneralLedger(IGeneralLedgerRepository repository)
 		{

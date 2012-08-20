@@ -88,7 +88,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void PostTransaction()
 		{
-			var generalLedger = new GeneralLedger(null);
+			var generalLedger = new GeneralLedger(new InMemoryGeneralLedger());
 			Assert.That(generalLedger.Post(_transaction), Is.True);
 		}
 	}
