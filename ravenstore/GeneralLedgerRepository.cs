@@ -105,11 +105,11 @@ namespace HomeTrack.RavenStore
 
 					var ravenEntity = _mappingEngine.Map<Transaction>(transaction);
 					session.Store(ravenEntity);
-
 					session.SaveChanges();
-				}
 
-				return true;
+					transaction.Id = ravenEntity.Id;
+					return true;
+				}
 			}
 
 			return false;

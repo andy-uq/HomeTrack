@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using AutoMapper.Mappers;
 
@@ -17,14 +18,14 @@ namespace HomeTrack.RavenStore
 				.ForMember(x => x.Id, m => m.ResolveUsing(GetRavenId));
 
 			map.CreateMap<Amount, HomeTrack.Amount>()
+				.ConstructUsing((Func<Amount, HomeTrack.Amount>)(_ => new HomeTrack.Amount()))
 				.ForMember(x => x.Account, m => m.ResolveUsing(ToAccount));
 
 			map.CreateMap<HomeTrack.Amount, Amount>()
 				.ForMember(x => x.AccountId, m => m.ResolveUsing(GetRavenId));
 
 			map.CreateMap<Transaction, HomeTrack.Transaction>()
-				.ForMember(x => x.Credit, m => m.MapFrom(x => x.Credit))
-				.ForMember(x => x.Debit, m => m.MapFrom(x => x.Debit));
+				.ConstructUsing((Func<Transaction, HomeTrack.Transaction>)(_ => new HomeTrack.Transaction()));
 			
 			map.CreateMap<HomeTrack.Transaction, Transaction>();
 

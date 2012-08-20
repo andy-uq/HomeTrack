@@ -38,8 +38,7 @@ namespace HomeTrack.Tests
 			var account = AccountFactory.Debit("Bank");
 			account.Id = "bank";
 
-			var amount = new Amount(account, 100M);
-
+			var amount = new Amount { Account = account, Direction = EntryType.Debit, Value = 10M };
 			var raven = _mappingEngine.Map<HomeTrack.RavenStore.Amount>(amount);
 
 			Assert.That(raven.AccountId, Is.EqualTo("accounts/bank"));

@@ -12,6 +12,8 @@ namespace HomeTrack
 		{
 			Debit = new HashSet<Amount>();
 			Credit = new HashSet<Amount>();
+
+			Date = DateTime.Now;
 		}
 
 		public Transaction(Account debit, Account credit, decimal amount) : this()
@@ -32,6 +34,11 @@ namespace HomeTrack
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
 		public decimal Amount { get; set; }
+
+		public override string ToString()
+		{
+			return string.Format("{0} - {1} ({2:n2})", Date, Description, Amount);
+		}
 
 		public bool Check()
 		{

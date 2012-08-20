@@ -39,10 +39,10 @@ namespace HomeTrack.Tests
 		[Test]
 		public void SearchAccountTransactions()
 		{
-			var t1 = new Transaction(_bank, _mortgage, 10M);
+			var t1 = new Transaction(_mortgage, _bank, 10M) { Description = "Pay back mortgage" };
 			GeneralLedger.Post(t1);
-			
-			var t2 = new Transaction(_bank, _cashOnHand, 10M);
+
+			var t2 = new Transaction(_cashOnHand, _bank, 10M) { Description = "Withdraw money" };
 			GeneralLedger.Post(t2);
 
 			var q = GeneralLedger.GetTransactions(_bank.Id);

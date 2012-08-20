@@ -9,15 +9,6 @@ namespace HomeTrack
 		{
 		}
 
-		public Amount(Account account, EntryType entryType, decimal value)
-		{
-			Ensure.That(() => value).IsGt(0M);
-
-			Account = account;
-			Direction = entryType;
-			Value = value;
-		}
-
 		public Amount(Account account, decimal value)
 		{
 			if (value == 0M)
