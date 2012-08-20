@@ -37,10 +37,12 @@ namespace HomeTrack.Tests
 			return _accounts.Single(x => x.Id.Equals(accountId, StringComparison.OrdinalIgnoreCase));
 		}
 
-		public void Add(Account account)
+		public string Add(Account account)
 		{
 			account.Id = Regex.Replace(account.Name, @"\W+", string.Empty).ToLower();
 			_accounts.Add(account);
+
+			return account.Id;
 		}
 
 		public bool TrialBalance()

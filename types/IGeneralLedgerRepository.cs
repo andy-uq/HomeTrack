@@ -8,7 +8,7 @@ namespace HomeTrack
 		IEnumerable<Account> DebitAccounts { get; }
 		IEnumerable<Account> CreditAccounts { get; }
 		Account GetAccount(string accountId);
-		void Add(Account account);
+		string Add(Account account);
 
 		bool Post(Transaction transaction);
 		IEnumerable<Transaction> GetTransactions(string accountId);

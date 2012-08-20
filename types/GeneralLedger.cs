@@ -19,7 +19,7 @@ namespace HomeTrack
 
 		public void Add(Account account)
 		{
-			_repository.Add(account);
+			account.Id = _repository.Add(account);
 		}
 
 		public IEnumerator<Account> GetEnumerator()
@@ -42,7 +42,14 @@ namespace HomeTrack
 
 		public Account this[string accountId]
 		{
-			get { return _repository.GetAccount(accountId); }
+			get
+			{
+				Account account = _repository.GetAccount(accountId);
+				if (account == null)
+					throw new InvalidOperationException("Cannot find account: " + accountId);
+
+				return account;
+			}
 		}
 
 		public bool Post(Transaction transaction)

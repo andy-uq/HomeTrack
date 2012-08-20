@@ -6,12 +6,10 @@ namespace HomeTrack.Web.Controllers
 	public class AccountController : Controller
 	{
 		private readonly GeneralLedger _generalLedger;
-		private readonly IUnitOfWork _unitOfWork;
 
-		public AccountController(GeneralLedger generalLedger, IUnitOfWork unitOfWork)
+		public AccountController(GeneralLedger generalLedger)
 		{
 			_generalLedger = generalLedger;
-			_unitOfWork = unitOfWork;
 		}
 
 		//
@@ -19,15 +17,15 @@ namespace HomeTrack.Web.Controllers
 
 		public ActionResult Index()
 		{
-			return View(_unitOfWork.GetAll<Account>());
+			return View(_generalLedger);
 		}
 
 		//
 		// GET: /Account/Details/5
 
-		public ActionResult Details(int id)
+		public ActionResult Details(string id)
 		{
-			return View(_unitOfWork.GetById<Account>(id));
+			return View(_generalLedger[id]);
 		}
 
 		//
@@ -46,11 +44,7 @@ namespace HomeTrack.Web.Controllers
 		{
 			try
 			{
-				_unitOfWork.Add(account);
-				_unitOfWork.SaveChanges();
-
 				_generalLedger.Add(account);
-
 				return RedirectToAction("Index");
 			}
 			catch
@@ -62,9 +56,9 @@ namespace HomeTrack.Web.Controllers
 		//
 		// GET: /Account/Edit/5
 
-		public ActionResult Edit(int id)
+		public ActionResult Edit(string id)
 		{
-			return View(_unitOfWork.GetById<Account>(id));
+			return View(_generalLedger[id]);
 		}
 
 		//
@@ -75,9 +69,7 @@ namespace HomeTrack.Web.Controllers
 		{
 			try
 			{
-				_unitOfWork.Attach(account);
-				_unitOfWork.SaveChanges();
- 
+				_generalLedger.Add(account);
 				return RedirectToAction("Index");
 			}
 			catch

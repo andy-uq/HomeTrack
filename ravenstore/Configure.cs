@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using AutoMapper;
+using Autofac;
 using Newtonsoft.Json;
 using Raven.Client;
 using Raven.Client.Embedded;
@@ -19,10 +20,15 @@ namespace HomeTrack.RavenStore
 				.As<IDocumentStore>()
 				.SingleInstance();
 
-			containerBuilder.Register(c => c.Resolve<IRepository>().CreateUnitOfWork());
+			var configuration = new RegisterMappings().GetMappings();
+			var mappingEngine = new MappingEngine(configuration);
+			containerBuilder.RegisterInstance<IMappingEngine>(mappingEngine);
+
+			containerBuilder.RegisterType<GeneralLedgerRepository>()
+				.As<IGeneralLedgerRepository>()
+				.SingleInstance();
 			
 			containerBuilder.RegisterType<RavenRepository>()
-				.AsImplementedInterfaces()
 				.SingleInstance();
 		}
 
