@@ -12,7 +12,7 @@ namespace HomeTrack.Web.Controllers
 		private readonly GeneralLedger _generalLedger;
 		private readonly IUnitOfWork _unitOfWork;
 
-		public TransactionController( GeneralLedger generalLedger, IUnitOfWork unitOfWork)
+		public TransactionController(GeneralLedger generalLedger, IUnitOfWork unitOfWork)
 		{
 			_generalLedger = generalLedger;
 			_unitOfWork = unitOfWork;
@@ -52,7 +52,7 @@ namespace HomeTrack.Web.Controllers
 			var accounts = _unitOfWork.GetAll<Account>().ToArray();
 			var model = new ViewModels.Transaction()
 			{
-				Account = accounts.Single(x => x.Id == id),
+				Account = _unitOfWork.GetById<Account>(id),
 				Accounts = accounts,
 				Date = DateTime.Now,
 				Related = new[] {new EditRelatedAccount() {Accounts = accounts}}
@@ -71,11 +71,14 @@ namespace HomeTrack.Web.Controllers
 			if ( ModelState.IsValid )
 			{
 				var account = _unitOfWork.GetById<Account>(newTransaction.AccountId);
+				if (account == null)
+					throw new InvalidOperationException("Cannot find an account named " + newTransaction.AccountId);
 
 				var transaction = new Transaction()
 				{
 					Date = newTransaction.Date,
-					Description = newTransaction.Description
+					Description = newTransaction.Description,
+					Amount = newTransaction.Amount,
 				};
 
 				bool isCredit = account.Direction == EntryType.Credit;

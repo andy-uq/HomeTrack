@@ -19,16 +19,14 @@ namespace HomeTrack
 			Type = type;
 		}
 
-		public int Id { get; set; }
+		public string Id { get; set; }
 		public string Name { get; set; }
+		public string Description { get; set; }
 		public AccountType Type { get; set; }
 
 		public EntryType Direction { get { return Type.IsDebitOrCredit(); } }
 
-		public decimal Balance
-		{
-			get { return _balance; }
-		}
+		public decimal Balance { get; set; }
 
 		public void Post(decimal amount, EntryType entryType)
 		{

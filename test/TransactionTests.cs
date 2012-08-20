@@ -21,6 +21,7 @@ namespace HomeTrack.Tests
 
 			_transaction = new Transaction
 			{
+				Amount = 10M,
 				Debit = { new Amount(_bank, -10) },
 				Credit = { new Amount(_cashOnHand, 10) }
 			};

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 using Raven.Client.Embedded;
@@ -11,14 +12,10 @@ namespace HomeTrack.Tests
 		private Account _bank;
 		private Account _mortgage;
 		private Account _cashOnHand;
-		private EmbeddableDocumentStore _store;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_store = new EmbeddableDocumentStore { RunInMemory = true };
-			_store.Initialize();
-
 			_bank = AccountFactory.Debit("Bank");
 			_cashOnHand = AccountFactory.Debit("Bank");
 			_mortgage = AccountFactory.Credit("Mortgage");
@@ -27,41 +24,41 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AddTransaction()
 		{
-			var repository = new RavenRepository(_store);
-			using (var u = repository.CreateUnitOfWork())
+			using ( var repository = RavenStore.CreateRepository() )
 			{
-				u.Add(new Transaction());
-				u.SaveChanges();
-			}
+				using (var u = repository.CreateUnitOfWork())
+				{
+					u.Add(new Transaction());
+					u.SaveChanges();
+				}
 
-			using ( var s = _store.OpenSession() )
-			{
-				Assert.That(s.Query<Transaction>(), Is.Not.Empty);
+				repository.UseOnceTo(s => Assert.That(s.Query<Transaction>(), Is.Not.Empty));
 			}
 		}
 
 		[Test]
 		public void SearchAccountTransactions()
 		{
-			var repository = new RavenRepository(_store);
-
 			var t1 = new Transaction(_bank, _mortgage, 10M);
 			var t2 = new Transaction(_bank, _cashOnHand, 10M);
-
-			using ( var u = repository.CreateUnitOfWork() )
-			{
-				u.Add(t1);
-				u.Add(t2);
-				u.SaveChanges();
-			}
 			
-			using (var u = repository.CreateUnitOfWork())
+			using ( var repository = RavenStore.CreateRepository() )
 			{
-				var q = u.GetTransactions(_bank);
-				Assert.That(q, Is.EquivalentTo(new[] { t1, t2 }).Using(new TransactionComparer()));
+				using (var u = repository.CreateUnitOfWork())
+				{
+					u.Add(t1);
+					u.Add(t2);
+					u.SaveChanges();
+				}
 
-				q = u.GetTransactions(_mortgage);
-				Assert.That(q, Is.EquivalentTo(new[] { t1 }).Using(new TransactionComparer()));
+				using (var u = repository.CreateUnitOfWork())
+				{
+					var q = u.GetTransactions(_bank);
+					Assert.That(q, Is.EquivalentTo(new[] {t1, t2}).Using(new TransactionComparer()));
+
+					q = u.GetTransactions(_mortgage);
+					Assert.That(q, Is.EquivalentTo(new[] {t1}).Using(new TransactionComparer()));
+				}
 			}
 		}
 

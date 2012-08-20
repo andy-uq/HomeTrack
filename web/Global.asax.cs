@@ -37,6 +37,7 @@ namespace HomeTrack.Web
 			RegisterRoutes(RouteTable.Routes);
 
 			var builder = new ContainerBuilder();
+			builder.RegisterInstance(new GeneralLedger());
 
 			var raven = new RavenStore.Configure { DataDirectory = Server.MapPath("~/App_Data/RavenDb") };
 			raven.Build(builder);
