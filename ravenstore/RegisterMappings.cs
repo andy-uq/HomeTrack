@@ -18,7 +18,6 @@ namespace HomeTrack.RavenStore
 				.ForMember(x => x.Id, m => m.ResolveUsing(GetRavenId));
 
 			map.CreateMap<Amount, HomeTrack.Amount>()
-				.ConstructUsing((Func<Amount, HomeTrack.Amount>)(_ => new HomeTrack.Amount()))
 				.ForMember(x => x.Account, m => m.ResolveUsing(ToAccount));
 
 			map.CreateMap<HomeTrack.Amount, Amount>()
