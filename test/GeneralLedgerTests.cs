@@ -15,7 +15,7 @@ namespace HomeTrack.Tests
 			_bank = AccountFactory.Debit("Bank");
 			_mortgage = AccountFactory.Credit("Mortgage");
 
-			_ledger = new GeneralLedger
+			_ledger = new GeneralLedger(null)
 			{
 				_bank,
 				_mortgage,

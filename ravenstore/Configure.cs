@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Raven.Client;
 using Raven.Client.Embedded;
+using Raven.Database.Server;
 
 namespace HomeTrack.RavenStore
 {
@@ -31,6 +32,8 @@ namespace HomeTrack.RavenStore
 			documentStore.DataDirectory = DataDirectory;
 			documentStore.DefaultDatabase = "HomeTrack";
 			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
+
+			NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
 
 			documentStore.Initialize();
 		}

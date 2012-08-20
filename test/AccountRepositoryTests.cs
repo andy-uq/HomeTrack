@@ -1,5 +1,4 @@
-﻿using HomeTrack.RavenStore;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Raven.Client.Embedded;
 
 namespace HomeTrack.Tests
@@ -22,16 +21,15 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AddAccount()
 		{
-			var repository = new RavenRepository(_store);
-			using (var u = repository.CreateUnitOfWork())
+			using ( var repository = RavenStore.CreateRepository() )
 			{
-				u.Add(_bank);
-				u.SaveChanges();
-			}
+				using (var u = repository.CreateUnitOfWork())
+				{
+					u.Add(_bank);
+					u.SaveChanges();
+				}
 
-			using ( var s = _store.OpenSession() )
-			{
-				Assert.That(s.Query<Account>(), Is.Not.Empty);
+				repository.UseOnceTo(s => Assert.That(s.Query<Account>(), Is.Not.Empty));
 			}
 		}
 	}

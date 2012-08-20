@@ -16,7 +16,7 @@ namespace HomeTrack.Web.ViewModels
 
 	public class RelatedAccount
 	{
-		public int AccountId { get; set; }
+		public string AccountId { get; set; }
 		public decimal Amount { get; set; }
 	}
 
@@ -38,7 +38,7 @@ namespace HomeTrack.Web.ViewModels
 
 	public class NewTransaction
 	{
-		public int AccountId { get; set; }
+		public string AccountId { get; set; }
 		public decimal Amount { get; set; }
 		public string Description { get; set; }
 		public DateTime Date { get; set; }

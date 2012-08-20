@@ -24,6 +24,8 @@ namespace HomeTrack
 			
 			_debit.Add(new Amount(debit, amount));
 			_credit.Add(new Amount(credit, amount));
+
+			Amount = Math.Abs(amount);
 		}
 
 		public ISet<Amount> Debit
@@ -39,22 +41,14 @@ namespace HomeTrack
 		public int Id { get; set; }
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
+		public decimal Amount { get; set; }
 
-		public decimal CreditAmount
-		{
-			get { return _credit.Sum(x => x.CreditValue); }
-		}
-
-		public decimal DebitAmount
-		{
-			get { return _debit.Sum(x => x.DebitValue); }
-		}
 		public bool Check()
 		{
-			var debit = DebitAmount;
-			var credit = CreditAmount;
+			var debit = _debit.Sum(x => x.DebitValue);
+			var credit = _credit.Sum(x => x.CreditValue);
 
-			return credit == debit;
+			return Amount == Math.Abs(credit) && Amount == Math.Abs(debit);
 		}
 
 		public bool Is(Account account)

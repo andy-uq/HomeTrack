@@ -2,6 +2,8 @@
 {
 	public static class AccountFactory
 	{
+		private static int _nextId = 1;
+
 		public static Account Debit(string name)
 		{
 			return new Account(name, AccountType.Asset);

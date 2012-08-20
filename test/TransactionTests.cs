@@ -21,6 +21,7 @@ namespace HomeTrack.Tests
 
 			_transaction = new Transaction
 			{
+				Amount = 10M,
 				Debit = { new Amount(_bank, -10) },
 				Credit = { new Amount(_cashOnHand, 10) }
 			};
@@ -87,7 +88,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void PostTransaction()
 		{
-			var generalLedger = new GeneralLedger();
+			var generalLedger = new GeneralLedger(null);
 			Assert.That(generalLedger.Post(_transaction), Is.True);
 		}
 	}

@@ -7,31 +7,24 @@ namespace HomeTrack
 {
 	public class GeneralLedger : IEnumerable<Account>
 	{
-		private readonly ISet<Account> _accounts;
+		private IGeneralLedgerRepository _repository;
 
-		public IEnumerable<Account> DebitAccounts
+		public GeneralLedger(IGeneralLedgerRepository repository)
 		{
-			get { return _accounts.Where(x => x.Direction == EntryType.Debit); }
+			_repository = repository;
 		}
 
-		public IEnumerable<Account> CreditAccounts
-		{
-			get { return _accounts.Where(x => x.Direction == EntryType.Credit); }
-		}
+		public IEnumerable<Account> DebitAccounts { get { return _repository.DebitAccounts; } }
+		public IEnumerable<Account> CreditAccounts { get { return _repository.CreditAccounts; } }
 
-		public GeneralLedger()
-		{
-			_accounts = new HashSet<Account>();
-		}
-		
 		public void Add(Account account)
 		{
-			_accounts.Add(account);
+			_repository.Add(account);
 		}
 
 		public IEnumerator<Account> GetEnumerator()
 		{
-			return _accounts.GetEnumerator();
+			return _repository.Accounts.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -47,20 +40,19 @@ namespace HomeTrack
 			return debit == credit;
 		}
 
-		public Account this[string name]
+		public Account this[string accountId]
 		{
-			get { return _accounts.Single(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)); }
+			get { return _repository.GetAccount(accountId); }
 		}
 
 		public bool Post(Transaction transaction)
 		{
-			foreach (var debitAmount in transaction.Debit)
-				debitAmount.Post();
+			return _repository.Post(transaction);
+		}
 
-			foreach (var creditAmount in transaction.Credit)
-				creditAmount.Post();
-
-			return true;
+		public IEnumerable<Transaction> GetTransactions(string accountId)
+		{
+			return _repository.GetTransactions(accountId);
 		}
 	}
 }

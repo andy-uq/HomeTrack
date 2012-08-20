@@ -127,12 +127,15 @@
 				}),
 				dataType: 'json',
 				success: function(result) {
-					if (result && result.redirectUrl) {
-						window.location = result.redirectUrl;
+					$('#exception').html(null).hide();
+					if (result) {
+						if (result.redirectUrl) {
+							window.location = result.redirectUrl;
+						}
 					}
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
-					$('#exception').html(xhr.responseText);
+					$('#exception').html(xhr.responseText).show();
 					alert(xhr.statusText);
 				}
 			});
