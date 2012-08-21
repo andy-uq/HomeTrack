@@ -1,6 +1,26 @@
 ﻿@model Account
+
+@functions 
+{
+
+	private SelectListItem ToSelectItem(AccountType x)
+	{
+		return new SelectListItem
+		{
+			Text = x.ToString(),
+			Value = x.ToString()
+		};
+	}
+
+}
+
 @{
 	ViewBag.Title = "Edit account";
+
+	var accountTypeValues = Enum
+		.GetValues(typeof(AccountType))
+		.Cast<AccountType>()
+		.Select(ToSelectItem);
 }
 
 <h2>Edit account</h2>
@@ -19,11 +39,18 @@
             @Html.TextBoxFor(model => model.Name) 
             @Html.ValidationMessageFor(model => model.Name) 
         </div> 
+		<div class="editor-label"> 
+            @Html.LabelFor(model => model.Description) 
+        </div> 
+        <div class="editor-field"> 
+            @Html.TextAreaFor(model => model.Description) 
+            @Html.ValidationMessageFor(model => model.Description) 
+        </div> 
        <div class="editor-label"> 
             @Html.LabelFor(model => model.Type) 
         </div> 
 		<div class="editor-field"> 
-			@Html.DropDownListFor(model => model.Type, Enum.GetValues(typeof(AccountType)).Cast<AccountType>().Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() })) 
+			@Html.DropDownListFor(model => model.Type, accountTypeValues) 
 			@Html.ValidationMessageFor(model => model.Type) 
 		</div>
 		<p> 

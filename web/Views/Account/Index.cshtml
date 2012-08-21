@@ -20,8 +20,15 @@
 		<tr>
 			<td>@account.Name</td>
 			<td>@account.Type</td>
-			<td>@account.Type.ToCrDrString()</td>
-			<td class="amount">@account.Balance.AsAmount()</td>
+			@if ( @account.Balance >= 0 )
+			{
+				<td>@account.Type.ToCrDrString()</td>
+				<td class="amount">@account.Balance.AsAmount()</td>
+			} else
+			{
+				<td>@account.Type.ToCrDrString()</td>
+				<td class="amount">@account.Balance.AsAmount()</td>
+			}
 			<td>@Html.ActionLink("view", "details", new { account.Id })</td>
 			<td>@Html.ActionLink("edit", "edit", new { account.Id })</td>
 			<td>@Html.ActionLink("transactions", "index", new{ controller="transaction", account.Id})</td>

@@ -1,69 +1,38 @@
-﻿@model AccountViewModel
+﻿@model TransactionIndexViewModel
 
-@{
-	var renderFunc = (Model.Account.Direction == EntryType.Debit) 
-		? (Func<HomeTrack.Transaction, HelperResult> )RenderDebitAccount 
-		: RenderDebitAccount;
-}
-
-@helper RenderCreditAccount(HomeTrack.Transaction transaction)
-{
-	<tr>
-		<td>@transaction.Date.ToString("d MMM")</td>
-		<td>@transaction.Description</td>
-		<td></td>
-		<td>@transaction.Amount.AsAmount()</td>
-	</tr>
-	foreach (var rhs in transaction.RightHandSide())
-	{
-		<tr>
-			<td></td>
-			<td>@rhs.Account.Name</td>
-			<td class="amount">@rhs.Value.AsAmount()</td>
-			<td></td>
-		</tr>
-	}
-}
-
-@helper RenderDebitAccount(HomeTrack.Transaction transaction)
-{
-	<tr>
-		<td>@transaction.Date.ToString("d MMM")</td>
-		<td>@transaction.Description</td>
-		<td class="amount">@transaction.Amount.AsAmount()</td>
-		<td></td>
-	</tr>
-	foreach (var rhs in transaction.RightHandSide())
-	{
-		<tr>
-			<td></td>
-			<td>@rhs.Account.Name</td>
-			<td></td>
-			<td class="amount">@rhs.Value.AsAmount()</td>
-		</tr>
-	}
-}
-
-<h2>Transactions</h2>
+<h2>@Model.Account.Name Transactions</h2>
 
 <table>
 	<thead>
 		<tr>
+			<td>Date</td>
 			<td>Name</td>
-
 			<td>Dr</td>
 			<td>Cr</td>
 		</tr>
 	</thead>
 	<tbody>
-	@foreach ( var transaction in Model.Transactions )
-	{
-		@renderFunc(transaction);
-	}
+		@foreach ( var transaction in Model.Transactions )
+		{
+			<tr>
+				<td>@transaction.Date.ToString("d MMM")</td>
+				<td>@transaction.Description</td>
+				<td class="amount">@transaction.Debit.AsAmount()</td>
+				<td class="amount">@transaction.Credit.AsAmount()</td>
+				<td>@Html.ActionLink("Reference", "details", new { transaction.Id })</td>
+			</tr>
+		}
 	</tbody>
-</table>
-	
+	<tfoot>
+		<tr>
+			<td>@DateTime.Now.ToString("d MMM")</td>
+			<td>Balance</td>
+			<td class="amount">@Model.Account.Type.ToDr(Model.Account.Balance).AsAmount()</td>
+			<td class="amount">@Model.Account.Type.ToCr(Model.Account.Balance).AsAmount()</td>
+		</tr>
+	</tfoot>
+</table>	
 	
 <p>
-	@Html.ActionLink("Create", "create", new { Model.Id })
+	@Html.ActionLink("Create", "create", new { Model.Account.Id })
  </p>

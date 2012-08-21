@@ -127,6 +127,7 @@ namespace HomeTrack.RavenStore
 						where
 							t.Credit.Any(x => x.AccountId == accountId)
 							|| t.Debit.Any(x => x.AccountId == accountId)
+						orderby t.Date, t.Id
 						select t
 					);
 

@@ -57,7 +57,7 @@
 	var accounts = [
 		@foreach (var account in Model.Accounts)
 		{
-			<text>{ name: "@Html.Raw(account.Name)", id: @account.Id },</text>
+			<text>{ name: "@Html.Raw(account.Name)", id: '@account.Id' },</text>
 		}
 	];
 	
@@ -84,7 +84,7 @@
 		self.accounts = ko.observableArray([
 				@foreach (var account in Model.Related)
 			{
-				<text>new RelatedAccount(@account.AccountId, @account.Amount),</text>
+				<text>new RelatedAccount('@account.AccountId', @account.Amount),</text>
 			}
 			]);
 		self.date = ko.observable('@Model.Date');
@@ -118,7 +118,7 @@
 				type: "POST",
 				data: JSON.stringify({
 					newTransaction: {
-						AccountId: @Model.Account.Id,
+						AccountId: '@Model.Account.Id',
 						Amount: self.amount(),
 						Description: self.description(),
 						Date: self.date(),

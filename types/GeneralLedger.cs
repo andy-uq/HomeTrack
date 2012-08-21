@@ -19,6 +19,15 @@ namespace HomeTrack
 
 		public void Add(Account account)
 		{
+			if ( account.Id != null )
+			{
+				Account currentAccount;
+				if ( (currentAccount = _repository.GetAccount(account.Id)) != null )
+				{
+					account.Balance = currentAccount.Balance;
+				}
+			}
+
 			account.Id = _repository.Add(account);
 		}
 

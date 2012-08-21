@@ -100,6 +100,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\NewTransaction.cs" />
+    <Compile Include="ViewModels\TransactionIndexViewModel.cs" />
     <Compile Include="ViewModels\ViewExtensions.cs" />
     <Compile Include="ViewModels\AccountViewModel.cs" />
   </ItemGroup>
@@ -143,6 +144,8 @@
     <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
     <Content Include="Views\Shared\RelatedAccount.cshtml" />
+    <Content Include="Views\Account\Details.cshtml" />
+    <Content Include="Views\Account\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RavenStore\RavenStore.csproj">

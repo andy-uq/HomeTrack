@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace HomeTrack.Web.ViewModels
+﻿namespace HomeTrack.Web.ViewModels
 {
 	public static class ViewExtensions
 	{
@@ -19,7 +14,9 @@ namespace HomeTrack.Web.ViewModels
 				return string.Empty;
 			}
 
-			return amount.Value.ToString(format ?? "n2");
+			return amount >= 0M 
+				? amount.Value.ToString(format ?? "n2") 
+				: string.Concat("(", (-amount.Value).ToString(format ?? "n2"), ")");
 		}
 	}
 }

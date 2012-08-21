@@ -24,10 +24,20 @@ namespace HomeTrack.Web.Controllers
 			if (account == null)
 				return new HttpNotFoundResult();
 
-			var model = new AccountViewModel
+			var model = new TransactionIndexViewModel
 			{
 				Account = account,
-				Transactions = _generalLedger.GetTransactions(id)
+				Transactions =
+					from x in _generalLedger.GetTransactions(id)
+					orderby x.Date , x.Id
+					select new TransactionIndexViewModel.Transaction
+					{
+						Id = x.Id,
+						Date = x.Date,
+						Description = x.Description,
+						Debit = x.Debit.Where(a => a.Account.Id == id).Select<Amount, decimal?>(d => d.Value).SingleOrDefault(),
+						Credit = x.Credit.Where(a => a.Account.Id == id).Select<Amount, decimal?>(d => d.Value).SingleOrDefault(),
+					}
 			};
 
 			return View(model);
