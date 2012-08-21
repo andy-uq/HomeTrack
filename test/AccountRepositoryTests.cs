@@ -11,7 +11,7 @@ namespace HomeTrack.Tests
 		{
 			var bank = AccountFactory.Debit("Bank");
 			GeneralLedger.Add(bank);
-			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Account>(), Is.Not.Empty));
+			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Account>()), Is.Not.Empty);
 		}
 	}
 }

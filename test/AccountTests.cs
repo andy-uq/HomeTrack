@@ -23,6 +23,20 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void AccountTypeDr()
+		{
+			var dr = new Account("Bank", AccountType.Asset).Type.ToCrDrString();
+			Assert.That(dr, Is.EqualTo("Dr"));
+		}
+
+		[Test]
+		public void AccountTypeCr()
+		{
+			var cr = new Account("Mortgage", AccountType.Liability).Type.ToCrDrString();
+			Assert.That(cr, Is.EqualTo("Cr"));
+		}
+
+		[Test]
 		public void CreateDebitAccount()
 		{
 			var account = _debitAccount;
