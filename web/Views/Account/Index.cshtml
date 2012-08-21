@@ -10,31 +10,30 @@
 <table>
 	<thead>
 		<tr>
-			<td>Name</td>
-			<td colspan="2">Type</td>
-			<td>Balance</td>
+			<td rowspan="2">Name</td>
+			<td rowspan="2">Type</td>
+			<td colspan="2">Balance</td>
+		</tr>
+		<tr>
+			<td>Dr</td>
+			<td>Cr</td>
 		</tr>
 	</thead>
-	@foreach (var account in Model)
+	<tbody>
+	@foreach ( var account in Model.OrderBy(x => x.Type).ThenBy(x => x.Name) )
 	{
 		<tr>
 			<td>@account.Name</td>
 			<td>@account.Type</td>
-			@if ( @account.Balance >= 0 )
-			{
-				<td>@account.Type.ToCrDrString()</td>
-				<td class="amount">@account.Balance.AsAmount()</td>
-			} else
-			{
-				<td>@account.Type.ToCrDrString()</td>
-				<td class="amount">@account.Balance.AsAmount()</td>
-			}
+			<td>@account.Type.ToDr(account.Balance).AsAmount()</td>
+			<td>@account.Type.ToCr(account.Balance).AsAmount()</td>
 			<td>@Html.ActionLink("view", "details", new { account.Id })</td>
 			<td>@Html.ActionLink("edit", "edit", new { account.Id })</td>
 			<td>@Html.ActionLink("transactions", "index", new{ controller="transaction", account.Id})</td>
 			<td>@Html.ActionLink("new", "create", new{ controller="transaction", account.Id})</td>
 		</tr>
 	}
+	</tbody>
 </table>
 	
 	

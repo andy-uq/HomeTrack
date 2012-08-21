@@ -106,7 +106,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configure.cs" />
+    <Compile Include="ConfigureEmbeddedDocumentStore.cs" />
     <Compile Include="GeneralLedgerRepository.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

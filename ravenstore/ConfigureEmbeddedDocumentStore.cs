@@ -1,14 +1,18 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Autofac;
 using Newtonsoft.Json;
 using Raven.Client;
+using Raven.Client.Document;
 using Raven.Client.Embedded;
 using Raven.Database.Server;
 
 namespace HomeTrack.RavenStore
 {
-	public class Configure : IDemandBuilder
+	public class ConfigureEmbeddedDocumentStore : IDemandBuilder
 	{
+		private Action<DocumentStore> _afterInitialise;
+		
 		public string DataDirectory { get; set; }
 
 		public void Build(ContainerBuilder containerBuilder)
@@ -42,12 +46,21 @@ namespace HomeTrack.RavenStore
 			NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
 
 			documentStore.Initialize();
+			if ( _afterInitialise != null )
+			{
+				_afterInitialise(documentStore);
+			}
 		}
 
 
 		private void ConfigureJsonSerialiser(JsonSerializer obj)
 		{
 			obj.TypeNameHandling = TypeNameHandling.None;
+		}
+
+		public void AfterInitialise(Action<DocumentStore> afterInitialise)
+		{
+			_afterInitialise = afterInitialise;
 		}
 	}
 }
