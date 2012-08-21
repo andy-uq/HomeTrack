@@ -6,7 +6,7 @@
 	@Html.Hidden("AccountId", Model.Account.Id)
 	<fieldset>
 		<legend>
-			New Transaction
+			New Transaction against @Model.Account.Name
 		</legend>
 		<div class="editor-label"> 
 			@Html.LabelFor(model => model.Date) 
@@ -28,6 +28,12 @@
 		<div class="editor-field"> 
 			<input type="text" name="Amount" data-bind="value: amount"/> 
 			@Html.ValidationMessageFor(model => model.Amount) 
+		</div>
+		<div class="editor-field">
+			<input id="direction_debit" type="radio" name="Direction" value="debit" data-bind="checked: direction"/>
+			<label for="direction_debit">Dr</label>
+			<input id="direction_credit" type="radio" name="Direction" value="credit" data-bind="checked: direction"/>
+			<label for="direction_credit">Cr</label>
 		</div>
 		<div>
 			<table>
@@ -82,7 +88,7 @@
 
 		// Editable data
 		self.accounts = ko.observableArray([
-				@foreach (var account in Model.Related)
+			@foreach (var account in Model.Related)
 			{
 				<text>new RelatedAccount('@account.AccountId', @account.Amount),</text>
 			}
@@ -90,6 +96,7 @@
 		self.date = ko.observable('@Model.Date');
 		self.description = ko.observable('@Model.Description');
 		self.amount = ko.observable('@Model.Amount');
+		self.direction = ko.observable('@Model.Direction');
 
 		// Operations
 		self.addAccount = function() {
@@ -121,6 +128,7 @@
 						AccountId: '@Model.Account.Id',
 						Amount: self.amount(),
 						Description: self.description(),
+						Direction: self.direction(),
 						Date: self.date(),
 						Related: relatedAccounts
 					}
@@ -142,5 +150,6 @@
 		};
 	}
 
-	ko.applyBindings(new TransactionViewModel());
+	var vm = new TransactionViewModel();
+	ko.applyBindings(vm);
 </script>

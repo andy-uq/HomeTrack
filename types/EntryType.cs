@@ -2,6 +2,7 @@
 {
 	public enum EntryType
 	{
+		NotSpecified,
 		Debit,
 		Credit
 	}

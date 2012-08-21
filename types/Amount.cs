@@ -9,23 +9,14 @@ namespace HomeTrack
 		{
 		}
 
-		public Amount(Account account, decimal value)
+		public Amount(Account account, EntryType entryType, decimal value)
 		{
-			if (value == 0M)
-				throw new ArgumentException("Cannot express a value of zero");
+			if (value <= 0M)
+				throw new ArgumentException("Cannot express a value of zero or less");
 
 			Account = account;
-
-			if ( value >= 0M )
-			{
-				Direction = account.Direction;
-				Value = value;
-			}
-			else
-			{
-				Direction = account.Direction.Invert();
-				Value = -value;
-			}
+			Direction = entryType;
+			Value = value;
 		}
 
 		public Account Account { get; set; }

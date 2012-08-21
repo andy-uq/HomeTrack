@@ -38,7 +38,7 @@ namespace HomeTrack.Web
 
 			var builder = new ContainerBuilder();
 			
-			var raven = new RavenStore.Configure { DataDirectory = Server.MapPath("~/App_Data/RavenDb") };
+			var raven = new RavenStore.ConfigureEmbeddedDocumentStore() { DataDirectory = Server.MapPath("~/App_Data/RavenDb") };
 			raven.Build(builder);
 
 			builder.Register(r => new GeneralLedger(r.Resolve<IGeneralLedgerRepository>()));

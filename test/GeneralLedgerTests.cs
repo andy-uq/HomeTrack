@@ -12,8 +12,8 @@ namespace HomeTrack.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_bank = AccountFactory.Debit("Bank");
-			_mortgage = AccountFactory.Credit("Mortgage");
+			_bank = AccountFactory.Debit("Bank", a => a.Balance = 100);
+			_mortgage = AccountFactory.Credit("Mortgage", a => a.Balance = 100);
 
 			_ledger = new GeneralLedger(new InMemoryGeneralLedger())
 			{
@@ -67,6 +67,26 @@ namespace HomeTrack.Tests
 			_mortgage.Debit(10M);
 
 			Assert.That(_ledger.TrialBalance(), Is.True);
+		}
+
+		[Test]
+		public void PostCredit()
+		{
+			var t = new Transaction(_mortgage, _bank, 10M);
+			_ledger.Post(t);
+
+			Assert.That(_mortgage.Balance, Is.EqualTo(90M));
+			Assert.That(_bank.Balance, Is.EqualTo(90M));
+		}
+
+		[Test]
+		public void PostDebit()
+		{
+			var t = new Transaction(_bank, _mortgage, 10M);
+			_ledger.Post(t);
+
+			Assert.That(_mortgage.Balance, Is.EqualTo(110M));
+			Assert.That(_bank.Balance, Is.EqualTo(110M));
 		}
 	}
 }

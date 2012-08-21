@@ -18,9 +18,9 @@ namespace HomeTrack.Tests
 		{
 			base.SetUp();
 
-			_bank = AccountFactory.Debit("Bank");
-			_cashOnHand = AccountFactory.Debit("Bank");
-			_mortgage = AccountFactory.Credit("Mortgage");
+			_bank = AccountFactory.Debit("Bank", a => a.Balance = 100);
+			_cashOnHand = AccountFactory.Debit("Cash on hand");
+			_mortgage = AccountFactory.Credit("Mortgage", a => a.Balance = 50);
 
 			GeneralLedger.Add(_bank);
 			GeneralLedger.Add(_cashOnHand);
@@ -30,10 +30,13 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AddTransaction()
 		{
-			var t1 = new Transaction(_bank, _mortgage, 10M);
+			var t1 = new Transaction(_mortgage, _bank, 10M);
 			GeneralLedger.Post(t1);
 			
 			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Transaction>(), Is.Not.Empty));
+
+			Assert.That(GeneralLedger["bank"].Balance, Is.EqualTo(90M));
+			Assert.That(GeneralLedger["mortgage"].Balance, Is.EqualTo(40M));
 		}
 
 		[Test]
@@ -50,6 +53,10 @@ namespace HomeTrack.Tests
 
 			q = GeneralLedger.GetTransactions(_mortgage.Id);
 			Assert.That(q, Is.EquivalentTo(new[] {t1}).Using(new TransactionComparer()));
+
+			Assert.That(GeneralLedger["bank"].Balance, Is.EqualTo(80M));
+			Assert.That(GeneralLedger["mortgage"].Balance, Is.EqualTo(40M));
+			Assert.That(GeneralLedger["cashOnHand"].Balance, Is.EqualTo(10M));
 		}
 
 		public class TransactionComparer : IEqualityComparer<Transaction>

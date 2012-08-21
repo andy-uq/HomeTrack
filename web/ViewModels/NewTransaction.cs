@@ -12,6 +12,8 @@ namespace HomeTrack.Web.ViewModels
 		public EditRelatedAccount[] Related { get; set; }
 		
 		public IEnumerable<Account> Accounts { get; set; }
+
+		public EntryType Direction { get; set; }
 	}
 
 	public class RelatedAccount
@@ -40,9 +42,10 @@ namespace HomeTrack.Web.ViewModels
 	{
 		public string AccountId { get; set; }
 		public decimal Amount { get; set; }
+		public EntryType Direction { get; set; }
 		public string Description { get; set; }
 		public DateTime Date { get; set; }
 		public RelatedAccount[] Related { get; set; }
-		
+
 	}
 }

@@ -1,17 +1,25 @@
-﻿namespace HomeTrack.Tests
+﻿using System;
+
+namespace HomeTrack.Tests
 {
 	public static class AccountFactory
 	{
-		private static int _nextId = 1;
-
-		public static Account Debit(string name)
+		public static Account Debit(string name, Action<Account> initialise = null)
 		{
-			return new Account(name, AccountType.Asset);
+			var account = new Account(name, AccountType.Asset);
+			if (initialise != null)
+				initialise(account);
+
+			return account;
 		}
 
-		public static Account Credit(string name)
+		public static Account Credit(string name, Action<Account> initialise = null)
 		{
-			return new Account(name, AccountType.Liability);
+			var account = new Account(name, AccountType.Liability);
+			if ( initialise != null )
+				initialise(account);
+
+			return account;
 		}
 	}
 }

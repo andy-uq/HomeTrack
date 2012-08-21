@@ -57,10 +57,12 @@ namespace HomeTrack.Web.Controllers
 		public ActionResult Create(string id)
 		{
 			var accounts = _generalLedger.ToArray();
+			var account = _generalLedger[id];
 			var model = new ViewModels.Transaction()
 			{
-				Account = _generalLedger[id],
+				Account = account,
 				Accounts = accounts,
+				Direction = account.Direction,
 				Date = DateTime.Now,
 				Related = new[] {new EditRelatedAccount() {Accounts = accounts}}
 			};
@@ -88,15 +90,15 @@ namespace HomeTrack.Web.Controllers
 					Amount = newTransaction.Amount,
 				};
 
-				bool isCredit = account.Direction == EntryType.Credit;
+				bool isCredit = newTransaction.Direction == EntryType.Credit;
 				var left = isCredit ? transaction.Credit : transaction.Debit;
 				var right = isCredit ? transaction.Debit : transaction.Credit;
 				
-				left.Add(new Amount(account, newTransaction.Amount));
+				left.Add(new Amount(account, newTransaction.Direction, newTransaction.Amount));
 				foreach (var r in newTransaction.Related)
 				{
 					account = _generalLedger[r.AccountId];
-					right.Add(new Amount(account, r.Amount));
+					right.Add(new Amount(account, newTransaction.Direction.Invert(), r.Amount));
 				}
 
 				if ( _generalLedger.Post(transaction) )

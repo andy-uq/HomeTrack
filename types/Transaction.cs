@@ -21,8 +21,8 @@ namespace HomeTrack
 			Ensure.That(() => debit).IsNotNull();
 			Ensure.That(() => credit).IsNotNull();
 			
-			Debit.Add(new Amount(debit, amount));
-			Credit.Add(new Amount(credit, amount));
+			Debit.Add(new Amount(debit, EntryType.Debit, amount));
+			Credit.Add(new Amount(credit, EntryType.Credit, amount));
 
 			Amount = Math.Abs(amount);
 		}

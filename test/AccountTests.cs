@@ -76,12 +76,12 @@ namespace HomeTrack.Tests
 		public void PostAmount()
 		{
 			var account = _debitAccount;
-			var amount = new Amount(account, 10M);
+			var amount = new Amount(account, EntryType.Debit, 10M);
 			amount.Post();
 
 			Assert.That(account.Balance, Is.EqualTo(10M));
 
-			amount = new Amount(account, -10M);
+			amount = new Amount(account, EntryType.Credit, 10M);
 			amount.Post();
 			Assert.That(account.Balance, Is.EqualTo(0M));
 		}

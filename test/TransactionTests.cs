@@ -22,8 +22,8 @@ namespace HomeTrack.Tests
 			_transaction = new Transaction
 			{
 				Amount = 10M,
-				Debit = { new Amount(_bank, -10) },
-				Credit = { new Amount(_cashOnHand, 10) }
+				Debit = { new Amount(_bank, EntryType.Debit, 10) },
+				Credit = { new Amount(_cashOnHand, EntryType.Credit, 10) }
 			};
 		}
 
@@ -42,13 +42,15 @@ namespace HomeTrack.Tests
 		[Test]
 		public void CreateTransaction()
 		{
-			new Transaction(_bank, _cashOnHand, -10M);
+			var t = new Transaction(_cashOnHand, _bank, 10M);
+			Assert.That(t.Debit.First().Direction, Is.EqualTo(EntryType.Debit));
+			Assert.That(t.Credit.First().Direction, Is.EqualTo(EntryType.Credit));
 		}
 
 		[Test]
 		public void TransactionIs()
 		{
-			var t = new Transaction(_bank, _cashOnHand, -10M);
+			var t = new Transaction(_cashOnHand, _bank, 10M);
 			Assert.That(t.Is(_bank));
 			Assert.That(t.Is(_cashOnHand));
 			Assert.That(t.Is(_mortgage), Is.False);
@@ -59,22 +61,22 @@ namespace HomeTrack.Tests
 		{
 			new Transaction
 			{
-				Debit = { new Amount(_bank, -10) },
-				Credit = { new Amount(_cashOnHand, -10) }
+				Debit = { new Amount(_bank, EntryType.Debit, 10) },
+				Credit = { new Amount(_cashOnHand, EntryType.Credit, 10) }
 			};
 		}
 
 		[Test]
 		public void DebitValue()
 		{
-			Assert.That(_transaction.Debit.Sum(x => x.DebitValue), Is.EqualTo(-10M));
-			Assert.That(_transaction.Credit.Sum(x => x.CreditValue), Is.EqualTo(-10M));
+			Assert.That(_transaction.Debit.Sum(x => x.DebitValue), Is.EqualTo(10M));
+			Assert.That(_transaction.Credit.Sum(x => x.CreditValue), Is.EqualTo(10M));
 		}
 
 		[Test]
 		public void CreditValue()
 		{
-			var a = new Amount(_bank, 10M);
+			var a = new Amount(_bank, EntryType.Debit, 10M);
 			Assert.That(a.DebitValue, Is.EqualTo(10M));
 			Assert.That(a.CreditValue, Is.EqualTo(-10M));
 		}
