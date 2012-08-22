@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
@@ -12,7 +13,18 @@ namespace HomeTrack.Web
 
 	public class MvcApplication : System.Web.HttpApplication
 	{
-		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+		private readonly Func<string, string> _mapPath;
+
+		public MvcApplication()
+		{
+		}
+
+		public MvcApplication(Func<string, string> mapPath)
+		{
+			_mapPath = mapPath;
+		}
+
+		private static void RegisterGlobalFilters(GlobalFilterCollection filters)
 		{
 			filters.Add(new HandleErrorAttribute());
 		}
@@ -26,26 +38,43 @@ namespace HomeTrack.Web
 				"{controller}/{action}/{id}", // URL with parameters
 				new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
 			);
-
 		}
 
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
+			Start();
+		}
 
+		public void Start()
+		{
 			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);
 
 			var builder = new ContainerBuilder();
-			
-			var raven = new RavenStore.ConfigureEmbeddedDocumentStore() { DataDirectory = Server.MapPath("~/App_Data/RavenDb") };
+			RegisterIoc(builder);
+		}
+
+		private void RegisterIoc(ContainerBuilder builder)
+		{
+			var raven = new RavenStore.ConfigureEmbeddedDocumentStore()
+			{
+				DataDirectory = MapPath("~/App_Data/RavenDb"),
+				UseEmbeddedHttpServer = false
+			};
+
 			raven.Build(builder);
 
 			builder.Register(r => new GeneralLedger(r.Resolve<IGeneralLedgerRepository>()));
-			builder.RegisterControllers(typeof(MvcApplication).Assembly);
+			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+		}
+
+		private Func<string, string> MapPath
+		{
+			get { return _mapPath ?? Server.MapPath; }
 		}
 	}
 }

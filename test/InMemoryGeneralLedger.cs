@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -45,19 +44,6 @@ namespace HomeTrack.Tests
 			return account.Id;
 		}
 
-		public bool TrialBalance()
-		{
-			var debit = DebitAccounts.Sum(x => x.Balance);
-			var credit = CreditAccounts.Sum(x => x.Balance);
-
-			return debit == credit;
-		}
-
-		public Account this[string accountId]
-		{
-			get { return GetAccount(accountId); }
-		}
-
 		public bool Post(Transaction transaction)
 		{
 			if (transaction.Check())
@@ -81,8 +67,8 @@ namespace HomeTrack.Tests
 				(
 					from t in _transactions
 					where
-						System.Linq.Enumerable.Any(t.Credit, x => x.Account.Id == accountId)
-						|| System.Linq.Enumerable.Any(t.Debit, x => x.Account.Id == accountId)
+						t.Credit.Any(x => x.Account.Id == accountId)
+						|| t.Debit.Any(x => x.Account.Id == accountId)
 					select t
 				);
 		}

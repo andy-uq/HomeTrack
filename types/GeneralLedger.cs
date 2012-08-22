@@ -53,6 +53,9 @@ namespace HomeTrack
 		{
 			get
 			{
+				if ( string.IsNullOrEmpty(accountId) )
+					throw new ArgumentNullException("accountId");
+				
 				Account account = _repository.GetAccount(accountId);
 				if (account == null)
 					throw new InvalidOperationException("Cannot find account: " + accountId);

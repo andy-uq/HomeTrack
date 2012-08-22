@@ -24,8 +24,7 @@ namespace HomeTrack.Web.Controllers
 				Data = new
 				{
 					Tag = "ValidationError",
-					State =
-					errors
+					State = errors
 				}
 			};
 		}

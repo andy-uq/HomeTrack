@@ -108,6 +108,8 @@
   <ItemGroup>
     <Compile Include="AccountFactory.cs" />
     <Compile Include="AccountRepositoryTests.cs" />
+    <Compile Include="AmountTests.cs" />
+    <Compile Include="AutomaticPaymentTests.cs" />
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="GeneralLedgerTests.cs" />
     <Compile Include="InMemoryGeneralLedger.cs" />

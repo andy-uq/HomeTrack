@@ -42,15 +42,8 @@ namespace HomeTrack.Web.Controllers
 		[HttpPost]
 		public ActionResult Create(Account account)
 		{
-			try
-			{
-				_generalLedger.Add(account);
-				return RedirectToAction("Index");
-			}
-			catch
-			{
-				return View(account);
-			}
+			_generalLedger.Add(account);
+			return RedirectToAction("Index");
 		}
 		
 		//
@@ -67,41 +60,8 @@ namespace HomeTrack.Web.Controllers
 		[HttpPost]
 		public ActionResult Edit(Account account)
 		{
-			try
-			{
-				_generalLedger.Add(account);
-				return RedirectToAction("Index");
-			}
-			catch
-			{
-				return View();
-			}
-		}
-
-		//
-		// GET: /Account/Delete/5
- 
-		public ActionResult Delete(int id)
-		{
-			return View();
-		}
-
-		//
-		// POST: /Account/Delete/5
-
-		[HttpPost]
-		public ActionResult Delete(int id, FormCollection collection)
-		{
-			try
-			{
-				// TODO: Add delete logic here
- 
-				return RedirectToAction("Index");
-			}
-			catch
-			{
-				return View();
-			}
+			_generalLedger.Add(account);
+			return RedirectToAction("Index");
 		}
 	}
 }

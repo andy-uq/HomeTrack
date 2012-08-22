@@ -11,7 +11,32 @@
 	{
 		public static EntryType Invert(this EntryType entryType)
 		{
-			return entryType == EntryType.Debit ? EntryType.Credit : EntryType.Debit;
+			switch (entryType)
+			{
+				case EntryType.Debit:
+					return EntryType.Credit;
+				
+				case EntryType.Credit:
+					return EntryType.Debit;
+
+				default:
+					return EntryType.NotSpecified;
+			}
+		}
+
+		public static string ToDrCrString(this EntryType entryType)
+		{
+			switch ( entryType )
+			{
+				case EntryType.Debit:
+					return "Dr";
+
+				case EntryType.Credit:
+					return "Cr";
+
+				default:
+					return string.Empty;
+			}
 		}
 	}
 }

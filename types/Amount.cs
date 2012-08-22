@@ -3,7 +3,7 @@ using EnsureThat;
 
 namespace HomeTrack
 {
-	public class Amount
+	public class Amount : IEquatable<Amount>
 	{
 		public Amount()
 		{
@@ -36,6 +36,18 @@ namespace HomeTrack
 		public void Post()
 		{
 			Account.Post(Value, Direction);
+		}
+
+		public bool Equals(Amount other)
+		{
+			return Value == other.Value
+			       && Account.Equals(other.Account)
+			       && Direction == other.Direction;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}: {1:n2} {2}", Account.Name, Value, Direction.ToDrCrString());
 		}
 	}
 }

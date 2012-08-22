@@ -12,8 +12,8 @@ namespace HomeTrack.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_debitAccount = AccountFactory.Debit("Bank");
-			_creditAccount = AccountFactory.Credit("Mortgage");
+			_debitAccount = AccountFactory.Asset("Bank");
+			_creditAccount = AccountFactory.Liability("Mortgage");
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException), ExpectedMessage = "The string can't be null or empty.\r\nParameter name: name")]
@@ -25,15 +25,19 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AccountTypeDr()
 		{
-			var dr = new Account("Bank", AccountType.Asset).Type.ToCrDrString();
-			Assert.That(dr, Is.EqualTo("Dr"));
+			const AccountType type = AccountType.Asset;
+			Assert.That(type.ToCrDrString(), Is.EqualTo("Dr"));
+			Assert.That(type.ToDr(10), Is.EqualTo(10));
+			Assert.That(type.ToCr(10), Is.EqualTo(null));
 		}
 
 		[Test]
 		public void AccountTypeCr()
 		{
-			var cr = new Account("Mortgage", AccountType.Liability).Type.ToCrDrString();
-			Assert.That(cr, Is.EqualTo("Cr"));
+			const AccountType type = AccountType.Liability;
+			Assert.That(type.ToCrDrString(), Is.EqualTo("Cr"));
+			Assert.That(type.ToDr(10), Is.EqualTo(null));
+			Assert.That(type.ToCr(10), Is.EqualTo(10));
 		}
 
 		[Test]

@@ -37,7 +37,7 @@ namespace HomeTrack
 
 		public override string ToString()
 		{
-			return string.Format("{0} - {1} ({2:n2})", Date, Description, Amount);
+			return string.Format("{0:yyyy-MM-dd} {0:HH:mm} - {1} {2:c}", Date, Description, Amount);
 		}
 
 		public bool Check()
@@ -51,14 +51,6 @@ namespace HomeTrack
 		public bool Is(Account account)
 		{
 			return Debit.Concat(Credit).Any(x => x.Account == account);
-		}
-
-		public IEnumerable<Amount> RightHandSide()
-		{
-			if (Debit.Count <= Credit.Count)
-				return Credit;
-
-			return Debit;
 		}
 	}
 }

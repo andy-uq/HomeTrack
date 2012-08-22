@@ -13,6 +13,7 @@ namespace HomeTrack.RavenStore
 	{
 		private Action<DocumentStore> _afterInitialise;
 		
+		public bool UseEmbeddedHttpServer { get; set; }
 		public string DataDirectory { get; set; }
 
 		public void Build(ContainerBuilder containerBuilder)
@@ -38,12 +39,15 @@ namespace HomeTrack.RavenStore
 
 		public void InitialiseDocumentStore(EmbeddableDocumentStore documentStore)
 		{
-			documentStore.UseEmbeddedHttpServer = true;
+			documentStore.UseEmbeddedHttpServer = UseEmbeddedHttpServer;
 			documentStore.DataDirectory = DataDirectory;
 			documentStore.DefaultDatabase = "HomeTrack";
 			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
 
-			NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
+			if (UseEmbeddedHttpServer)
+			{
+				NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
+			}
 
 			documentStore.Initialize();
 			if ( _afterInitialise != null )

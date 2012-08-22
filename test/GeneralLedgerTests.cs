@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace HomeTrack.Tests
 {
@@ -12,8 +13,8 @@ namespace HomeTrack.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_bank = AccountFactory.Debit("Bank", a => a.Balance = 100);
-			_mortgage = AccountFactory.Credit("Mortgage", a => a.Balance = 100);
+			_bank = AccountFactory.Asset("Bank", a => a.Balance = 100);
+			_mortgage = AccountFactory.Liability("Mortgage", a => a.Balance = 100);
 
 			_ledger = new GeneralLedger(new InMemoryGeneralLedger())
 			{
@@ -33,6 +34,12 @@ namespace HomeTrack.Tests
 		{
 			var account = _ledger["Bank"];
 			Assert.That(account, Is.SameAs(_bank));
+		}
+
+		[Test,ExpectedException(typeof(ArgumentNullException))]
+		public void NullNameThrowsException()
+		{
+			var account = _ledger[null];
 		}
 
 		[Test]

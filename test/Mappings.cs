@@ -22,7 +22,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AccountEntityToRaven()
 		{
-			var account = AccountFactory.Debit("Bank");
+			var account = AccountFactory.Asset("Bank");
 			var raven = _mappingEngine.Map<HomeTrack.RavenStore.Account>(account);
 
 			Assert.That(raven.Name, Is.EqualTo(account.Name));
@@ -35,7 +35,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AmountEntityToRaven()
 		{
-			var account = AccountFactory.Debit("Bank");
+			var account = AccountFactory.Asset("Bank");
 			account.Id = "bank";
 
 			var amount = new Amount { Account = account, Direction = EntryType.Debit, Value = 10M };
@@ -50,9 +50,9 @@ namespace HomeTrack.Tests
 		[Test]
 		public void TransactionEntityToRaven()
 		{
-			var debit = AccountFactory.Debit("Bank");
+			var debit = AccountFactory.Asset("Bank");
 			debit.Id = "bank";
-			var credit = AccountFactory.Credit("Mortgage");
+			var credit = AccountFactory.Liability("Mortgage");
 			credit.Id = "mortgage";
 
 			var transaction = new Transaction(debit, credit, 100M);

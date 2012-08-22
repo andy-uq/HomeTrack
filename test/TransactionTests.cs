@@ -15,9 +15,9 @@ namespace HomeTrack.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_bank = AccountFactory.Debit("Bank");
-			_cashOnHand = AccountFactory.Debit("Bank");
-			_mortgage = AccountFactory.Credit("Mortgage");
+			_bank = AccountFactory.Asset("Bank");
+			_cashOnHand = AccountFactory.Asset("Bank");
+			_mortgage = AccountFactory.Liability("Mortgage");
 
 			_transaction = new Transaction
 			{
@@ -42,9 +42,10 @@ namespace HomeTrack.Tests
 		[Test]
 		public void CreateTransaction()
 		{
-			var t = new Transaction(_cashOnHand, _bank, 10M);
+			var t = new Transaction(_cashOnHand, _bank, 10M) { Date = new DateTime(2012, 1, 1), Description = "Withdrawal" };
 			Assert.That(t.Debit.First().Direction, Is.EqualTo(EntryType.Debit));
 			Assert.That(t.Credit.First().Direction, Is.EqualTo(EntryType.Credit));
+			Assert.That(t.ToString(), Is.EqualTo("2012-01-01 00:00 - Withdrawal $10.00"));
 		}
 
 		[Test]

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</ProjectGuid>
+    <ProjectGuid>{F6956E83-7F85-4019-945F-4883034960F2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HomeTrack</RootNamespace>
-    <AssemblyName>HomeTrack.Types</AssemblyName>
+    <RootNamespace>HomeTrack.Web.Tests</RootNamespace>
+    <AssemblyName>HomeTrack.Web.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -33,17 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\packages\Autofac.2.6.3.862\lib\NET40\Autofac.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\packages\Autofac.2.6.3.862\lib\NET40\Autofac.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="EnsureThat">
-      <HintPath>..\test\packages\Ensure.That.0.9.0\lib\net40\EnsureThat.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,17 +50,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
-    <Compile Include="AccountType.cs" />
-    <Compile Include="Amount.cs" />
-    <Compile Include="AutomaticPayment.cs" />
-    <Compile Include="EntryType.cs" />
-    <Compile Include="GeneralLedger.cs" />
-    <Compile Include="IDemandBuilder.cs" />
-    <Compile Include="IGeneralLedgerRepository.cs" />
-    <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="AccountControllerTests.cs" />
+    <Compile Include="ControllerExtensionTests.cs" />
+    <Compile Include="GlobalTests.cs" />
+    <Compile Include="MvcMockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction.cs" />
+    <Compile Include="TransactionControllerTests.cs" />
+    <Compile Include="ViewExtensionTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\test\test.csproj">
+      <Project>{197D96CB-9AC6-4B33-AB2F-447312807410}</Project>
+      <Name>test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\types\types.csproj">
+      <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>
+      <Name>types</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\web\web.csproj">
+      <Project>{E512BF5A-B34A-4FD6-B223-CFCF5CC57D2F}</Project>
+      <Name>web</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
