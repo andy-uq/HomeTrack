@@ -117,6 +117,16 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void GetTransaction()
+		{
+			var t1 = new Transaction(_mortgage, _bank, 10M);
+			_ledger.Post(t1);
+
+			var t2 = _ledger.GetTransaction(t1.Id);
+			Assert.That(t2, Is.EqualTo(t1).Using(new TransactionComparer()));
+		}
+
+		[Test]
 		public void PostDebit()
 		{
 			var t = new Transaction(_bank, _mortgage, 10M);

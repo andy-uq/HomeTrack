@@ -9,6 +9,8 @@ namespace HomeTrack.Web.ViewModels
 		{
 			map.CreateMap<HomeTrack.Transaction, TransactionIndexViewModel.Transaction>()
 				.ConvertUsing(ToViewModel);
+
+			map.CreateMap<HomeTrack.Transaction, Transaction>();
 		}
 
 		private TransactionIndexViewModel.Transaction ToViewModel(HomeTrack.Transaction transaction)

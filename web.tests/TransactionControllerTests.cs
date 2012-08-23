@@ -67,6 +67,24 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
+		public void Details()
+		{
+			var t1 = new Transaction(_bank, _income, 10M);
+
+			_repository
+				.Setup(x => x.GetTransaction(1))
+				.Returns(t1);
+
+			var result = _controller.Details(1);
+			Assert.That(result.Model, Is.InstanceOf<ViewModels.Transaction>());
+
+			var model = (ViewModels.Transaction)result.Model;
+
+			var mT1 = _mappingEngine.Map<ViewModels.Transaction>(t1);
+			Assert.That(mT1, Is.EqualTo(model).Using(new ViewModelComparer()));
+		}
+
+		[Test]
 		public void Create()
 		{
 			_repository

@@ -97,6 +97,11 @@ namespace HomeTrack.Web.Controllers
 
 			return ModelState.JsonValidation();
 		}
-		
+
+		public ViewResult Details(int id)
+		{
+			var transaction = _generalLedger.GetTransaction(id);
+			return View(_mappingEngine.Map<ViewModels.Transaction>(transaction));
+		}
 	}
 }

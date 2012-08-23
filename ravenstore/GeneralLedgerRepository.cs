@@ -145,6 +145,11 @@ namespace HomeTrack.RavenStore
 			}
 		}
 
+		public HomeTrack.Transaction GetTransaction(int id)
+		{
+			return _repository.UseOnceTo(s => s.Load<Transaction>(id).Hydrate<HomeTrack.Transaction>(_mappingEngine));
+		}
+
 		public void Dispose()
 		{
 			_repository.Dispose();

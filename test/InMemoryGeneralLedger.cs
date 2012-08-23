@@ -9,6 +9,7 @@ namespace HomeTrack.Tests
 	{
 		private readonly ISet<Account> _accounts;
 		private readonly List<Transaction> _transactions;
+		private int nextId = 1;
 
 		public IEnumerable<Account> Accounts
 		{
@@ -54,6 +55,7 @@ namespace HomeTrack.Tests
 				foreach (var creditAmount in transaction.Credit)
 					creditAmount.Post();
 
+				transaction.Id = nextId++;
 				_transactions.Add(transaction);
 				return true;
 			}
@@ -71,6 +73,11 @@ namespace HomeTrack.Tests
 						|| t.Debit.Any(x => x.Account.Id == accountId)
 					select t
 				);
+		}
+
+		public Transaction GetTransaction(int id)
+		{
+			return _transactions.SingleOrDefault(x => x.Id == id);
 		}
 
 		public void Dispose()

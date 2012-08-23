@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper">
+    <Reference Include="AutoMapper, Version=2.1.267.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.2.1.267\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto">
@@ -119,6 +119,7 @@
     <Compile Include="AccountTests.cs" />
     <Compile Include="RavenRepositoryTests.cs" />
     <Compile Include="RavenStore.cs" />
+    <Compile Include="TransactionComparer.cs" />
     <Compile Include="TransactionRepositoryTests.cs" />
     <Compile Include="TransactionTests.cs" />
   </ItemGroup>

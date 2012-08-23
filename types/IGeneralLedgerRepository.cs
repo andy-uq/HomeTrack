@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 
 namespace HomeTrack
 {
-	public interface IGeneralLedgerRepository
+	public interface IGeneralLedgerRepository : IDisposable
 	{
 		IEnumerable<Account> Accounts { get; }
 		IEnumerable<Account> DebitAccounts { get; }
@@ -12,6 +13,6 @@ namespace HomeTrack
 
 		bool Post(Transaction transaction);
 		IEnumerable<Transaction> GetTransactions(string accountId);
-		void Dispose();
+		Transaction GetTransaction(int id);
 	}
 }

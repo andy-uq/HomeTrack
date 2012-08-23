@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 using Raven.Client.Embedded;
@@ -57,19 +56,6 @@ namespace HomeTrack.Tests
 			Assert.That(GeneralLedger["bank"].Balance, Is.EqualTo(80M));
 			Assert.That(GeneralLedger["mortgage"].Balance, Is.EqualTo(40M));
 			Assert.That(GeneralLedger["cashOnHand"].Balance, Is.EqualTo(10M));
-		}
-
-		public class TransactionComparer : IEqualityComparer<Transaction>
-		{
-			public bool Equals(Transaction x, Transaction y)
-			{
-				return x.Id == y.Id;
-			}
-
-			public int GetHashCode(Transaction obj)
-			{
-				return obj.Id.GetHashCode();
-			}
 		}
 	}
 }
