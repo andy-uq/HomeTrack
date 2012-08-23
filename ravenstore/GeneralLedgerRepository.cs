@@ -28,12 +28,20 @@ namespace HomeTrack.RavenStore
 
 		public IEnumerable<HomeTrack.Account> DebitAccounts
 		{
-			get { throw new System.NotImplementedException(); }
+			get
+			{
+				var accounts = _repository.UseOnceTo(session => session.Query<Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Debit));
+				return accounts.Hydrate<HomeTrack.Account>(_mappingEngine);
+			}
 		}
 
 		public IEnumerable<HomeTrack.Account> CreditAccounts
 		{
-			get { throw new System.NotImplementedException(); }
+			get
+			{
+				var accounts = _repository.UseOnceTo(session => session.Query<Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Credit));
+				return accounts.Hydrate<HomeTrack.Account>(_mappingEngine);
+			}
 		}
 
 		public HomeTrack.Account GetAccount(string accountId)
@@ -135,6 +143,11 @@ namespace HomeTrack.RavenStore
 					.Hydrate<HomeTrack.Transaction>(_mappingEngine)
 					.ToArray();
 			}
+		}
+
+		public void Dispose()
+		{
+			_repository.Dispose();
 		}
 	}
 }

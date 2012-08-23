@@ -8,15 +8,13 @@ namespace HomeTrack.Tests
 	[TestFixture]
 	public class Mappings
 	{
-		private MappingEngine _mappingEngine;
+		private IMappingEngine _mappingEngine;
 
 		[SetUp]
 		public void SetUp()
 		{
-			var registerMappings = new RegisterMappings();
-			var configuration = registerMappings.GetMappings();
-
-			_mappingEngine = new AutoMapper.MappingEngine(configuration);
+			var typeMapProvider = new RavenEntityTypeMapProvider();
+			_mappingEngine = (new MappingProvider { typeMapProvider }).Build();
 		}
 
 		[Test]

@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 using HomeTrack;
+using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
 using Moq;
 using NUnit.Framework;
@@ -13,11 +14,16 @@ namespace web.tests
 		private AccountController _controller;
 		private Mock<IGeneralLedgerRepository> _repository;
 		private GeneralLedger _generalLedger;
+		private Account _bank;
 
 		[SetUp]
 		public void AccountController()
 		{
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
+			_bank = AccountFactory.Asset("bank", initialBalance:100);
+			_repository.Setup(x => x.GetAccount("bank"))
+				.Returns(_bank);
+			
 			_generalLedger = new GeneralLedger(_repository.Object);
 			_controller = new AccountController(_generalLedger);
 		}
@@ -79,13 +85,18 @@ namespace web.tests
 		[Test]
 		public void EditAccount()
 		{
-			var args = new Account() {Name = "Name", Description = "Description", Type = AccountType.Asset};
-
+			var args = _bank;
+			Account updatedAccount = null;
 			_repository.Setup(x => x.Add(args))
+				.Callback<Account>(b => updatedAccount = b)
 				.Returns("name");
 
-			var result = (RedirectToRouteResult)_controller.Edit(args);
+			var result = (RedirectToRouteResult)_controller.Edit("bank", "Name", "Description");
 			AssertRouteData(result.RouteValues, null, action: "Index");
+
+			Assert.That(updatedAccount.Name, Is.EqualTo("Name"));
+			Assert.That(updatedAccount.Description, Is.EqualTo("Description"));
+			Assert.That(updatedAccount.Balance, Is.EqualTo(100M));
 		}
 		
 		private void AssertRouteData(RouteValueDictionary routeData, string controller = null, string action = null, string id = null)

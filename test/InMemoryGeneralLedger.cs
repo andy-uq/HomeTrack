@@ -33,7 +33,7 @@ namespace HomeTrack.Tests
 
 		public Account GetAccount(string accountId)
 		{
-			return _accounts.Single(x => x.Id.Equals(accountId, StringComparison.OrdinalIgnoreCase));
+			return _accounts.SingleOrDefault(x => x.Id.Equals(accountId, StringComparison.OrdinalIgnoreCase));
 		}
 
 		public string Add(Account account)
@@ -71,6 +71,10 @@ namespace HomeTrack.Tests
 						|| t.Debit.Any(x => x.Account.Id == accountId)
 					select t
 				);
+		}
+
+		public void Dispose()
+		{			
 		}
 	}
 }

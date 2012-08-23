@@ -19,7 +19,7 @@ namespace HomeTrack.Web.Controllers
 					}
 				);
 
-			return new JsonResult
+			return new ValidationJsonResult
 			{
 				Data = new
 				{
@@ -28,5 +28,9 @@ namespace HomeTrack.Web.Controllers
 				}
 			};
 		}
+	}
+
+	public class ValidationJsonResult : JsonResult
+	{
 	}
 }

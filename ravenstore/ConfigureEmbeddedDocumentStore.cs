@@ -25,10 +25,9 @@ namespace HomeTrack.RavenStore
 				.As<IDocumentStore>()
 				.SingleInstance();
 
-			var configuration = new RegisterMappings().GetMappings();
-			var mappingEngine = new MappingEngine(configuration);
-			containerBuilder.RegisterInstance<IMappingEngine>(mappingEngine);
-
+			containerBuilder.RegisterType<RavenEntityTypeMapProvider>()
+				.As<ITypeMapProvider>();
+			
 			containerBuilder.RegisterType<GeneralLedgerRepository>()
 				.As<IGeneralLedgerRepository>()
 				.SingleInstance();

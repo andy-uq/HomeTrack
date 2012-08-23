@@ -12,5 +12,6 @@ namespace HomeTrack
 
 		bool Post(Transaction transaction);
 		IEnumerable<Transaction> GetTransactions(string accountId);
+		void Dispose();
 	}
 }

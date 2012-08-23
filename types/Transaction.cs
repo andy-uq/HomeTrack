@@ -25,6 +25,7 @@ namespace HomeTrack
 			Credit.Add(new Amount(credit, EntryType.Credit, amount));
 
 			Amount = Math.Abs(amount);
+			Date = DateTimeServer.Now;
 		}
 
 		public ISet<Amount> Debit { get; set; }

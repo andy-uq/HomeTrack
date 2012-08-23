@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using AutoMapper;
 using HomeTrack.RavenStore;
 using HomeTrack.Web.ViewModels;
 
@@ -9,10 +10,12 @@ namespace HomeTrack.Web.Controllers
 	public class TransactionController : Controller
 	{
 		private readonly GeneralLedger _generalLedger;
+		private readonly IMappingEngine _mappingEngine;
 
-		public TransactionController(GeneralLedger generalLedger)
+		public TransactionController(GeneralLedger generalLedger, IMappingEngine mappingEngine)
 		{
 			_generalLedger = generalLedger;
+			_mappingEngine = mappingEngine;
 		}
 
 		//
@@ -21,8 +24,6 @@ namespace HomeTrack.Web.Controllers
 		public ActionResult Index(string id)
 		{
 			var account = _generalLedger[id];
-			if (account == null)
-				return new HttpNotFoundResult();
 
 			var model = new TransactionIndexViewModel
 			{
@@ -30,14 +31,7 @@ namespace HomeTrack.Web.Controllers
 				Transactions =
 					from x in _generalLedger.GetTransactions(id)
 					orderby x.Date , x.Id
-					select new TransactionIndexViewModel.Transaction
-					{
-						Id = x.Id,
-						Date = x.Date,
-						Description = x.Description,
-						Debit = x.Debit.Where(a => a.Account.Id == id).Select<Amount, decimal?>(d => d.Value).SingleOrDefault(),
-						Credit = x.Credit.Where(a => a.Account.Id == id).Select<Amount, decimal?>(d => d.Value).SingleOrDefault(),
-					}
+					select _mappingEngine.Map<TransactionIndexViewModel.Transaction>(x)
 			};
 
 			return View(model);

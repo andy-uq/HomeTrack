@@ -58,8 +58,12 @@ namespace HomeTrack.Web.Controllers
 		// POST: /Account/Edit/5
 
 		[HttpPost]
-		public ActionResult Edit(Account account)
+		public ActionResult Edit(string id, string name, string description)
 		{
+			var account = _generalLedger[id];
+			account.Name = name;
+			account.Description = description;
+			
 			_generalLedger.Add(account);
 			return RedirectToAction("Index");
 		}

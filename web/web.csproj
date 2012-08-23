@@ -108,6 +108,8 @@
     <Compile Include="ViewModels\NewTransaction.cs" />
     <Compile Include="ViewModels\TransactionIndexViewModel.cs" />
     <Compile Include="ViewModels\ViewExtensions.cs" />
+    <Compile Include="ViewModels\ViewModelMapping.cs" />
+    <Compile Include="ViewModels\ViewModelTypeMapProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\Database.sdf" />

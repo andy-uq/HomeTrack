@@ -18,9 +18,9 @@ namespace HomeTrack.Tests
 		{
 			base.SetUp();
 
-			_bank = AccountFactory.Asset("Bank", a => a.Balance = 100);
+			_bank = AccountFactory.Asset("Bank", initialBalance: 100);
 			_cashOnHand = AccountFactory.Asset("Cash on hand");
-			_mortgage = AccountFactory.Liability("Mortgage", a => a.Balance = 50);
+			_mortgage = AccountFactory.Liability("Mortgage", initialBalance:50);
 
 			GeneralLedger.Add(_bank);
 			GeneralLedger.Add(_cashOnHand);

@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using AutoMapper;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
 using HomeTrack.Web.ViewModels;
@@ -15,6 +18,7 @@ namespace HomeTrack.Web.Tests
 	{
 		private TransactionController _controller;
 		private Mock<IGeneralLedgerRepository> _repository;
+		private IMappingEngine _mappingEngine;
 		private GeneralLedger _generalLedger;
 		
 		private Account _bank;
@@ -23,10 +27,11 @@ namespace HomeTrack.Web.Tests
 		[SetUp]
 		public void AccountController()
 		{
+			_mappingEngine = (new MappingProvider() {new ViewModelTypeMapProvider()}).Build();
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
 			
-			_bank = AccountFactory.Asset("bank", a => a.Id = "bank");
-			_income = AccountFactory.Income("income", a => a.Id = "income");
+			_bank = AccountFactory.Asset("bank");
+			_income = AccountFactory.Income("income");
 
 			_repository.Setup(x => x.GetAccount("bank"))
 				.Returns(_bank);
@@ -35,22 +40,30 @@ namespace HomeTrack.Web.Tests
 				.Returns(_income);
 
 			_generalLedger = new GeneralLedger(_repository.Object);
-			_controller = new TransactionController(_generalLedger);
+			_controller = new TransactionController(_generalLedger, _mappingEngine);
 		}
 
 		[Test]
 		public void Index()
 		{
+			var t1 = new Transaction(_bank, _income, 10M);
+			var t2 = new Transaction(_bank, _income, 20M);
+
 			_repository
 				.Setup(x => x.GetTransactions("bank"))
-				.Returns(Enumerable.Empty<Transaction>);
+				.Returns(new[] { t1, t2 });
 
 			var result = (ViewResult)_controller.Index("bank");
 			Assert.That(result.Model, Is.InstanceOf<TransactionIndexViewModel>());
 
 			var model = (TransactionIndexViewModel) result.Model;
 			Assert.That(model.Account, Is.EqualTo(_bank));
-			Assert.That(model.Transactions, Is.Empty);
+
+
+			var mT1 = _mappingEngine.Map<TransactionIndexViewModel.Transaction>(t1);
+			var mT2 = _mappingEngine.Map<TransactionIndexViewModel.Transaction>(t2);
+
+			Assert.That(model.Transactions, Is.EquivalentTo(new[] { mT1, mT2 }).Using(new ViewModelComparer()));
 		}
 
 		[Test]
@@ -94,6 +107,42 @@ namespace HomeTrack.Web.Tests
 
 			var result = (JsonResult) _controller.Create(args);
 			Assert.That(result.Data, Has.Property("redirectUrl") /* .EqualTo("/transaction/index/bank") */);
+		}
+
+		[Test]
+		public void UnbalancedTransactionIsError()
+		{
+			_controller.SetFakeControllerContext("~/transaction/create/bank");
+
+			var args = new NewTransaction()
+			{
+				AccountId = _bank.Id,
+				Amount = 10M,
+				Related = new[]
+				{
+					new RelatedAccount {AccountId = _income.Id, Amount = 100M},
+				}
+			};
+
+			_repository.Setup(x => x.Post(It.IsAny<Transaction>()))
+				.Returns(false);
+
+			var result = (ValidationJsonResult)_controller.Create(args);
+			Assert.That(result.Data, Has.Property("Tag"));
+			Assert.That(result.Data, Has.Property("State"));
+		}
+
+		public class ViewModelComparer : IEqualityComparer<TransactionIndexViewModel.Transaction>
+		{
+			public bool Equals(TransactionIndexViewModel.Transaction x, TransactionIndexViewModel.Transaction y)
+			{
+				return x.Id == y.Id;
+			}
+
+			public int GetHashCode(TransactionIndexViewModel.Transaction obj)
+			{
+				return obj.Id;
+			}
 		}
 	}
 }

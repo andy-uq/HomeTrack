@@ -19,15 +19,6 @@ namespace HomeTrack
 
 		public void Add(Account account)
 		{
-			if ( account.Id != null )
-			{
-				Account currentAccount;
-				if ( (currentAccount = _repository.GetAccount(account.Id)) != null )
-				{
-					account.Balance = currentAccount.Balance;
-				}
-			}
-
 			account.Id = _repository.Add(account);
 		}
 
@@ -72,6 +63,17 @@ namespace HomeTrack
 		public IEnumerable<Transaction> GetTransactions(string accountId)
 		{
 			return _repository.GetTransactions(accountId);
+		}
+
+		public Transaction Apply(AutomaticPayment payment)
+		{
+			var transaction = new Transaction();
+			return transaction;
+		}
+
+		public void Dispose()
+		{
+			_repository.Dispose();
 		}
 	}
 }
