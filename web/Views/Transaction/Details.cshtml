@@ -1,0 +1,23 @@
+﻿@model HomeTrack.Web.ViewModels.Transaction
+    <fieldset>
+        <legend>Transaction</legend>
+    
+        <div class="display-label">Date</div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Date)
+        </div>
+        <div class="display-label">Amount</div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Amount)
+        </div>
+    
+        <div class="display-label">Description</div>
+        <div class="display-field">
+            @Html.DisplayFor(model => model.Description)
+        </div>
+    
+    </fieldset>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { /* id=Model.PrimaryKey */ }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
