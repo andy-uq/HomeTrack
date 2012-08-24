@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Configuration;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
-using Autofac.Core;
 using Autofac.Integration.Mvc;
+using HomeTrack.RavenStore;
 
 namespace HomeTrack.Web
 {
-	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
-	// visit http://go.microsoft.com/?LinkId=9394801
-
-	public class MvcApplication : System.Web.HttpApplication
+	public class MvcApplication : HttpApplication
 	{
 		private readonly Func<string, string> _mapPath;
+		private ConfigureEmbeddedDocumentStore _ravenDb;
 
 		public MvcApplication()
 		{
@@ -22,6 +20,13 @@ namespace HomeTrack.Web
 		public MvcApplication(Func<string, string> mapPath)
 		{
 			_mapPath = mapPath;
+		}
+
+		public IContainer Container { get; private set; }
+
+		private Func<string, string> MapPath
+		{
+			get { return _mapPath ?? Server.MapPath; }
 		}
 
 		private static void RegisterGlobalFilters(GlobalFilterCollection filters)
@@ -36,45 +41,55 @@ namespace HomeTrack.Web
 			routes.MapRoute(
 				"Default", // Route name
 				"{controller}/{action}/{id}", // URL with parameters
-				new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
-			);
+				new {controller = "Home", action = "Index", id = UrlParameter.Optional} // Parameter defaults
+				);
 		}
 
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
-			Start();
+			Start(GlobalFilters.Filters, RouteTable.Routes);
 		}
 
-		public void Start()
+		public void Start(GlobalFilterCollection filters, RouteCollection routes)
 		{
-			RegisterGlobalFilters(GlobalFilters.Filters);
-			RegisterRoutes(RouteTable.Routes);
+			RegisterGlobalFilters(filters);
+			RegisterRoutes(routes);
 
 			var builder = new ContainerBuilder();
-			RegisterIoc(builder);
+			Container = RegisterIoc(builder);
 		}
 
-		private void RegisterIoc(ContainerBuilder builder)
+		private IContainer RegisterIoc(ContainerBuilder builder)
 		{
-			var raven = new RavenStore.ConfigureEmbeddedDocumentStore()
-			{
-				DataDirectory = MapPath("~/App_Data/RavenDb"),
-				UseEmbeddedHttpServer = false
-			};
+			EmbeddedDocumentStore.Build(builder);
 
-			raven.Build(builder);
+			builder.RegisterType<MappingProvider>();
+			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
+			builder.Register(c => c.Resolve<MappingProvider>().Build());
 
-			builder.Register(r => new GeneralLedger(r.Resolve<IGeneralLedgerRepository>()));
+			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 
-			var container = builder.Build();
+			IContainer container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+
+			return container;
 		}
 
-		private Func<string, string> MapPath
+		public ConfigureEmbeddedDocumentStore EmbeddedDocumentStore
 		{
-			get { return _mapPath ?? Server.MapPath; }
+			get
+			{
+				return _ravenDb ??
+				       (
+				       	_ravenDb = new ConfigureEmbeddedDocumentStore
+				       	{
+				       		DataDirectory = MapPath("~/App_Data/RavenDb"),
+				       		UseEmbeddedHttpServer = false
+				       	}
+				       );
+			}
 		}
 	}
 }

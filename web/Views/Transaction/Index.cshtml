@@ -17,9 +17,9 @@
 			<tr>
 				<td>@transaction.Date.ToString("d MMM")</td>
 				<td>@transaction.Description</td>
-				<td class="amount">@transaction.Debit.AsAmount()</td>
-				<td class="amount">@transaction.Credit.AsAmount()</td>
-				<td>@Html.ActionLink("Reference", "details", new { transaction.Id })</td>
+				<td class="amount">@transaction.Debit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
+				<td class="amount">@transaction.Credit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
+				<td>@Html.ActionLink("Details", "details", new { transaction.Id })</td>
 			</tr>
 		}
 	</tbody>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HomeTrack.Web.ViewModels
 {
-	public class Transaction
+	public class NewTransaction
 	{
 		public Account Account { get; set; }
 		public decimal Amount { get; set; }
@@ -38,7 +38,7 @@ namespace HomeTrack.Web.ViewModels
 		public IEnumerable<Account> Accounts { get; set; } 
 	}
 
-	public class NewTransaction
+	public class NewTransactionArgs
 	{
 		public string AccountId { get; set; }
 		public decimal Amount { get; set; }

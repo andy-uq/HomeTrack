@@ -22,7 +22,7 @@ namespace HomeTrack
 		public Account Account { get; set; }
 		public EntryType Direction { get; set; }
 		public decimal Value { get; set; }
-
+		
 		public decimal DebitValue
 		{
 			get { return Direction == EntryType.Debit ? Value : -Value; }
@@ -48,6 +48,16 @@ namespace HomeTrack
 		public override string ToString()
 		{
 			return string.Format("{0}: {1:n2} {2}", Account.Name, Value, Direction.ToDrCrString());
+		}
+
+		public decimal? AsDr()
+		{
+			return Direction == EntryType.Debit ? Value : (decimal?) null;
+		}
+
+		public decimal? AsCr()
+		{
+			return Direction == EntryType.Credit ? Value : (decimal?)null;
 		}
 	}
 }

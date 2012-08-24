@@ -58,12 +58,8 @@ namespace HomeTrack.Web.Tests
 
 			var model = (TransactionIndexViewModel) result.Model;
 			Assert.That(model.Account, Is.EqualTo(_bank));
-
-
-			var mT1 = _mappingEngine.Map<TransactionIndexViewModel.Transaction>(t1);
-			var mT2 = _mappingEngine.Map<TransactionIndexViewModel.Transaction>(t2);
-
-			Assert.That(model.Transactions, Is.EquivalentTo(new[] { mT1, mT2 }).Using(new ViewModelComparer()));
+			
+			Assert.That(model.Transactions, Is.EquivalentTo(new[] { t1, t2 }));
 		}
 
 		[Test]
@@ -76,12 +72,7 @@ namespace HomeTrack.Web.Tests
 				.Returns(t1);
 
 			var result = _controller.Details(1);
-			Assert.That(result.Model, Is.InstanceOf<ViewModels.Transaction>());
-
-			var model = (ViewModels.Transaction)result.Model;
-
-			var mT1 = _mappingEngine.Map<ViewModels.Transaction>(t1);
-			Assert.That(mT1, Is.EqualTo(model).Using(new ViewModelComparer()));
+			Assert.That(result.Model, Is.InstanceOf<ViewModels.TransactionDetails>());
 		}
 
 		[Test]
@@ -93,8 +84,8 @@ namespace HomeTrack.Web.Tests
 
 			var result = (ViewResult)_controller.Create("bank");
 
-			Assert.That(result.Model, Is.InstanceOf<ViewModels.Transaction>());
-			var model = (ViewModels.Transaction)result.Model;
+			Assert.That(result.Model, Is.InstanceOf<ViewModels.NewTransaction>());
+			var model = (ViewModels.NewTransaction)result.Model;
 			Assert.That(model.Account, Is.EqualTo(_bank));
 			Assert.That(model.Accounts, Is.EquivalentTo(new[] { _bank, _income }));
 		}
@@ -104,7 +95,7 @@ namespace HomeTrack.Web.Tests
 		{
 			_controller.SetFakeControllerContext("~/transaction/create/bank");
 
-			var args = new NewTransaction()
+			var args = new NewTransactionArgs()
 			{
 				AccountId = _bank.Id,
 				Amount = 10M,
@@ -132,7 +123,7 @@ namespace HomeTrack.Web.Tests
 		{
 			_controller.SetFakeControllerContext("~/transaction/create/bank");
 
-			var args = new NewTransaction()
+			var args = new NewTransactionArgs()
 			{
 				AccountId = _bank.Id,
 				Amount = 10M,
@@ -150,16 +141,20 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Data, Has.Property("State"));
 		}
 
-		public class ViewModelComparer : IEqualityComparer<TransactionIndexViewModel.Transaction>
+		public class ViewModelComparer : 
+			IEqualityComparer<HomeTrack.Web.ViewModels.NewTransaction>
 		{
-			public bool Equals(TransactionIndexViewModel.Transaction x, TransactionIndexViewModel.Transaction y)
+			public bool Equals(ViewModels.NewTransaction x, ViewModels.NewTransaction y)
 			{
-				return x.Id == y.Id;
+				return 
+					x.Date == y.Date 
+					&& x.Account.Id == y.Account.Id
+					&& x.Description == y.Description;
 			}
 
-			public int GetHashCode(TransactionIndexViewModel.Transaction obj)
+			public int GetHashCode(ViewModels.NewTransaction obj)
 			{
-				return obj.Id;
+				throw new System.NotImplementedException();
 			}
 		}
 	}

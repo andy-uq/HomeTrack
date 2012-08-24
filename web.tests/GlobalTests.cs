@@ -3,6 +3,9 @@ using System.Collections;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using AutoMapper;
+using Autofac;
+using HomeTrack;
 using HomeTrack.Web;
 using Moq;
 using NUnit.Framework;
@@ -15,8 +18,17 @@ namespace web.tests
 		[Test]
 		public void Start()
 		{
-			var global = new MvcApplication(p => p);
-			global.Start();
+			var global = new MvcApplication(p => p) { EmbeddedDocumentStore = { RunInMemory = true } };
+			global.Start(new GlobalFilterCollection(), new RouteCollection());
+		}
+
+		[Test]
+		public void ResolveIoc()
+		{
+			var global = new MvcApplication(p => p) { EmbeddedDocumentStore = { RunInMemory = true } };
+			global.Start(new GlobalFilterCollection(), new RouteCollection());
+			global.Container.Resolve<IMappingEngine>();
+			global.Container.Resolve<GeneralLedger>();
 		}
 
 		[TestCase("~/", "Home", "Index", null)]

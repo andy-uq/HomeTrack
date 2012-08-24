@@ -31,7 +31,7 @@ namespace HomeTrack.Web.Controllers
 				Transactions =
 					from x in _generalLedger.GetTransactions(id)
 					orderby x.Date , x.Id
-					select _mappingEngine.Map<TransactionIndexViewModel.Transaction>(x)
+					select x
 			};
 
 			return View(model);
@@ -44,7 +44,7 @@ namespace HomeTrack.Web.Controllers
 		{
 			var accounts = _generalLedger.ToArray();
 			var account = _generalLedger[id];
-			var model = new ViewModels.Transaction()
+			var model = new ViewModels.NewTransaction()
 			{
 				Account = account,
 				Accounts = accounts,
@@ -61,7 +61,7 @@ namespace HomeTrack.Web.Controllers
 		// POST: /Transaction/Create
 
 		[HttpPost]
-		public ActionResult Create(NewTransaction newTransaction)
+		public ActionResult Create(NewTransactionArgs newTransaction)
 		{
 			if ( ModelState.IsValid )
 			{
@@ -101,7 +101,7 @@ namespace HomeTrack.Web.Controllers
 		public ViewResult Details(int id)
 		{
 			var transaction = _generalLedger.GetTransaction(id);
-			return View(_mappingEngine.Map<ViewModels.Transaction>(transaction));
+			return View(_mappingEngine.Map<ViewModels.TransactionDetails>(transaction));
 		}
 	}
 }

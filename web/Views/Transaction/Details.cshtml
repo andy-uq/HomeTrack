@@ -1,4 +1,4 @@
-﻿@model HomeTrack.Web.ViewModels.Transaction
+﻿@model HomeTrack.Web.ViewModels.TransactionDetails
     <fieldset>
         <legend>Transaction</legend>
     
@@ -8,7 +8,7 @@
         </div>
         <div class="display-label">Amount</div>
         <div class="display-field">
-            @Html.DisplayFor(model => model.Amount)
+            @Model.Amount.ToString("c")
         </div>
     
         <div class="display-label">Description</div>
@@ -16,8 +16,28 @@
             @Html.DisplayFor(model => model.Description)
         </div>
     
-    </fieldset>
+	<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+			<td>Dr</td>
+			<td>Cr</td>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach ( var amount in Model.Amounts )
+		{
+			<tr>
+				<td>@Html.ActionLink(amount.Account.Name, "index", new { amount.Account.Id })</td>
+				<td class="amount">@amount.AsDr()</td>
+				<td class="amount">@amount.AsCr()</td>
+			</tr>
+		}
+	</tbody>
+</table>	
+
+	</fieldset>
     <p>
-        @Html.ActionLink("Edit", "Edit", new { /* id=Model.PrimaryKey */ }) |
+        @Html.ActionLink("Edit", "Edit", new { Model.Id }) |
         @Html.ActionLink("Back to List", "Index")
     </p>

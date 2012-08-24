@@ -15,6 +15,7 @@ namespace HomeTrack.RavenStore
 		
 		public bool UseEmbeddedHttpServer { get; set; }
 		public string DataDirectory { get; set; }
+		public bool RunInMemory { get; set; }
 
 		public void Build(ContainerBuilder containerBuilder)
 		{
@@ -36,10 +37,18 @@ namespace HomeTrack.RavenStore
 				.SingleInstance();
 		}
 
-		public void InitialiseDocumentStore(EmbeddableDocumentStore documentStore)
+		private void InitialiseDocumentStore(EmbeddableDocumentStore documentStore)
 		{
-			documentStore.UseEmbeddedHttpServer = UseEmbeddedHttpServer;
-			documentStore.DataDirectory = DataDirectory;
+			if ( RunInMemory )
+			{
+				documentStore.RunInMemory = true;
+			}
+			else
+			{
+				documentStore.UseEmbeddedHttpServer = UseEmbeddedHttpServer;
+				documentStore.DataDirectory = DataDirectory;
+			}
+
 			documentStore.DefaultDatabase = "HomeTrack";
 			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
 
