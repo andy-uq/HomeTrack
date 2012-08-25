@@ -10,7 +10,7 @@ namespace HomeTrack
 		void RegisterTypeMaps(ConfigurationStore map);
 	}
 
-	public class MappingProvider : IEnumerable<ITypeMapProvider>
+	public class MappingProvider
 	{
 		private readonly HashSet<ITypeMapProvider> _providers;
 
@@ -19,8 +19,7 @@ namespace HomeTrack
 			_providers = new HashSet<ITypeMapProvider>();
 		}
 
-		public MappingProvider(IEnumerable<ITypeMapProvider> providers)
-			: this()
+		public MappingProvider(params ITypeMapProvider[] providers) : this()
 		{
 			foreach ( var provider in providers )
 				Add(provider);
@@ -38,16 +37,6 @@ namespace HomeTrack
 				provider.RegisterTypeMaps(map);
 
 			return new MappingEngine(map);
-		}
-
-		public IEnumerator<ITypeMapProvider> GetEnumerator()
-		{
-			return _providers.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 	}
 }

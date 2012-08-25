@@ -169,7 +169,7 @@ namespace HomeTrack.Tests
 			get
 			{
 				var repository = RavenStore.CreateRepository();
-				var mappingEngine = (new MappingProvider { new RavenEntityTypeMapProvider() }).Build();
+				var mappingEngine = (new MappingProvider(new RavenEntityTypeMapProvider())).Build();
 
 				return new GeneralLedgerRepository(repository, mappingEngine);
 			}

@@ -70,12 +70,6 @@ namespace HomeTrack
 			return _repository.GetTransactions(accountId);
 		}
 
-		public Transaction Apply(AutomaticPayment payment)
-		{
-			var transaction = new Transaction();
-			return transaction;
-		}
-
 		public void Dispose()
 		{
 			_repository.Dispose();

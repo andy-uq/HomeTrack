@@ -68,6 +68,9 @@ namespace HomeTrack.Web
 			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
 			builder.Register(c => c.Resolve<MappingProvider>().Build());
 
+			var path = MapPath("~/App_Data");
+			builder.Register(c => new DirectoryExplorer(path));
+
 			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 

@@ -27,7 +27,7 @@ namespace HomeTrack.Web.Tests
 		[SetUp]
 		public void AccountController()
 		{
-			_mappingEngine = (new MappingProvider() {new ViewModelTypeMapProvider()}).Build();
+			_mappingEngine = new MappingProvider(new ViewModelTypeMapProvider()).Build();
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
 			
 			_bank = AccountFactory.Asset("bank");

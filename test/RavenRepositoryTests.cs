@@ -24,7 +24,7 @@ namespace HomeTrack.Tests
 		{
 			_repository = RavenStore.CreateRepository();
 
-			var mappingEngine = (new MappingProvider {new RavenEntityTypeMapProvider()}).Build();
+			var mappingEngine = new MappingProvider(new RavenEntityTypeMapProvider()).Build();
 			_generalLedger = new GeneralLedger(new GeneralLedgerRepository(_repository, mappingEngine));
 		}
 

@@ -1,0 +1,26 @@
+﻿@model DirectoryExplorer
+
+<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>@Html.ActionLink("..", "directory", new { path = string.Join("@", Model.Name.Split('/').Reverse().Skip(1).Reverse()).Trim('@') })</td>
+		</tr>
+		@foreach ( var directory in Model.GetDirectories().OrderBy(x => x.Name) )
+		{
+			<tr>
+				<td>@Html.ActionLink(directory.Name, "directory", new { path = (Model.Name.Replace("/", "@") + "@" + directory.Name).Trim('@') })</td>
+			</tr>
+		}
+		@foreach ( var file in Model.GetFiles() )
+		{
+			<tr>
+				<td>@Html.ActionLink(file.Name, "preview", new { path = (Model.Name.Replace("/", "@") + "@" + file.Name).Trim('@') })</td>
+			</tr>
+		}
+	</tbody>
+</table>

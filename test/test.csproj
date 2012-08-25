@@ -111,9 +111,12 @@
     <Compile Include="AccountRepositoryTests.cs" />
     <Compile Include="AmountTests.cs" />
     <Compile Include="AutomaticPaymentTests.cs" />
+    <Compile Include="CsvImportTests.cs" />
     <Compile Include="DateTimeServerTests.cs" />
+    <Compile Include="DirectoryExplorerTests.cs" />
     <Compile Include="ExtensionTests.cs" />
     <Compile Include="GeneralLedgerTests.cs" />
+    <Compile Include="ImportDetectorTests.cs" />
     <Compile Include="InMemoryGeneralLedger.cs" />
     <Compile Include="Mappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,6 +131,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj">
+      <Project>{50504179-F2F9-4536-BE2F-F208C62D9DBB}</Project>
+      <Name>core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RavenStore\RavenStore.csproj">
       <Project>{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}</Project>
       <Name>RavenStore</Name>

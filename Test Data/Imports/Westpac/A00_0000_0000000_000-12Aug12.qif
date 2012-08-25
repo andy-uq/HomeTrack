@@ -1,0 +1,96 @@
+!Type:Bank
+D13/08/12
+T0.00
+PWestpac Alert
+MRef=Txt Alert,Part=021 608398,Code=16:00-60008
+^
+D13/08/12
+T-140.00
+PCountdown Ri WBC ATM
+MRef=12-10:45-725,Part=************,Code=7575Cash
+^
+D15/08/12
+T0.00
+PWestpac Alert
+MRef=Txt Alert,Part=021 608398,Code=07:00-70004
+^
+D15/08/12
+T3581.29
+PTerabyte Interactive
+MPart=Salary,Code=Terabyte
+^
+D15/08/12
+T-1000.00
+PBonus Saver
+MRef=Savings,Part=Salary,
+^
+D16/08/12
+T14840.95
+PClarke A D       WBC
+MRef=0000000-0002,Part=T/Dep Break,
+^
+D16/08/12
+T15000.00
+PClarke A D       WBC
+MRef=0000000-0004,Part=T/Dep Break,
+^
+D16/08/12
+T20000.00
+PClarke A D       WBC
+MRef=0000000-0005,Part=T/Dep Break,
+^
+D16/08/12
+T25000.00
+PClarke A D       WBC
+MRef=0000000-0006,Part=T/Dep Break,
+^
+D16/08/12
+T-72000.00
+PBarfoot
+MRef=10:33-73136,Part=12 Tuata Str,Code=Deposit
+^
+D16/08/12
+T-160.81
+PClarke A D       WBC
+MRef=0000000-0004,Part=Int Recovery,
+^
+D16/08/12
+T-214.41
+PClarke A D       WBC
+MRef=0000000-0005,Part=Int Recovery,
+^
+D17/08/12
+T-5000.00
+PTo 0000-0000000-25
+MRef=08:53-69004,Part=WBC Internet,Code=Transfer
+^
+D20/08/12
+T0.00
+PWestpac Alert
+MRef=Txt Alert,Part=021 608398,Code=16:00-60005
+^
+D20/08/12
+T-605.14
+PTo ************9623
+MRef=21:00-90086,Part=WBC Internet,Code=Transfer
+^
+D22/08/12
+T-155.70
+PMercury Energy
+MRef=000000000,
+^
+D23/08/12
+T-776.98
+P8190State Insurance
+MRef=21:00-71231,Part=WBC Internet,Code=Bill Payment
+^
+D23/08/12
+T-640.00
+PDownTheBackJack Ltd
+MRef=Wellpark,Part=Rent,
+^
+D25/08/12
+T400.00
+PFRM 0000-0000000-00
+MRef=16:26-64664,Part=From,Code=Tam
+^

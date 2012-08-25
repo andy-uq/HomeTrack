@@ -14,7 +14,7 @@ namespace HomeTrack.Tests
 		public void SetUp()
 		{
 			var typeMapProvider = new RavenEntityTypeMapProvider();
-			_mappingEngine = (new MappingProvider { typeMapProvider }).Build();
+			_mappingEngine = new MappingProvider(typeMapProvider).Build();
 		}
 
 		[Test]
