@@ -70,6 +70,10 @@
     <Compile Include="ViewMappingTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj">
+      <Project>{50504179-F2F9-4536-BE2F-F208C62D9DBB}</Project>
+      <Name>core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ravenstore\RavenStore.csproj">
       <Project>{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}</Project>
       <Name>RavenStore</Name>

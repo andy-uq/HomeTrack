@@ -35,5 +35,13 @@ namespace HomeTrack.Tests
 			var explorer = new DirectoryExplorer(DIRECTORY);
 			Assert.That(explorer.GetFiles().Select(x => x.FullName), Is.EqualTo(files));
 		}
+
+		[Test]
+		public void GetFilename()
+		{
+			var explorer = new DirectoryExplorer(DIRECTORY);
+			Assert.That(explorer.NavigateTo("imports/westpac"), Is.True);
+			Assert.That(explorer.GetFilename("abcd.csv"), Is.EqualTo(Path.Combine(DIRECTORY, "Imports\\Westpac", "abcd.csv")));
+		}
 	}
 }

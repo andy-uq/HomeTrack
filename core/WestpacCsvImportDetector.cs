@@ -18,7 +18,7 @@ namespace HomeTrack.Core
 
 	public class WestpacCsvImportDetector : IImportDetector
 	{
-		public static readonly string[] PropertyNames = new[] {"Analysis Code", "Description", "Other Party", "Particulars", "Reference"};
+		public static readonly string[] PropertyNames = new[] {"Other Party", "Description", "Particulars", "Analysis Code", "Reference"};
 
 		#region IImportDetector Members
 

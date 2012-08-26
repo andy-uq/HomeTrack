@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
+using HomeTrack.Core;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
 using Moq;
@@ -15,6 +16,7 @@ namespace HomeTrack.Web.Tests
 		private GeneralLedger _generalLedger;
 		private Account _bank;
 		private DirectoryExplorer _directoryExplorer;
+		private Mock<IImportDetector> _importDetector;
 
 		private const string DIRECTORY = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data";
 
@@ -28,8 +30,10 @@ namespace HomeTrack.Web.Tests
 
 			_directoryExplorer = new DirectoryExplorer(DIRECTORY);
 
+			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(_repository.Object);
-			_controller = new ImportController(_generalLedger, _directoryExplorer);
+
+			_controller = new ImportController(_generalLedger, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
 		[Test]
@@ -47,7 +51,7 @@ namespace HomeTrack.Web.Tests
 		[Test]
 		public void ChangeDirectory()
 		{
-			var result = (ViewResult )_controller.Directory("imports/asb");
+			var result = (ViewResult )_controller.Directory("imports@asb");
 			Assert.That(result.Model, Is.InstanceOf<DirectoryExplorer>());
 
 			var model = (DirectoryExplorer)result.Model;
@@ -59,7 +63,21 @@ namespace HomeTrack.Web.Tests
 		[Test]
 		public void Preview()
 		{
-			var result = (ViewResult)_controller.Preview("imports/asb/export20120825200829.csv");
+			var filename = "imports@asb@export20120825200829.csv";
+
+			var t = filename.Replace("@", "/");
+			Assert.That(System.IO.Path.GetDirectoryName(t), Is.EqualTo("imports\\asb"));
+			Assert.That(System.IO.Path.GetFileName(t), Is.EqualTo("export20120825200829.csv"));
+
+			_importDetector.SetupGet(x => x.Name).Returns("Mock");
+			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
+				.Returns(true);
+
+			var result = (ViewResult)_controller.Preview(filename);
+			Assert.That(result.Model, Is.InstanceOf<Import>());
+
+			var model = (Import )result.Model;
+			Assert.That(model.ImportType, Is.EqualTo("Mock"));
 		}
 	}
 }

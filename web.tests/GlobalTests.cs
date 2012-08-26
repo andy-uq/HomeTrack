@@ -6,6 +6,7 @@ using System.Web.Routing;
 using AutoMapper;
 using Autofac;
 using HomeTrack;
+using HomeTrack.Core;
 using HomeTrack.Web;
 using Moq;
 using NUnit.Framework;
@@ -29,6 +30,8 @@ namespace web.tests
 			global.Start(new GlobalFilterCollection(), new RouteCollection());
 			global.Container.Resolve<IMappingEngine>();
 			global.Container.Resolve<GeneralLedger>();
+			global.Container.Resolve<DirectoryExplorer>();
+			global.Container.Resolve<ImportDetector>();
 		}
 
 		[TestCase("~/", "Home", "Index", null)]

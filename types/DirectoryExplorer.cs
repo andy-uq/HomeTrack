@@ -56,5 +56,10 @@ namespace HomeTrack
 		{
 			return _directory.GetFiles();
 		}
+
+		public string GetFilename(string filename)
+		{
+			return Path.Combine(_directory.FullName, filename);
+		}
 	}
 }

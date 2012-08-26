@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
+using HomeTrack.Core;
 using HomeTrack.RavenStore;
 
 namespace HomeTrack.Web
@@ -70,6 +71,10 @@ namespace HomeTrack.Web
 
 			var path = MapPath("~/App_Data");
 			builder.Register(c => new DirectoryExplorer(path));
+
+			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterInstance(new AsbCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterType<ImportDetector>();
 
 			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);

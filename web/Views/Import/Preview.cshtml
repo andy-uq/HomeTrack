@@ -1,7 +1,43 @@
-﻿@model dynamic
+﻿@model HomeTrack.Core.Import
+<h2>@Model.ImportType</h2>
 <table>
+	<thead>
+		<tr>
+			<td>
+				Date
+			</td>
+			@foreach ( var p in @Model.GetPropertyNames() )
+   {
+				<td>@p
+				</td>
+   }
+			<td>
+				Cr
+			</td>
+			<td>
+				Dr
+			</td>
+		</tr>
+	</thead>
+	<tbody>
+@foreach ( var row in Model.GetData() )
+{
+	var props = row.Properties.ToDictionary(p => p.Key, p => p.Value);
 	<tr>
-		<td></td>
+		<td>@row.Date.ToString("yyyy-M-d")
+		</td>
+		@foreach (var p in @Model.GetPropertyNames())
+		{
+			<td>@props[p]
+			</td>
+		}
+		<td>
+			@AccountType.Asset.ToCr(row.Amount).AsAmount()
+		</td>
+		<td>
+			@AccountType.Asset.ToDr(row.Amount).AsAmount()
+		</td>
 	</tr>
-
+}
+	</tbody>
 </table>

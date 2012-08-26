@@ -19,7 +19,7 @@
 		@foreach ( var file in Model.GetFiles() )
 		{
 			<tr>
-				<td>@Html.ActionLink(file.Name, "preview", new { path = (Model.Name.Replace("/", "@") + "@" + file.Name).Trim('@') })</td>
+				<td>@Html.ActionLink(file.Name, "preview", new { filename = (Model.Name.Replace("/", "@") + "@" + file.Name).Trim('@') })</td>
 			</tr>
 		}
 	</tbody>

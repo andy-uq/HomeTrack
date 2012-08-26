@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using HomeTrack.Core;
 using HomeTrack.Web.ViewModels;
 
 namespace HomeTrack.Web.Controllers
@@ -9,11 +10,13 @@ namespace HomeTrack.Web.Controllers
 	{
 		private readonly GeneralLedger _generalLedger;
 		private readonly DirectoryExplorer _directoryExplorer;
+		private readonly ImportDetector _importDetector;
 
-		public ImportController(GeneralLedger generalLedger, DirectoryExplorer directoryExplorer)
+		public ImportController(GeneralLedger generalLedger, DirectoryExplorer directoryExplorer, ImportDetector importDetector)
 		{
 			_generalLedger = generalLedger;
 			_directoryExplorer = directoryExplorer;
+			_importDetector = importDetector;
 		}
 
 		public ActionResult Directory(string path)
@@ -31,13 +34,23 @@ namespace HomeTrack.Web.Controllers
 
 		public ActionResult Preview(string filename)
 		{
+			filename = filename.Replace("@", "/");
+
 			string name = Path.GetFileName(filename);
-			string directory = Path.GetDirectoryName(filename);
 
-			if ( !_directoryExplorer.NavigateTo(directory) )
-				return new HttpNotFoundResult("A directory named " + directory + " could not be found");
+			var directoryName = Path.GetDirectoryName(filename);
+			if (directoryName != null)
+			{
+				string directory = directoryName.Replace('\\', '/');
 
-			return View();
+				if ( !_directoryExplorer.NavigateTo(directory) )
+					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
+			}
+
+			var model = new Import(_importDetector);
+			model.Open(_directoryExplorer.GetFilename(name));
+
+			return View(model);
 		}
 	}
 }
