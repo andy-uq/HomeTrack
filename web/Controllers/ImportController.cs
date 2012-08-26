@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Web.ViewModels;
 
@@ -26,6 +27,17 @@ namespace HomeTrack.Web.Controllers
 			}
 
 			return View(_directoryExplorer);
+		}
+
+		public ActionResult Preview(string filename)
+		{
+			string name = Path.GetFileName(filename);
+			string directory = Path.GetDirectoryName(filename);
+
+			if ( !_directoryExplorer.NavigateTo(directory) )
+				return new HttpNotFoundResult("A directory named " + directory + " could not be found");
+
+			return View();
 		}
 	}
 }

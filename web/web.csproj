@@ -149,6 +149,7 @@
     <Content Include="Views\Account\Edit.cshtml" />
     <Content Include="Views\Transaction\Details.cshtml" />
     <Content Include="Views\Import\Directory.cshtml" />
+    <Content Include="Views\Import\Preview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RavenStore\RavenStore.csproj">

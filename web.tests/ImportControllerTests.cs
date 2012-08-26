@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
-using HomeTrack.Web.ViewModels;
 using Moq;
 using NUnit.Framework;
 
@@ -58,6 +54,12 @@ namespace HomeTrack.Web.Tests
 			Assert.That(model.Name, Is.EqualTo("/Imports/Asb"));
 			Assert.That(model.GetDirectories(), Is.Empty);
 			Assert.That(model.GetFiles().Select( x=>x.Name), Has.Member("Export20120825200829.csv"));
+		}
+
+		[Test]
+		public void Preview()
+		{
+			var result = (ViewResult)_controller.Preview("imports/asb/export20120825200829.csv");
 		}
 	}
 }
