@@ -61,7 +61,7 @@ namespace HomeTrack.Core
 			GetHeader();
 
 			var type = typeof (T);
-			Dictionary<string, Action<T, string>> propertyMap = type.GetProperties()
+			var propertyMap = type.GetProperties()
 				.ToDictionary(
 				p => p.Name, 
 				v => (Action<T, string>)((instance, value) => {

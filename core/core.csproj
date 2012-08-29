@@ -40,10 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountIdentifier.cs" />
     <Compile Include="Accumulator.cs" />
+    <Compile Include="CompositePattern.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="ImportDetector.cs" />
+    <Compile Include="ImportRowExtensions.cs" />
+    <Compile Include="Patterns.cs" />
+    <Compile Include="VisaCsvImportDetector.cs" />
     <Compile Include="WestpacCsvImportDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

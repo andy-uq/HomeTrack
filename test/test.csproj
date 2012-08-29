@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountFactory.cs" />
+    <Compile Include="AccountIndentificationTests.cs" />
     <Compile Include="AccountRepositoryTests.cs" />
     <Compile Include="AmountTests.cs" />
     <Compile Include="AutomaticPaymentTests.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="RavenRepositoryTests.cs" />
     <Compile Include="RavenStore.cs" />
     <Compile Include="TransactionComparer.cs" />
+    <Compile Include="ImportPatternTests.cs" />
     <Compile Include="TransactionRepositoryTests.cs" />
     <Compile Include="TransactionTests.cs" />
   </ItemGroup>

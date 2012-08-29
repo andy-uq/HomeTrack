@@ -20,6 +20,11 @@ namespace HomeTrack.Tests
 			return NewAccount(name, AccountType.Income, initialBalance, initialise);
 		}
 
+		public static Account Expense(string name, decimal initialBalance = 0, Action<Account> initialise = null)
+		{
+			return NewAccount(name, AccountType.Expense, initialBalance, initialise);
+		}
+
 		private static Account NewAccount(string name, AccountType accountType, decimal initialBalance, Action<Account> initialise)
 		{
 			var account = new Account(name, accountType)

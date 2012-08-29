@@ -74,6 +74,7 @@ namespace HomeTrack.Web
 
 			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterInstance(new AsbCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterInstance(new VisaCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterType<ImportDetector>();
 
 			builder.RegisterType<GeneralLedger>();
