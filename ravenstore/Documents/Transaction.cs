@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeTrack.RavenStore
+namespace HomeTrack.RavenStore.Documents
 {
 	public class Transaction
 	{
@@ -11,15 +11,6 @@ namespace HomeTrack.RavenStore
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
 		public decimal Amount { get; set; }
-	}
-
-	public class Account
-	{
-		public string Id { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public AccountType Type { get; set; }
-		public decimal Balance { get; set; }
 	}
 
 	public class Amount

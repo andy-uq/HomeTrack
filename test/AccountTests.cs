@@ -30,6 +30,11 @@ namespace HomeTrack.Tests
 			Assert.That(type.ToDr(10), Is.EqualTo(10));
 			Assert.That(type.ToCr(10), Is.EqualTo(null));
 		}
+		[Test]
+		public void AccountToString()
+		{
+			Assert.That(_creditAccount.ToString(), Is.EqualTo("Mortgage"));
+		}
 
 		[Test]
 		public void AccountTypeCr()

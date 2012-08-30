@@ -32,5 +32,10 @@ namespace HomeTrack.Core
 		{
 			return this.All(x => x.IsMatch(importRow));
 		}
+
+		public override string ToString()
+		{
+			return string.Join(" AND ", this.Select(x => string.Format("({0})", x.ToString())));
+		}
 	}
 }

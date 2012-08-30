@@ -10,7 +10,7 @@ namespace HomeTrack.Tests
 		{
 			var bank = AccountFactory.Asset("Bank");
 			GeneralLedger.Add(bank);
-			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Account>()), Is.Not.Empty);
+			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.Account>()), Is.Not.Empty);
 		}		
 		
 		[Test]
@@ -23,9 +23,9 @@ namespace HomeTrack.Tests
 			GeneralLedger.Add(bank);
 
 			var ravenId = string.Concat("accounts/", bank.Id);
-			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Account>(ravenId)), Is.Not.Null);
-			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Account>(ravenId)), Has.Property("Description").EqualTo("Updated description"));
-			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Account>(ravenId)), Has.Property("Balance").EqualTo(10M));
+			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Documents.Account>(ravenId)), Is.Not.Null);
+			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Documents.Account>(ravenId)), Has.Property("Description").EqualTo("Updated description"));
+			Assert.That(Repository.UseOnceTo(s => s.Load<HomeTrack.RavenStore.Documents.Account>(ravenId)), Has.Property("Balance").EqualTo(10M));
 		}
 	}
 }

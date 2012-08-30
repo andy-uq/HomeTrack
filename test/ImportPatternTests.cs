@@ -58,6 +58,7 @@ namespace HomeTrack.Tests
 		{
 			var pattern = new AmountPattern() { Amount = 10M };
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
+			Assert.That(pattern.ToString(), Is.EqualTo("Amount=10.00"));
 		}
 
 		[Test]

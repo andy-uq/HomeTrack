@@ -39,6 +39,13 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void AccountIdentifierName()
+		{
+			var a1 = new AccountIdentifier { Pattern = new AmountPattern { Amount = 10M }, Account = _groceries };
+			Assert.That(a1.ToString(), Is.EqualTo("Groceries <- Amount=10.00"));
+		}
+
+		[Test]
 		public void CreateAccountIdentifier()
 		{
 			var a1 = new AccountIdentifier { Pattern = new AmountPattern { Amount = 10M }, Account = _groceries };
@@ -48,8 +55,5 @@ namespace HomeTrack.Tests
 			Assert.That(_row2.Object.IdentifyAccount(new[] { a1, a2 }), Is.EqualTo(_wow));
 			Assert.That(_row3.Object.IdentifyAccount(new[] { a1, a2 }), Is.Null);
 		}
-
 	}
-
-	
 }

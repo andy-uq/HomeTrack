@@ -326,3 +326,7 @@ div#title {
 .amount {
 	text-align: right;
 }
+
+.has-account {
+	color: green;
+}

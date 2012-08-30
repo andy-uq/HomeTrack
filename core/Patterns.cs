@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace HomeTrack.Core
@@ -12,6 +13,11 @@ namespace HomeTrack.Core
 		{
 			return importRow.Amount >= Min && importRow.Amount <= Max;
 		}
+
+		public override string ToString()
+		{
+			return string.Format("Amount >= {0:n2} and <= {1:n2}", Min, Max);
+		}
 	}
 
 	public class AmountPattern : IPattern
@@ -21,6 +27,11 @@ namespace HomeTrack.Core
 		public bool IsMatch(IImportRow importRow)
 		{
 			return importRow.Amount == Amount;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("Amount={0:n2}", Amount);
 		}
 	}
 
@@ -40,6 +51,13 @@ namespace HomeTrack.Core
 		public bool IsMatch(IImportRow importRow)
 		{
 			return DaysOfMonth.Any(x => importRow.Date.Day == x);
+		}
+
+		public override string ToString()
+		{
+			return DaysOfMonth.Length == 0
+			       	? string.Format("Day = {0}", DaysOfMonth[0])
+			       	: string.Format("Day in [{0}]", string.Join(",", DaysOfMonth.Select(x => x.ToString(CultureInfo.InvariantCulture))));
 		}
 	}
 

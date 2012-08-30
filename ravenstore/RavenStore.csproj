@@ -107,19 +107,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountIdentifierRepository.cs" />
     <Compile Include="ConfigureEmbeddedDocumentStore.cs" />
+    <Compile Include="Documents\Account.cs" />
+    <Compile Include="Documents\AccountIdentifier.cs" />
     <Compile Include="GeneralLedgerRepository.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenExtensions.cs" />
     <Compile Include="RavenRepository.cs" />
     <Compile Include="RavenEntityTypeMapProvider.cs" />
-    <Compile Include="Transaction.cs" />
+    <Compile Include="Documents\Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\core\core.csproj">
+      <Project>{50504179-F2F9-4536-BE2F-F208C62D9DBB}</Project>
+      <Name>core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\types\types.csproj">
       <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>
       <Name>types</Name>

@@ -1,4 +1,4 @@
-﻿namespace HomeTrack.Core
+﻿namespace HomeTrack
 {
 	public class AccountIdentifier
 	{
@@ -8,6 +8,11 @@
 		public bool IsMatch(IImportRow row)
 		{
 			return Pattern.IsMatch(row);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} <- {1}", Account, Pattern);
 		}
 	}
 }

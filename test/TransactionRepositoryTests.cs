@@ -32,7 +32,7 @@ namespace HomeTrack.Tests
 			var t1 = new Transaction(_mortgage, _bank, 10M);
 			GeneralLedger.Post(t1);
 			
-			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Transaction>(), Is.Not.Empty));
+			Repository.UseOnceTo(s => Assert.That(s.Query<HomeTrack.RavenStore.Documents.Transaction>(), Is.Not.Empty));
 
 			Assert.That(GeneralLedger["bank"].Balance, Is.EqualTo(90M));
 			Assert.That(GeneralLedger["mortgage"].Balance, Is.EqualTo(40M));

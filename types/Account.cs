@@ -42,5 +42,10 @@ namespace HomeTrack
 		{
 			Post(amount, EntryType.Credit);
 		}
+
+		public override string ToString()
+		{
+			return Name ?? Id;
+		}
 	}
 }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using HomeTrack.Core;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 
@@ -8,6 +9,12 @@ namespace HomeTrack.Tests
 	{
 		private RavenRepository _repository;
 		private GeneralLedger _generalLedger;
+		private IMappingEngine _mappingEngine;
+
+		public IMappingEngine MappingEngine
+		{
+			get { return _mappingEngine; }
+		}
 
 		protected RavenRepository Repository
 		{
@@ -23,9 +30,8 @@ namespace HomeTrack.Tests
 		public virtual void SetUp()
 		{
 			_repository = RavenStore.CreateRepository();
-
-			var mappingEngine = new MappingProvider(new RavenEntityTypeMapProvider()).Build();
-			_generalLedger = new GeneralLedger(new GeneralLedgerRepository(_repository, mappingEngine));
+			_mappingEngine = new MappingProvider(new RavenEntityTypeMapProvider()).Build();
+			_generalLedger = new GeneralLedger(new GeneralLedgerRepository(_repository, _mappingEngine));
 		}
 
 		[TearDown]

@@ -21,7 +21,7 @@ namespace HomeTrack.RavenStore
 		{
 			get
 			{
-				var accounts = _repository.UseOnceTo(x => x.Query<Account>().ToArray());
+				var accounts = _repository.UseOnceTo(x => x.Query<Documents.Account>().ToArray());
 				return accounts.Hydrate<HomeTrack.Account>(_mappingEngine);
 			}
 		}
@@ -30,7 +30,7 @@ namespace HomeTrack.RavenStore
 		{
 			get
 			{
-				var accounts = _repository.UseOnceTo(session => session.Query<Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Debit));
+				var accounts = _repository.UseOnceTo(session => session.Query<Documents.Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Debit));
 				return accounts.Hydrate<HomeTrack.Account>(_mappingEngine);
 			}
 		}
@@ -39,7 +39,7 @@ namespace HomeTrack.RavenStore
 		{
 			get
 			{
-				var accounts = _repository.UseOnceTo(session => session.Query<Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Credit));
+				var accounts = _repository.UseOnceTo(session => session.Query<Documents.Account>().ToArray().Where(x => x.Type.IsDebitOrCredit() == EntryType.Credit));
 				return accounts.Hydrate<HomeTrack.Account>(_mappingEngine);
 			}
 		}
@@ -47,7 +47,7 @@ namespace HomeTrack.RavenStore
 		public HomeTrack.Account GetAccount(string accountId)
 		{
 			var qualifiedId = QualifiedId("accounts", accountId);
-			var account = _repository.UseOnceTo(x => x.Load<Account>(qualifiedId));
+			var account = _repository.UseOnceTo(x => x.Load<Documents.Account>(qualifiedId));
 			return _mappingEngine.Map<HomeTrack.Account>(account);
 		}
 
@@ -63,7 +63,7 @@ namespace HomeTrack.RavenStore
 
 		public string Add(HomeTrack.Account account)
 		{
-			var ravenEntity = _mappingEngine.Map<Account>(account);
+			var ravenEntity = _mappingEngine.Map<Documents.Account>(account);
 			_repository.UseOnceTo(x => x.Store(ravenEntity), saveChanges: true);
 
 			return FromQualifiedId(ravenEntity.Id);
@@ -84,13 +84,13 @@ namespace HomeTrack.RavenStore
 						.Distinct()
 						.ToArray();
 
-					var accounts = session.Load<Account>(accountIds).ToArray();
+					var accounts = session.Load<Documents.Account>(accountIds).ToArray();
 					
 					for (var i = 0; i < accountIds.Length; i++)
 					{
 						if ( accounts[i] == null )
 						{
-							var allAccounts = session.Query<Account>().Select(x => x.Id);
+							var allAccounts = session.Query<Documents.Account>().Select(x => x.Id);
 							throw new InvalidOperationException(string.Format("Cannot find account {0} from ({1})",
 							                                                  accountIds[i],
 							                                                  string.Join(", ", allAccounts)));
@@ -111,7 +111,7 @@ namespace HomeTrack.RavenStore
 						accountLookup[value.Account.Id].Balance = value.Account.Balance;
 					}
 
-					var ravenEntity = _mappingEngine.Map<Transaction>(transaction);
+					var ravenEntity = _mappingEngine.Map<Documents.Transaction>(transaction);
 					session.Store(ravenEntity);
 					session.SaveChanges();
 
@@ -131,7 +131,7 @@ namespace HomeTrack.RavenStore
 			{
 				var query =
 					(
-						from t in session.Query<Transaction>()
+						from t in session.Query<Documents.Transaction>()
 						where
 							t.Credit.Any(x => x.AccountId == accountId)
 							|| t.Debit.Any(x => x.AccountId == accountId)
@@ -147,7 +147,7 @@ namespace HomeTrack.RavenStore
 
 		public HomeTrack.Transaction GetTransaction(int id)
 		{
-			return _repository.UseOnceTo(s => s.Load<Transaction>(id).Hydrate<HomeTrack.Transaction>(_mappingEngine));
+			return _repository.UseOnceTo(s => s.Load<Documents.Transaction>(id).Hydrate<HomeTrack.Transaction>(_mappingEngine));
 		}
 
 		public void Dispose()

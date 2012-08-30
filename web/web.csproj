@@ -101,6 +101,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\ImportPreview.cs" />
     <Compile Include="ViewModels\NewTransaction.cs" />
     <Compile Include="ViewModels\TransactionDetails.cs" />
     <Compile Include="ViewModels\TransactionIndexViewModel.cs" />
@@ -117,6 +118,7 @@
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>

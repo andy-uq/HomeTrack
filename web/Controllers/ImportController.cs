@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Core;
@@ -11,12 +12,14 @@ namespace HomeTrack.Web.Controllers
 		private readonly GeneralLedger _generalLedger;
 		private readonly DirectoryExplorer _directoryExplorer;
 		private readonly ImportDetector _importDetector;
+		private readonly IEnumerable<AccountIdentifier> _accountIdentifiers;
 
-		public ImportController(GeneralLedger generalLedger, DirectoryExplorer directoryExplorer, ImportDetector importDetector)
+		public ImportController(GeneralLedger generalLedger, DirectoryExplorer directoryExplorer, ImportDetector importDetector, IEnumerable<AccountIdentifier> accountIdentifiers)
 		{
 			_generalLedger = generalLedger;
 			_directoryExplorer = directoryExplorer;
 			_importDetector = importDetector;
+			_accountIdentifiers = accountIdentifiers;
 		}
 
 		public ActionResult Directory(string path)
@@ -47,8 +50,10 @@ namespace HomeTrack.Web.Controllers
 					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
 			}
 
-			var model = new Import(_importDetector);
-			model.Open(_directoryExplorer.GetFilename(name));
+			var import = new Import(_importDetector);
+			import.Open(_directoryExplorer.GetFilename(name));
+
+			var model = new ImportPreview {Import = import, AccountIdentifiers = _accountIdentifiers };
 
 			return View(model);
 		}

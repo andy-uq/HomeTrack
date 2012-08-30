@@ -32,7 +32,11 @@ namespace HomeTrack.RavenStore
 			containerBuilder.RegisterType<GeneralLedgerRepository>()
 				.As<IGeneralLedgerRepository>()
 				.SingleInstance();
-			
+
+			containerBuilder.RegisterType<AccountIdentifierRepository>()
+				.As<IAccountIdentifierRepository>()
+				.SingleInstance();
+
 			containerBuilder.RegisterType<RavenRepository>()
 				.SingleInstance();
 		}

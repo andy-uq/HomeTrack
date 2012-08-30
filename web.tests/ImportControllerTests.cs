@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
+using HomeTrack.Web.ViewModels;
 using Moq;
 using NUnit.Framework;
 
@@ -15,16 +17,27 @@ namespace HomeTrack.Web.Tests
 		private Mock<IGeneralLedgerRepository> _repository;
 		private GeneralLedger _generalLedger;
 		private Account _bank;
+		private Account _groceries;
+		private Account _wow;
 		private DirectoryExplorer _directoryExplorer;
 		private Mock<IImportDetector> _importDetector;
 
 		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
+
+		private IEnumerable<AccountIdentifier> GetAccountIdentifers()
+		{
+			yield return new AccountIdentifier { Pattern = new AmountPattern { Amount = 10M }, Account = _groceries };
+			yield return new AccountIdentifier { Pattern = new FieldPattern { Name = "Other Party", Pattern = "Blizzard" }, Account = _wow };
+		}
 
 		[SetUp]
 		public void ImportController()
 		{
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
 			_bank = AccountFactory.Asset("bank", initialBalance: 100);
+			_groceries = AccountFactory.Asset("groceries");
+			_wow = AccountFactory.Asset("wow");
+			
 			_repository.Setup(x => x.GetAccount("bank"))
 				.Returns(_bank);
 
@@ -33,7 +46,7 @@ namespace HomeTrack.Web.Tests
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(_repository.Object);
 
-			_controller = new ImportController(_generalLedger, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
+			_controller = new ImportController(_generalLedger, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}), GetAccountIdentifers());
 		}
 
 		[Test]
@@ -74,10 +87,12 @@ namespace HomeTrack.Web.Tests
 				.Returns(true);
 
 			var result = (ViewResult)_controller.Preview(filename);
-			Assert.That(result.Model, Is.InstanceOf<Import>());
+			Assert.That(result.Model, Is.InstanceOf<ImportPreview>());
 
-			var model = (Import )result.Model;
-			Assert.That(model.ImportType, Is.EqualTo("Mock"));
+			var model = (ImportPreview)result.Model;
+			Assert.That(model.Import, Is.Not.Null);
+			Assert.That(model.Import.ImportType, Is.EqualTo("Mock"));
+			Assert.That(model.AccountIdentifiers, Is.Not.Empty);
 		}
 	}
 }

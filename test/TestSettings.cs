@@ -18,7 +18,7 @@ namespace HomeTrack.Tests
 			string root;
 			if ( _mapPath.TryGetValue(Environment.MachineName, out root) )
 			{
-				return System.IO.Path.Combine(root, filename.Substring(1));
+				return System.IO.Path.Combine(root, filename.Substring(2));
 			}
 
 			throw new InvalidOperationException("Cannot resolve virtual path");
