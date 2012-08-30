@@ -7,14 +7,14 @@ namespace HomeTrack.Tests
 	[TestFixture]
 	public class DirectoryExplorerTests
 	{
-		private const string DIRECTORY = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data";
+		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
 
 		[Test]
 		public void GetDirectory()
 		{
-			var directories = Directory.GetDirectories(DIRECTORY);
+			var directories = Directory.GetDirectories(_directory);
 
-			var explorer = new DirectoryExplorer(DIRECTORY);
+			var explorer = new DirectoryExplorer(_directory);
 			Assert.That(explorer.GetDirectories().Select(x => x.FullName), Is.EqualTo(directories));
 			Assert.That(explorer.Name, Is.EqualTo("/"));
 		}
@@ -22,7 +22,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void NavigateTo()
 		{
-			var explorer = new DirectoryExplorer(DIRECTORY);
+			var explorer = new DirectoryExplorer(_directory);
 			Assert.That(explorer.NavigateTo("imports/westpac"), Is.True);
 			Assert.That(explorer.Name, Is.EqualTo("/Imports/Westpac"));
 		}
@@ -30,18 +30,18 @@ namespace HomeTrack.Tests
 		[Test]
 		public void GetFiles()
 		{
-			var files = Directory.GetFiles(DIRECTORY);
+			var files = Directory.GetFiles(_directory);
 
-			var explorer = new DirectoryExplorer(DIRECTORY);
+			var explorer = new DirectoryExplorer(_directory);
 			Assert.That(explorer.GetFiles().Select(x => x.FullName), Is.EqualTo(files));
 		}
 
 		[Test]
 		public void GetFilename()
 		{
-			var explorer = new DirectoryExplorer(DIRECTORY);
+			var explorer = new DirectoryExplorer(_directory);
 			Assert.That(explorer.NavigateTo("imports/westpac"), Is.True);
-			Assert.That(explorer.GetFilename("abcd.csv"), Is.EqualTo(Path.Combine(DIRECTORY, "Imports\\Westpac", "abcd.csv")));
+			Assert.That(explorer.GetFilename("abcd.csv"), Is.EqualTo(Path.Combine(_directory, "Imports\\Westpac", "abcd.csv")));
 		}
 	}
 }

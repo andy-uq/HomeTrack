@@ -18,7 +18,7 @@ namespace HomeTrack.Web.Tests
 		private DirectoryExplorer _directoryExplorer;
 		private Mock<IImportDetector> _importDetector;
 
-		private const string DIRECTORY = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data";
+		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
 
 		[SetUp]
 		public void ImportController()
@@ -28,7 +28,7 @@ namespace HomeTrack.Web.Tests
 			_repository.Setup(x => x.GetAccount("bank"))
 				.Returns(_bank);
 
-			_directoryExplorer = new DirectoryExplorer(DIRECTORY);
+			_directoryExplorer = new DirectoryExplorer(_directory);
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(_repository.Object);

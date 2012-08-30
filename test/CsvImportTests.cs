@@ -11,23 +11,11 @@ namespace HomeTrack.Tests
 	[TestFixture]
 	public class CsvImportTests
 	{
-		#region Setup/Teardown
-
-		[SetUp]
-		public void SetUp()
-		{
-			_file = new FileInfo(WP_FILENAME);
-		}
-
-		#endregion
-
 		private const string WP_FILENAME =
-			@"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data\Imports\Westpac\A00_0000_0000000_000-12Aug12.csv";
+			@"~\Test Data\Imports\Westpac\A00_0000_0000000_000-12Aug12.csv";
 
 		private const string ASB_FILENAME =
-			@"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data\Imports\Asb\Export20120825200829.csv";
-
-		private FileInfo _file;
+			@"~\Test Data\Imports\Asb\Export20120825200829.csv";
 
 		private class TestObj
 		{
@@ -96,7 +84,8 @@ namespace HomeTrack.Tests
 		[Test]
 		public void DecodeAsbImport()
 		{
-			using (var reader = new CsvReader(ASB_FILENAME))
+			var filename = TestSettings.GetFilename(ASB_FILENAME);
+			using (var reader = new CsvReader(filename))
 			{
 				reader.GetHeader(skip: 6);
 				AsbCsvImportRow actual = reader.GetData<AsbCsvImportRow>().First();
@@ -164,19 +153,14 @@ namespace HomeTrack.Tests
 		[Test]
 		public void DecodeWestpacImport()
 		{
-			using (var reader = new CsvReader(WP_FILENAME))
+			var filename = TestSettings.GetFilename(WP_FILENAME);
+			using (var reader = new CsvReader(filename))
 			{
 				WestpacCsvImportRow actual = reader.GetData<WestpacCsvImportRow>().First();
 				Assert.That(actual.Date, Is.EqualTo(DateTime.Parse("13/08/2012")));
 				Assert.That(actual.Amount, Is.EqualTo(-140M));
 				Assert.That(actual.OtherParty, Is.EqualTo("Countdown Ri WBC ATM"));
 			}
-		}
-
-		[Test]
-		public void FileExists()
-		{
-			Assert.That(_file.Exists, Is.True);
 		}
 
 		[Test]

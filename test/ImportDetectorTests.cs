@@ -8,9 +8,9 @@ namespace HomeTrack.Tests
 	[TestFixture]
 	public class ImportTests
 	{
-		private const string WP_FILENAME = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data\Imports\Westpac\A00_0000_0000000_000-12Aug12.csv";
-		private const string ASB_FILENAME = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data\Imports\Asb\Export20120825200829.csv";
-		private const string VISA_FILENAME = @"C:\Users\Andy\Documents\GitHub\HomeTrack\Test Data\Imports\Visa\AXXXX_XXXX_XXXX_9623-01Apr12.csv";
+		private static readonly string _wpFilename = TestSettings.GetFilename(@"~\Test Data\Imports\Westpac\A00_0000_0000000_000-12Aug12.csv");
+		private static readonly string _asbFilename = TestSettings.GetFilename(@"~\Test Data\Imports\Asb\Export20120825200829.csv");
+		private static readonly string _visaFilename = TestSettings.GetFilename(@"~\Test Data\Imports\Visa\AXXXX_XXXX_XXXX_9623-01Apr12.csv");
 
 		[Test]
 		public void CanDetectWestpac()
@@ -20,9 +20,9 @@ namespace HomeTrack.Tests
 
 			Assert.That(westpac.GetPropertyNames(), Is.EquivalentTo(new[] { "Analysis Code", "Description", "Other Party", "Particulars", "Reference" }));
 
-			Assert.That(westpac.Matches(WP_FILENAME), Is.True);
-			Assert.That(westpac.Matches(ASB_FILENAME), Is.False);
-			Assert.That(westpac.Matches(VISA_FILENAME), Is.False);
+			Assert.That(westpac.Matches(_wpFilename), Is.True);
+			Assert.That(westpac.Matches(_asbFilename), Is.False);
+			Assert.That(westpac.Matches(_visaFilename), Is.False);
 		}
 
 		[Test]
@@ -31,9 +31,9 @@ namespace HomeTrack.Tests
 			var asb = new AsbCsvImportDetector();
 			Assert.That(asb.Name, Is.EqualTo("ASB"));
 
-			Assert.That(asb.Matches(ASB_FILENAME), Is.True);
-			Assert.That(asb.Matches(WP_FILENAME), Is.False);
-			Assert.That(asb.Matches(VISA_FILENAME), Is.False);
+			Assert.That(asb.Matches(_asbFilename), Is.True);
+			Assert.That(asb.Matches(_wpFilename), Is.False);
+			Assert.That(asb.Matches(_visaFilename), Is.False);
 		}
 
 		[Test]
@@ -42,9 +42,9 @@ namespace HomeTrack.Tests
 			var visa = new VisaCsvImportDetector();
 			Assert.That(visa.Name, Is.EqualTo("Visa"));
 
-			Assert.That(visa.Matches(VISA_FILENAME), Is.True);
-			Assert.That(visa.Matches(ASB_FILENAME), Is.False);
-			Assert.That(visa.Matches(WP_FILENAME), Is.False);
+			Assert.That(visa.Matches(_visaFilename), Is.True);
+			Assert.That(visa.Matches(_asbFilename), Is.False);
+			Assert.That(visa.Matches(_wpFilename), Is.False);
 		}
 
 		[Test]
@@ -55,9 +55,9 @@ namespace HomeTrack.Tests
 			var visa = new VisaCsvImportDetector();
 
 			var importDetector = new ImportDetector(new IImportDetector[] { wp, asb, visa });
-			Assert.That(importDetector.GetImportDetector(WP_FILENAME), Is.EqualTo(wp));
-			Assert.That(importDetector.GetImportDetector(ASB_FILENAME), Is.EqualTo(asb));
-			Assert.That(importDetector.GetImportDetector(VISA_FILENAME), Is.EqualTo(visa));
+			Assert.That(importDetector.GetImportDetector(_wpFilename), Is.EqualTo(wp));
+			Assert.That(importDetector.GetImportDetector(_asbFilename), Is.EqualTo(asb));
+			Assert.That(importDetector.GetImportDetector(_visaFilename), Is.EqualTo(visa));
 		}
 
 		[Test]
@@ -113,7 +113,7 @@ namespace HomeTrack.Tests
 		public void CanImportWestpac()
 		{
 			var wp = new WestpacCsvImportDetector();
-			var import = wp.Import(WP_FILENAME);
+			var import = wp.Import(_wpFilename);
 
 			Assert.That(import.Count(), Is.EqualTo(18));
 			
@@ -126,7 +126,7 @@ namespace HomeTrack.Tests
 		public void CanImportAsb()
 		{
 			var asb = new AsbCsvImportDetector();
-			var import = asb.Import(ASB_FILENAME);
+			var import = asb.Import(_asbFilename);
 
 			Assert.That(import.Count(), Is.EqualTo(45));
 
@@ -139,7 +139,7 @@ namespace HomeTrack.Tests
 		public void CanImportVisa()
 		{
 			var visa = new VisaCsvImportDetector();
-			var import = visa.Import(VISA_FILENAME);
+			var import = visa.Import(_visaFilename);
 
 			Assert.That(import.Count(), Is.EqualTo(64));
 
@@ -157,20 +157,20 @@ namespace HomeTrack.Tests
 
 			var importDetector = new ImportDetector(new IImportDetector[] { wp, asb, visa });
 			var import = new Import(importDetector);
-			import.Open(WP_FILENAME);
+			import.Open(_wpFilename);
 			
 			Assert.That(import.ImportType, Is.EqualTo(wp.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(wp.GetPropertyNames()));
 			import.GetData();
 
 			import = new Import(importDetector);
-			import.Open(ASB_FILENAME);
+			import.Open(_asbFilename);
 			Assert.That(import.ImportType, Is.EqualTo(asb.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(asb.GetPropertyNames()));
 			import.GetData();
 
 			import = new Import(importDetector);
-			import.Open(VISA_FILENAME);
+			import.Open(_visaFilename);
 			Assert.That(import.ImportType, Is.EqualTo(visa.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(visa.GetPropertyNames()));
 			import.GetData();
