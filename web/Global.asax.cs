@@ -72,6 +72,8 @@ namespace HomeTrack.Web
 			var path = MapPath("~/App_Data");
 			builder.Register(c => new DirectoryExplorer(path));
 
+			PatternBuilder.Register(builder);
+
 			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterInstance(new AsbCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterInstance(new VisaCsvImportDetector()).As<IImportDetector>();

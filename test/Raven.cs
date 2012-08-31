@@ -4,7 +4,7 @@ using Raven.Client.Embedded;
 
 namespace HomeTrack.Tests
 {
-	public static class RavenStore
+	public static class Raven
 	{
 		public static RavenRepository CreateRepository()
 		{

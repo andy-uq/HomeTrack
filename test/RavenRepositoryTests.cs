@@ -1,5 +1,4 @@
 using AutoMapper;
-using HomeTrack.Core;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
 
@@ -29,7 +28,7 @@ namespace HomeTrack.Tests
 		[SetUp]
 		public virtual void SetUp()
 		{
-			_repository = RavenStore.CreateRepository();
+			_repository = Raven.CreateRepository();
 			_mappingEngine = new MappingProvider(new RavenEntityTypeMapProvider()).Build();
 			_generalLedger = new GeneralLedger(new GeneralLedgerRepository(_repository, _mappingEngine));
 		}

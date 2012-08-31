@@ -13,7 +13,7 @@ namespace HomeTrack.Core
 		{
 			return importRow.Amount >= Min && importRow.Amount <= Max;
 		}
-
+		
 		public override string ToString()
 		{
 			return string.Format("Amount >= {0:n2} and <= {1:n2}", Min, Max);
@@ -55,7 +55,7 @@ namespace HomeTrack.Core
 
 		public override string ToString()
 		{
-			return DaysOfMonth.Length == 0
+			return DaysOfMonth.Length == 1
 			       	? string.Format("Day = {0}", DaysOfMonth[0])
 			       	: string.Format("Day in [{0}]", string.Join(",", DaysOfMonth.Select(x => x.ToString(CultureInfo.InvariantCulture))));
 		}
@@ -77,6 +77,11 @@ namespace HomeTrack.Core
 		{
 			var value = importRow.Properties.SingleOrDefault(x => x.Key == Name);
 			return Regex.IsMatch(value.Value);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} matches {1}", Name, Pattern);
 		}
 	}
 }

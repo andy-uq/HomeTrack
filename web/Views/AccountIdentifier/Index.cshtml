@@ -1,0 +1,23 @@
+﻿@model IEnumerable<AccountIdentifier>
+	
+<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+			<td>Pattern</td>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach(var i in Model )
+	{
+		<tr>
+			<td>@i.Account.Name</td>
+			<td>@i.Pattern</td>
+		</tr>
+	}
+	</tbody>
+</table>
+
+<p>
+	@Html.ActionLink("Create", "Create")
+ </p>

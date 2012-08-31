@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="App_Start\MiniProfiler.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AccountIdentifierController.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
@@ -101,6 +102,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AccountIdentifierArgs.cs" />
     <Compile Include="ViewModels\ImportPreview.cs" />
     <Compile Include="ViewModels\NewTransaction.cs" />
     <Compile Include="ViewModels\TransactionDetails.cs" />
@@ -115,6 +117,8 @@
     <Content Include="Scripts\jquery-1.8.0.min.js" />
     <Content Include="Scripts\knockout-2.1.0.debug.js" />
     <Content Include="Scripts\knockout-2.1.0.js" />
+    <Content Include="Scripts\underscore.js" />
+    <Content Include="Scripts\underscore.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -152,6 +156,8 @@
     <Content Include="Views\Transaction\Details.cshtml" />
     <Content Include="Views\Import\Directory.cshtml" />
     <Content Include="Views\Import\Preview.cshtml" />
+    <Content Include="Views\AccountIdentifier\Index.cshtml" />
+    <Content Include="Views\AccountIdentifier\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.csproj">

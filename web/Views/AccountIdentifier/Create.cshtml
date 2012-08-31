@@ -1,0 +1,127 @@
+﻿@model AccountIdentifierViewModel
+<h2>
+	Create account identifier</h2>
+@using ( Html.BeginForm() )
+{
+	@Html.ValidationSummary(true)
+
+	<fieldset>
+		<legend>Account details </legend>
+		<div class="editor-label">
+			@Html.Label("AccountId", "Account")
+		</div>
+		<div class="editor-field">
+			@Html.DropDownList("AccountId", Model.Accounts.Select(x => new SelectListItem { Text = x.Name, Value = x.Id }))
+		</div>
+		<div>
+			<table>
+				<thead>
+					<td>Name</td>
+					<td>Properties</td>
+				</thead>
+				<tbody data-bind="foreach: patterns">
+					<tr>
+						<td><select data-bind="options: $root.availableBuilders, value: name, optionsText: 'name', change:setProperties"></select></td>
+						<td>
+							<table>
+								<tr data-bind="foreach: properties">
+									<td data-bind="text: this"></td>
+								</tr>
+								<tr data-bind="foreach: propertyValues">
+									<td><input type="text" /></td>
+								</tr>
+							</table>
+						</td>
+						<td><a href="#" data-bind="click: $root.removePattern">X</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<a data-bind="click: addPattern">Add</a>
+		</div>
+		<p>
+			<input type="submit" value="Send" />
+		</p>
+	</fieldset>
+}
+
+<script type="text/javascript">
+	var builders = [
+		@foreach (var b in Model.Patterns)
+		{
+			<text>{ id:"@b.Name", name: "@b.Name", properties: ['@string.Join("','", b.Properties)'] },</text>
+		}
+	];
+	
+	// Class to represent a row in the patterns
+	function Pattern() {
+		var self = this;
+		self.name = ko.observable();
+		self.properties = [];
+		self.propertyValues = ko.observableArray([]);
+		self.setProperties = function() {
+			self.properties = _(builders).where({ id: self.name() }).properties;
+			self.propertyValues = _(builders).where({ id: self.name() }).properties.map(function (x) {
+				return "";
+			});
+		};
+	}
+
+	// Overall viewmodel for this screen, along with initial state
+	function AccountIdentifierViewModel() {
+		var self = this;
+
+		// Non-editable account data - from the server
+		self.availableBuilders = builders;
+
+		// Editable data
+		self.patterns = ko.observableArray([]);
+
+		// Operations
+		self.addPattern = function() {
+			self.patterns.push(new Pattern());
+		};
+		self.removePattern = function(p) {
+			self.patterns.remove(p);
+		};
+
+		self.save = function() {
+
+			var patterns = [];
+			
+			var koPatterns = self.patterns();
+			for(var i=0; i < koPatterns.length; i++) {
+				patterns.push({ Name: koPatterns[i].name(), Properties: koPatterns[i].properties() });
+			}
+
+			$.ajax({
+				url: location.href,
+				contentType: 'application/json; charset=utf-8',
+				type: "POST",
+				data: JSON.stringify({
+					args: {
+						AccountId: $('#AccountId').val(),
+						Patterns: patterns
+					}
+				}),
+				dataType: 'json',
+				success: function(result) {
+					$('#exception').html(null).hide();
+					if (result) {
+						if (result.redirectUrl) {
+							window.location = result.redirectUrl;
+						}
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					$('#exception').html(xhr.responseText).show();
+					alert(xhr.statusText);
+				}
+			});
+		};
+	}
+
+	var vm = new AccountIdentifierViewModel();
+	ko.applyBindings(vm);
+</script>

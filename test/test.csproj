@@ -125,7 +125,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccountTests.cs" />
     <Compile Include="RavenRepositoryTests.cs" />
-    <Compile Include="RavenStore.cs" />
+    <Compile Include="Raven.cs" />
     <Compile Include="TestSettings.cs" />
     <Compile Include="TransactionComparer.cs" />
     <Compile Include="ImportPatternTests.cs" />

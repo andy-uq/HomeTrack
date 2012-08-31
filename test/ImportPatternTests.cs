@@ -44,6 +44,7 @@ namespace HomeTrack.Tests
 		{
 			var pattern = new FieldPattern() {Name = "Other Party", Pattern = "COUNTDOWN"};
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
+			Assert.That(pattern.ToString(), Is.EqualTo("Other Party matches COUNTDOWN"));
 		}
 
 		[Test]
@@ -51,6 +52,7 @@ namespace HomeTrack.Tests
 		{
 			var pattern = new DayOfMonthPattern(1);
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
+			Assert.That(pattern.ToString(), Is.EqualTo("Day = 1"));
 		}
 
 		[Test]
@@ -66,6 +68,7 @@ namespace HomeTrack.Tests
 		{
 			var pattern = new AmountRangePattern() { Min = 10M, Max = 10M };
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
+			Assert.That(pattern.ToString(), Is.EqualTo("Amount >= 10.00 and <= 10.00"));
 		}
 
 		[Test]
@@ -75,6 +78,7 @@ namespace HomeTrack.Tests
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
 			Assert.That(pattern.IsMatch(_row2.Object), Is.True);
 			Assert.That(pattern.IsMatch(_row3.Object), Is.False);
+			Assert.That(pattern.ToString(), Is.EqualTo("Day in [1,5]"));
 		}
 
 		[Test]
@@ -83,12 +87,13 @@ namespace HomeTrack.Tests
 			var pattern = new CompositePattern
 			{
 				new FieldPattern() {Name = "Other Party", Pattern = "COUNTDOWN" },
-				new DayOfMonthPattern() {DaysOfMonth = new[] { 1 } }
+				new DayOfMonthPattern() {DaysOfMonth = new[] { 1, 7 } }
 			};
 
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
 			Assert.That(pattern.IsMatch(_row2.Object), Is.False);
 			Assert.That(pattern.IsMatch(_row3.Object), Is.False);
+			Assert.That(pattern.ToString(), Is.EqualTo("(Other Party matches COUNTDOWN) AND (Day in [1,7])"));
 		}
 	}
 

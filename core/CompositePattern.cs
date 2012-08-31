@@ -13,6 +13,12 @@ namespace HomeTrack.Core
 			_patterns = new List<IPattern>();
 		}
 
+		public CompositePattern(IEnumerable<IPattern> contents)
+			: this()
+		{
+			_patterns.AddRange(contents);
+		}
+
 		public void Add(IPattern pattern)
 		{
 			_patterns.Add(pattern);

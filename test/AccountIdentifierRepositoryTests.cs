@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using HomeTrack.Core;
 using HomeTrack.RavenStore;
 using NUnit.Framework;
@@ -33,42 +34,61 @@ namespace HomeTrack.Tests
 		[Test]
 		public void GetAll()
 		{
-			var i1 = new AccountIdentifier { Account = AccountFactory.Expense("Groceries"), Pattern = new AmountPattern { Amount = 10M } };
-			var i2 = new AccountIdentifier { Account = AccountFactory.Expense("Fuel"), Pattern = new DayOfMonthPattern(1, 15) };
-			var i3 = new AccountIdentifier { Account = AccountFactory.Expense("Electricity"), Pattern = new CompositePattern { new DayOfMonthPattern(1), new AmountRangePattern { Min = 10M, Max = 100M } } };
+			var i1 = new AccountIdentifier {Account = AccountFactory.Expense("Groceries"), Pattern = new AmountPattern {Amount = 10M}};
+			var i2 = new AccountIdentifier {Account = AccountFactory.Expense("Fuel"), Pattern = new DayOfMonthPattern(1, 15)};
+			var i3 = new AccountIdentifier
+			{
+				Account = AccountFactory.Expense("Electricity"),
+				Pattern = new CompositePattern
+				{
+					new DayOfMonthPattern(1),
+					new AmountRangePattern {Min = 10M, Max = 100M}
+				}
+			};
 
 			AccountIdentifierRepository.Add(i1);
 			AccountIdentifierRepository.Add(i2);
 			AccountIdentifierRepository.Add(i3);
 
-			var collection = AccountIdentifierRepository.GetAll();
+			var collection = AccountIdentifierRepository.GetAll().ToArray();
+
 			Assert.That(collection, Is.Not.Empty);
-			Assert.That(collection, Is.EquivalentTo(new[] { i1, i2, i3 }).Using(new AccountIdentifierComparer()));
+			Assert.That(collection, Is.EquivalentTo(new[] {i1, i2, i3}).Using(new AccountIdentifierComparer()));
+		}
+	}
+
+	internal class AccountIdentifierComparer : IEqualityComparer<AccountIdentifier>
+	{
+		public bool Equals(AccountIdentifier x, AccountIdentifier y)
+		{
+			var patternComparer = new PatternComparer();
+
+			return x.Account.Id == y.Account.Id
+					&& patternComparer.Equals(x.Pattern, y.Pattern);
+		}
+			
+		public int GetHashCode(AccountIdentifier obj)
+		{
+			throw new System.NotImplementedException();
+		}
+	}
+
+	internal class PatternComparer : IEqualityComparer<IPattern>
+	{
+		public bool Equals(IPattern x, IPattern y)
+		{
+			if ( x == null && y == null )
+				return true;
+
+			if ( x == null || y == null )
+				return false;
+
+			return x.GetType() == y.GetType();
 		}
 
-		internal class AccountIdentifierComparer : IEqualityComparer<AccountIdentifier>
+		public int GetHashCode(IPattern obj)
 		{
-			public bool Equals(AccountIdentifier x, AccountIdentifier y)
-			{
-				return x.Account.Id == y.Account.Id
-				       && Equals(x.Pattern, y.Pattern);
-			}
-			
-			bool Equals(IPattern x, IPattern y)
-			{
-				if ( x == null && y == null )
-					return true;
-
-				if ( x == null || y == null )
-					return false;
-
-				return x.GetType() == y.GetType();
-			}
-
-			public int GetHashCode(AccountIdentifier obj)
-			{
-				throw new System.NotImplementedException();
-			}
+			throw new System.NotImplementedException();
 		}
 	}
 }
