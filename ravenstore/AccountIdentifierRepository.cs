@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Raven.Client;
 
 namespace HomeTrack.RavenStore
 {
@@ -41,10 +42,17 @@ namespace HomeTrack.RavenStore
 			if ( string.IsNullOrEmpty(id) )
 				throw new ArgumentNullException("id");
 
-			_repository.UseOnceTo(x => {
-				var e = x.Load<Documents.AccountIdentifier>(id);
-				x.Delete(e);
-			}, saveChanges: true);
+			using ( var unitOfWork = _repository.DocumentStore.OpenSession() )
+			{
+				var e = unitOfWork.Load<Documents.AccountIdentifier>(id);
+				if (e == null)
+				{
+					return;
+				}
+				
+				unitOfWork.Delete(e);
+				unitOfWork.SaveChanges();
+			}
 		}
 
 		#endregion

@@ -51,7 +51,13 @@ namespace HomeTrack.Tests
 			AccountIdentifierRepository.Add(i);
 			AccountIdentifierRepository.Remove(i.Id);
 
-			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.AccountIdentifier>()), Is.Empty);
+			Assert.That(Repository.UseOnceTo(s => s.Query<RavenStore.Documents.AccountIdentifier>()), Is.Empty);
+		}
+
+		[Test]
+		public void RemoveItemThatDoesntExist()
+		{
+			AccountIdentifierRepository.Remove("accountIdentifier/1");
 		}
 
 		[Test]
