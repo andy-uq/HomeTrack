@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -11,9 +12,10 @@ namespace HomeTrack.Core
 
 		public bool IsMatch(IImportRow importRow)
 		{
-			return importRow.Amount >= Min && importRow.Amount <= Max;
+			var amount = Math.Abs(importRow.Amount);
+			return amount >= Min && amount <= Max;
 		}
-		
+
 		public override string ToString()
 		{
 			return string.Format("Amount >= {0:n2} and <= {1:n2}", Min, Max);
@@ -27,12 +29,25 @@ namespace HomeTrack.Core
 
 		public bool IsMatch(IImportRow importRow)
 		{
-			return importRow.Amount == Amount;
+			switch (Direction)
+			{
+				case EntryType.NotSpecified:
+					return Amount == Math.Abs(importRow.Amount);
+
+				case EntryType.Debit:
+					return Amount == importRow.Amount;
+
+				case EntryType.Credit:
+					return Amount == -importRow.Amount;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		public override string ToString()
 		{
-			return string.Format("Amount={0:n2}", Amount);
+			return string.Format("Amount={0:n2}{1}", Amount, Direction.ToDrCrString());
 		}
 	}
 
