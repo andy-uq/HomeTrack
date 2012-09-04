@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,29 @@ namespace HomeTrack.Tests
 			};
 
 			AccountIdentifierRepository.Add(i);
+
 			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.AccountIdentifier>()), Is.Not.Empty);
+			Assert.That(i.Id, Is.Not.Null.Or.Empty);
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void RemoveThrowsExceptionWhenIdIsNull()
+		{
+			AccountIdentifierRepository.Remove(null);
+		}
+
+		[Test]
+		public void Remove()
+		{
+			var i = new AccountIdentifier
+			{
+				Account = AccountFactory.Expense("Groceries")
+			};
+
+			AccountIdentifierRepository.Add(i);
+			AccountIdentifierRepository.Remove(i.Id);
+
+			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.AccountIdentifier>()), Is.Empty);
 		}
 
 		[Test]

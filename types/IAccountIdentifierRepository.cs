@@ -6,5 +6,6 @@ namespace HomeTrack
 	{
 		void Add(AccountIdentifier identifier);
 		IEnumerable<AccountIdentifier> GetAll();
+		void Remove(string id);
 	}
 }

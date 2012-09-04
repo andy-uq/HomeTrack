@@ -42,6 +42,16 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
+		public void Remove()
+		{
+			_repository.Setup(x => x.Remove(It.IsAny<string>()));
+
+			var result = _controller.Remove("id");
+			Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
+			Assert.That(result.RouteValues["action"], Is.EqualTo("index"));
+		}
+
+		[Test]
 		public void Create()
 		{
 			var result = _controller.Create();

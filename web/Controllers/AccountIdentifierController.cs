@@ -54,5 +54,11 @@ namespace HomeTrack.Web.Controllers
 
 			return RedirectToAction("index").ToJson(ControllerContext);
 		}
+
+		public RedirectToRouteResult Remove(string id)
+		{
+			_repository.Remove(id);
+			return RedirectToAction("index");
+		}
 	}
 }

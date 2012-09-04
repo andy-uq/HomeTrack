@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 
@@ -20,13 +21,30 @@ namespace HomeTrack.RavenStore
 		public void Add(AccountIdentifier identifier)
 		{
 			var document = _mappingEngine.Map<Documents.AccountIdentifier>(identifier);
-			_repository.UseOnceTo(session => session.Store(document), saveChanges: true);
+			using ( var unitOfWork = _repository.DocumentStore.OpenSession() )
+			{
+				unitOfWork.Store(document);
+				unitOfWork.SaveChanges();
+
+				identifier.Id = document.Id;
+			}
 		}
 
 		public IEnumerable<AccountIdentifier> GetAll()
 		{
 			var documents = _repository.UseOnceTo(x => x.Query<Documents.AccountIdentifier>().ToArray());
 			return documents.Hydrate<AccountIdentifier>(_mappingEngine);
+		}
+
+		public void Remove(string id)
+		{
+			if ( string.IsNullOrEmpty(id) )
+				throw new ArgumentNullException("id");
+
+			_repository.UseOnceTo(x => {
+				var e = x.Load<Documents.AccountIdentifier>(id);
+				x.Delete(e);
+			}, saveChanges: true);
 		}
 
 		#endregion
