@@ -48,6 +48,13 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void FieldPatternMatchWhereFieldDoesNotExist()
+		{
+			var pattern = new FieldPattern() {Name = "This field does not exist", Pattern = "COUNTDOWN"};
+			Assert.That(pattern.IsMatch(_row1.Object), Is.False);
+		}
+
+		[Test]
 		public void DayOfMonthPatternMatch()
 		{
 			var pattern = new DayOfMonthPattern(1);

@@ -77,7 +77,7 @@ namespace HomeTrack.Core
 		public bool IsMatch(IImportRow importRow)
 		{
 			var value = importRow.Properties.SingleOrDefault(x => x.Key == Name);
-			return Regex.IsMatch(value.Value);
+			return value.Value != null && Regex.IsMatch(value.Value);
 		}
 
 		public override string ToString()
