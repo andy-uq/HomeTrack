@@ -13,6 +13,7 @@
 		<tr>
 			<td>@i.Account.Name</td>
 			<td>@i.Pattern</td>
+			<td>@Html.ActionLink("remove", "remove", new{id=i.Id})</td>
 		</tr>
 	}
 	</tbody>
