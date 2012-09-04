@@ -1,21 +1,21 @@
 ﻿@model HomeTrack.Web.ViewModels.TransactionDetails
-    <fieldset>
-        <legend>Transaction</legend>
-    
-        <div class="display-label">Date</div>
-        <div class="display-field">
-            @Html.DisplayFor(model => model.Date)
-        </div>
-        <div class="display-label">Amount</div>
-        <div class="display-field">
-            @Model.Amount.ToString("c")
-        </div>
-    
-        <div class="display-label">Description</div>
-        <div class="display-field">
-            @Html.DisplayFor(model => model.Description)
-        </div>
-    
+	<fieldset>
+		<legend>Transaction</legend>
+	
+		<div class="display-label">Date</div>
+		<div class="display-field">
+			@Html.DisplayFor(model => model.Date)
+		</div>
+		<div class="display-label">Amount</div>
+		<div class="display-field">
+			@Model.Amount.ToString("c")
+		</div>
+	
+		<div class="display-label">Description</div>
+		<div class="display-field">
+			@Html.DisplayFor(model => model.Description)
+		</div>
+	
 	<table>
 	<thead>
 		<tr>
@@ -37,7 +37,7 @@
 </table>	
 
 	</fieldset>
-    <p>
-        @Html.ActionLink("Edit", "Edit", new { Model.Id }) |
-        @Html.ActionLink("Back to List", "Index")
-    </p>
+	<p>
+		@Html.ActionLink("Edit", "Edit", new { Model.Id }) |
+		@Html.ActionLink("Back to List", "Index")
+	</p>
