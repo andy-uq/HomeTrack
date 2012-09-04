@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Autofac;
 using Newtonsoft.Json;
@@ -36,6 +37,9 @@ namespace HomeTrack.RavenStore
 			containerBuilder.RegisterType<AccountIdentifierRepository>()
 				.As<IAccountIdentifierRepository>()
 				.SingleInstance();
+
+			containerBuilder.Register<IEnumerable<AccountIdentifier>>(r => r.Resolve<IAccountIdentifierRepository>().GetAll());
+				
 
 			containerBuilder.RegisterType<RavenRepository>()
 				.SingleInstance();

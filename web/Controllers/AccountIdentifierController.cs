@@ -32,8 +32,11 @@ namespace HomeTrack.Web.Controllers
 		}
 
 		[AcceptVerbs(HttpVerbs.Post)]
-		public RedirectToRouteResult Create(AccountIdentifierArgs args)
+		public JsonResult Create(AccountIdentifierArgs args)
 		{
+			if ( !ModelState.IsValid )
+				return ModelState.ToJson();
+			
 			var patterns =
 				(
 					from p in args.Patterns
@@ -49,7 +52,7 @@ namespace HomeTrack.Web.Controllers
 				          	: new CompositePattern(patterns)
 			});
 
-			return RedirectToAction("index");
+			return RedirectToAction("index").ToJson(ControllerContext);
 		}
 	}
 }

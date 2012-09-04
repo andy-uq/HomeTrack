@@ -13,7 +13,7 @@ namespace HomeTrack.Web.Tests
 		public void ModelErrorIntoJson()
 		{
 			var modelState = new ModelStateDictionary();
-			var jsonResult = modelState.JsonValidation();
+			var jsonResult = ControllerExtensions.ToJson(modelState);
 
 			var data = jsonResult.Data;
 			Assert.That(data, Has.Property("Tag").EqualTo("ValidationError"));
@@ -26,7 +26,7 @@ namespace HomeTrack.Web.Tests
 			var modelState = new ModelStateDictionary();
 			modelState.Add("FirstName", new ModelState { Errors = { "First name is a required field" } });
 
-			var jsonResult = modelState.JsonValidation();
+			var jsonResult = ControllerExtensions.ToJson(modelState);
 
 			var data = jsonResult.Data;
 			Assert.That(data, Has.Property("State").Not.Empty);
@@ -40,7 +40,7 @@ namespace HomeTrack.Web.Tests
 			var modelState = new ModelStateDictionary();
 			modelState.Add("FirstName", new ModelState { Errors = { new InvalidOperationException("Cannot operate") } });
 			
-			var jsonResult = modelState.JsonValidation();
+			var jsonResult = ControllerExtensions.ToJson(modelState);
 
 			var data = jsonResult.Data;
 			Assert.That(data, Has.Property("State").Not.Empty);

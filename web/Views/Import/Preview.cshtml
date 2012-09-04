@@ -1,6 +1,14 @@
 ﻿@using HomeTrack.Core
 @model ImportPreview
 <h2>@Model.Import.ImportType</h2>
+
+@if ( !Model.AccountIdentifiers.Any() )
+{
+	<p class="is-error">
+		You do not have any active account identifiers.
+	</p>
+}
+
 <table>
 	<thead>
 		<tr>

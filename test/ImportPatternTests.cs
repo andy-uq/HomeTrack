@@ -58,9 +58,16 @@ namespace HomeTrack.Tests
 		[Test]
 		public void AmountPatternMatch()
 		{
-			var pattern = new AmountPattern() { Amount = 10M };
+			var pattern = new AmountPattern() { Amount = 10M, Direction = EntryType.NotSpecified };
 			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
 			Assert.That(pattern.ToString(), Is.EqualTo("Amount=10.00"));
+		}
+
+		[Test]
+		public void NegativeAmountPatternMatch()
+		{
+			var pattern = new AmountPattern() { Amount = -10M, Direction = EntryType.Debit };
+			Assert.That(pattern.IsMatch(_row1.Object), Is.True);
 		}
 
 		[Test]

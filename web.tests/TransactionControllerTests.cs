@@ -136,7 +136,7 @@ namespace HomeTrack.Web.Tests
 			_repository.Setup(x => x.Post(It.IsAny<Transaction>()))
 				.Returns(false);
 
-			var result = (ValidationJsonResult)_controller.Create(args);
+			var result = (JsonResult)_controller.Create(args);
 			Assert.That(result.Data, Has.Property("Tag"));
 			Assert.That(result.Data, Has.Property("State"));
 		}

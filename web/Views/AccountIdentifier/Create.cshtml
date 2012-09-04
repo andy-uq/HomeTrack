@@ -1,10 +1,7 @@
 ﻿@model AccountIdentifierViewModel
 <h2>
 	Create account identifier</h2>
-@using ( Html.BeginForm() )
-{
-	@Html.ValidationSummary(true)
-
+<form method="post" data-bind="submit: save">
 	<fieldset>
 		<legend>Account details </legend>
 		<div class="editor-label">
@@ -21,14 +18,17 @@
 				</thead>
 				<tbody data-bind="foreach: patterns">
 					<tr>
-						<td><select data-bind="options: $root.availableBuilders, value: name, optionsText: 'name', change:setProperties"></select></td>
+						<td>
+							<select data-bind="options: $root.availableBuilders, value: pattern, optionsText: 'name', optionsCaption: 'Please select...'">
+							 </select>
+						</td>
 						<td>
 							<table>
-								<tr data-bind="foreach: properties">
-									<td data-bind="text: this"></td>
+								<tr data-bind="foreach: pattern().properties">
+									<td data-bind="text: key"></td>
 								</tr>
-								<tr data-bind="foreach: propertyValues">
-									<td><input type="text" /></td>
+								<tr data-bind="foreach: pattern().properties">
+									<td><input type="text" data-bind="value: value" /></td>
 								</tr>
 							</table>
 						</td>
@@ -44,28 +44,22 @@
 			<input type="submit" value="Send" />
 		</p>
 	</fieldset>
-}
+</form>
 
 <script type="text/javascript">
-	var builders = [
-		@foreach (var b in Model.Patterns)
+	var builders = @Html.Raw(Model
+		.Patterns
+		.Select(x => new 
 		{
-			<text>{ id:"@b.Name", name: "@b.Name", properties: ['@string.Join("','", b.Properties)'] },</text>
-		}
-	];
+			 id = x.Name, 
+			 name = x.Name, 
+			 properties = x.Properties.Select(p => new { key = p, value = "" }) 
+		}).ToJson());
 	
 	// Class to represent a row in the patterns
-	function Pattern() {
+	function Pattern(p) {
 		var self = this;
-		self.name = ko.observable();
-		self.properties = [];
-		self.propertyValues = ko.observableArray([]);
-		self.setProperties = function() {
-			self.properties = _(builders).where({ id: self.name() }).properties;
-			self.propertyValues = _(builders).where({ id: self.name() }).properties.map(function (x) {
-				return "";
-			});
-		};
+		self.pattern = ko.observable(p);
 	}
 
 	// Overall viewmodel for this screen, along with initial state
@@ -75,12 +69,14 @@
 		// Non-editable account data - from the server
 		self.availableBuilders = builders;
 
+		console.log(self.availableBuilders);
+
 		// Editable data
 		self.patterns = ko.observableArray([]);
 
 		// Operations
 		self.addPattern = function() {
-			self.patterns.push(new Pattern());
+			self.patterns.push(new Pattern(self.availableBuilders[0]));
 		};
 		self.removePattern = function(p) {
 			self.patterns.remove(p);
@@ -91,10 +87,11 @@
 			var patterns = [];
 			
 			var koPatterns = self.patterns();
+			
 			for(var i=0; i < koPatterns.length; i++) {
-				patterns.push({ Name: koPatterns[i].name(), Properties: koPatterns[i].properties() });
+				patterns.push({ Name: koPatterns[i].pattern().name, Properties: koPatterns[i].pattern().properties });
 			}
-
+			
 			$.ajax({
 				url: location.href,
 				contentType: 'application/json; charset=utf-8',

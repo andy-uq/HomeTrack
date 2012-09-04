@@ -95,7 +95,7 @@ namespace HomeTrack.Web.Controllers
 				ModelState.AddModelError("Amount", string.Format("Right hand amount must equal {0:c}", newTransaction.Amount));
 			}
 
-			return ModelState.JsonValidation();
+			return ModelState.ToJson();
 		}
 
 		public ViewResult Details(int id)

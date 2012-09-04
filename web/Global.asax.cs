@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -6,6 +7,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using HomeTrack.Core;
 using HomeTrack.RavenStore;
+using HomeTrack.Web.Controllers;
 
 namespace HomeTrack.Web
 {
@@ -56,6 +58,7 @@ namespace HomeTrack.Web
 		{
 			RegisterGlobalFilters(filters);
 			RegisterRoutes(routes);
+			ControllerExtensions.InitRoutes(routes);
 
 			var builder = new ContainerBuilder();
 			Container = RegisterIoc(builder);

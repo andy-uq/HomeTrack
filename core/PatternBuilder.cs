@@ -27,7 +27,8 @@ namespace HomeTrack.Core
 		public static IEnumerable<PatternBuilder> GetPatterns()
 		{
 			yield return new PatternBuilder("Amount", new[] {"Amount"}, p => new AmountPattern { Amount = Convert.ToDecimal(p["Amount"]) });
-			yield return new PatternBuilder("AmountRange", new[] {"Min","Max"}, p => new AmountRangePattern { Min = Convert.ToDecimal(p["Min"]), Max = Convert.ToDecimal(p["Min"]) });
+			yield return new PatternBuilder("Amount Range", new[] {"Min","Max"}, p => new AmountRangePattern { Min = Convert.ToDecimal(p["Min"]), Max = Convert.ToDecimal(p["Min"]) });
+			yield return new PatternBuilder("Field", new[] {"Name","Pattern"}, p => new FieldPattern { Name = p["Name"], Pattern = p["Pattern"] });
 		}
 
 		public IPattern Build(Dictionary<string, string> properties)

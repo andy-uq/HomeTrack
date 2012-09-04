@@ -45,6 +45,9 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.8.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -60,11 +63,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountControllerTests.cs" />
+    <Compile Include="AccountIdentifierControllerTests.cs" />
     <Compile Include="ControllerExtensionTests.cs" />
     <Compile Include="GlobalTests.cs" />
     <Compile Include="ImportControllerTests.cs" />
     <Compile Include="MvcMockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ToJsonTests.cs" />
     <Compile Include="TransactionControllerTests.cs" />
     <Compile Include="ViewExtensionTests.cs" />
     <Compile Include="ViewMappingTests.cs" />

@@ -1,11 +1,38 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace HomeTrack.Web.Controllers
 {
 	public static class ControllerExtensions
 	{
-		public static JsonResult JsonValidation(this ModelStateDictionary state)
+		private static RouteCollection _routes;
+
+		public static void InitRoutes(RouteCollection routes)
+		{
+			_routes = routes;
+		}
+
+		public static JsonResult ToJson(this RedirectToRouteResult state, ControllerContext context)
+		{
+			var redirectUrl = _routes == null
+			                  	? null
+			                  	: UrlHelper.GenerateUrl(state.RouteName, actionName: null, controllerName: null,
+			                  	                        routeValues: state.RouteValues, routeCollection: _routes,
+			                  	                        requestContext: context.RequestContext, includeImplicitMvcValues: false);
+			return new JsonResult
+			{
+				Data = new
+				{
+					actionName = state.RouteValues["action"],
+					controllerName = state.RouteValues["controller"],
+					routeValues = state.RouteValues,
+					redirectUrl
+				}
+			};
+		}
+
+		public static JsonResult ToJson(this ModelStateDictionary state)
 		{
 			var errors =
 				(
@@ -19,7 +46,7 @@ namespace HomeTrack.Web.Controllers
 					}
 				);
 
-			return new ValidationJsonResult
+			return new JsonResult
 			{
 				Data = new
 				{
@@ -28,9 +55,5 @@ namespace HomeTrack.Web.Controllers
 				}
 			};
 		}
-	}
-
-	public class ValidationJsonResult : JsonResult
-	{
 	}
 }

@@ -60,6 +60,9 @@
     <Reference Include="MiniProfiler">
       <HintPath>..\packages\MiniProfiler.2.0.2\lib\net40\MiniProfiler.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.8.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,6 +101,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\TransactionController.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

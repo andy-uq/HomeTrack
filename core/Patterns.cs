@@ -23,6 +23,7 @@ namespace HomeTrack.Core
 	public class AmountPattern : IPattern
 	{
 		public decimal Amount { get; set; }
+		public EntryType Direction { get; set; }
 
 		public bool IsMatch(IImportRow importRow)
 		{
