@@ -54,10 +54,22 @@ namespace HomeTrack.Web.Tests
 		[Test]
 		public void Create()
 		{
-			var result = _controller.Create();
+			var result = _controller.Create((string) null);
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
+			Assert.That(model.Accounts, Is.Not.Empty);			
+			Assert.That(model.Patterns, Is.Not.Empty);			
+		}
+
+		[Test]
+		public void CreateWithAccountId()
+		{
+			var result = _controller.Create("bank");
+			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
+
+			var model = (AccountIdentifierViewModel)result.Model;
+			Assert.That(model.AccountId, Is.EqualTo("bank"));			
 			Assert.That(model.Accounts, Is.Not.Empty);			
 			Assert.That(model.Patterns, Is.Not.Empty);			
 		}
@@ -68,7 +80,7 @@ namespace HomeTrack.Web.Tests
 			_controller.ModelState.Add("AccoundId", new ModelState());
 			_controller.ModelState.AddModelError("AccountId", "AccountId is a required field");
 
-			var result = (JsonResult )_controller.Create(null);
+			var result = _controller.Create(new AccountIdentifierArgs());
 			Assert.That(result.Data, Has.Property("State").Not.Empty);
 			Assert.That(result.Data, Has.Property("State").With.Some.Property("Name").EqualTo("AccountId"));
 			Assert.That(result.Data, Has.Property("State").With.Some.Property("Errors").With.Some.EqualTo("AccountId is a required field"));

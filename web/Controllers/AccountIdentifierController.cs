@@ -25,9 +25,9 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ViewResult Create()
+		public ViewResult Create(string accountId)
 		{
-			var model = new AccountIdentifierViewModel { Accounts = _generalLedger, Patterns = _patterns };
+			var model = new AccountIdentifierViewModel { Accounts = _generalLedger, Patterns = _patterns, AccountId = accountId };
 			return View(model);
 		}
 
@@ -52,7 +52,7 @@ namespace HomeTrack.Web.Controllers
 				          	: new CompositePattern(patterns)
 			});
 
-			return RedirectToAction("index").ToJson(ControllerContext);
+			return RedirectToAction("create", new { accountId = args.AccountId }).ToJson(ControllerContext);
 		}
 
 		public RedirectToRouteResult Remove(string id)

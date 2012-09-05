@@ -8,7 +8,7 @@
 			@Html.Label("AccountId", "Account")
 		</div>
 		<div class="editor-field">
-			@Html.DropDownList("AccountId", Model.Accounts.Select(x => new SelectListItem { Text = x.Name, Value = x.Id }))
+			@Html.DropDownList("AccountId", Model.Accounts.Select(x => new SelectListItem { Text = x.Name, Value = x.Id, Selected = x.Id == Model.AccountId }))
 		</div>
 		<div>
 			<table>

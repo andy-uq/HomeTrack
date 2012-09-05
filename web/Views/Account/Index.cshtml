@@ -29,8 +29,9 @@
 			<td>@account.Type.ToCr(account.Balance).AsAmount()</td>
 			<td>@Html.ActionLink("view", "details", new { account.Id })</td>
 			<td>@Html.ActionLink("edit", "edit", new { account.Id })</td>
-			<td>@Html.ActionLink("transactions", "index", new{ controller="transaction", account.Id})</td>
-			<td>@Html.ActionLink("new", "create", new{ controller="transaction", account.Id})</td>
+			<td>@Html.ActionLink("transactions", "index", "transaction", new { account.Id }, htmlAttributes:null)</td>
+			<td>@Html.ActionLink("new", "create", "transaction", new { account.Id }, htmlAttributes: null)</td>
+			<td>@Html.ActionLink("identifier", "create", "accountidentifier", new { accountId = account.Id }, htmlAttributes:null)</td>
 		</tr>
 	}
 	</tbody>

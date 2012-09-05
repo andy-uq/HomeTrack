@@ -6,6 +6,7 @@ namespace HomeTrack.Web.ViewModels
 {
 	public class AccountIdentifierViewModel
 	{
+		public string AccountId { get; set; }
 		public IEnumerable<Account> Accounts { get; set; }
 		public IEnumerable<PatternBuilder> Patterns { get; set; }
 	}
