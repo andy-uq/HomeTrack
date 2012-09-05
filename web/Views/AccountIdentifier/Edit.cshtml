@@ -1,6 +1,6 @@
 ﻿@model AccountIdentifierViewModel
 <h2>
-	Create account identifier</h2>
+	Edit account identifier</h2>
 <form method="post" data-bind="submit: save">
 	<fieldset>
 		<legend>Account details </legend>
@@ -51,11 +51,18 @@
 		.AvailablePatterns
 		.Select(x => new 
 		{
-			 id = x.Name, 
 			 name = x.Name, 
-			 properties = x.Properties.Select(p => new { key = p.Key, value = "" }) 
+			 properties = x.Properties.Select(p => new { key = p.Key, value = p.Value }) 
 		}).ToJson());
-	
+
+	var initialPatterns = @Html.Raw(Model
+		.Patterns
+		.Select(x => new 
+		{
+			 name = x.Name, 
+			 properties = x.Properties.Select(p => new { key = p.Key, value = p.Value }) 
+		}).ToJson());
+
 	// Class to represent a row in the patterns
 	function Pattern(p) {
 		var self = this;
@@ -67,10 +74,12 @@
 		var self = this;
 
 		// Non-editable account data - from the server
-		self.availableBuilders = builders;
+		self.availableBuilders = initialPatterns;
 
 		// Editable data
-		self.patterns = ko.observableArray([]);
+		self.patterns = ko.observableArray(_(initialPatterns).map(function (i) {
+			return new Pattern(i);
+		}));
 
 		// Operations
 		self.addPattern = function() {

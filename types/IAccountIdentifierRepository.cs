@@ -4,8 +4,9 @@ namespace HomeTrack
 {
 	public interface IAccountIdentifierRepository
 	{
-		void Add(AccountIdentifier identifier);
+		void AddOrUpdate(AccountIdentifier identifier);
 		IEnumerable<AccountIdentifier> GetAll();
-		void Remove(string id);
+		void Remove(int id);
+		AccountIdentifier GetById(int id);
 	}
 }

@@ -44,11 +44,57 @@ namespace HomeTrack.Web.Tests
 		[Test]
 		public void Remove()
 		{
-			_repository.Setup(x => x.Remove(It.IsAny<string>()));
+			_repository.Setup(x => x.Remove(It.IsAny<int>()));
 
-			var result = _controller.Remove("id");
+			var result = _controller.Remove(1);
 			Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
 			Assert.That(result.RouteValues["action"], Is.EqualTo("index"));
+		}
+
+		[Test]
+		public void Edit()
+		{
+			const int id = 1;
+			var account = AccountFactory.Expense("groceries");
+			IPattern p1 = new AmountPattern {Amount = 10M};
+			IPattern p2 = new DayOfMonthPattern(1,15);
+			_repository.Setup(x => x.GetById(It.IsAny<int>())).Returns(new AccountIdentifier() { Id = 1, Account = account, Pattern = new CompositePattern(new[] { p1, p2 })});
+
+			var result = _controller.Edit(id);
+			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
+
+			var model = (AccountIdentifierViewModel)result.Model;
+			Assert.That(model.Accounts, Is.Not.Empty);
+			Assert.That(model.AvailablePatterns, Is.Not.Empty);
+			Assert.That(model.AccountId, Is.EqualTo(account.Id));
+			Assert.That(model.Patterns, Is.Not.Empty);
+		}
+
+		[Test]
+		public void EditPost()
+		{
+			const int id = 1;
+
+			var args = new AccountIdentifierArgs
+			{
+				AccountId = "groceries",
+				Patterns = new[]
+				{
+					new PatternArgs {Name = "Amount", Properties = {{"Amount", "10"}}}
+				}
+			};
+
+			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
+				.Callback<AccountIdentifier>(a =>
+				{
+					Assert.That(a.Id, Is.EqualTo(id));
+					Assert.That(a.Account.Id, Is.EqualTo("groceries"));
+					Assert.That(a.Pattern, Is.InstanceOf<AmountPattern>());
+				})
+				;
+
+			var result = _controller.Edit(id, args);
+			Assert.That(result.Data, Has.Property("redirectUrl"));
 		}
 
 		[Test]
@@ -59,7 +105,7 @@ namespace HomeTrack.Web.Tests
 
 			var model = (AccountIdentifierViewModel)result.Model;
 			Assert.That(model.Accounts, Is.Not.Empty);			
-			Assert.That(model.Patterns, Is.Not.Empty);			
+			Assert.That(model.AvailablePatterns, Is.Not.Empty);			
 		}
 
 		[Test]
@@ -71,7 +117,7 @@ namespace HomeTrack.Web.Tests
 			var model = (AccountIdentifierViewModel)result.Model;
 			Assert.That(model.AccountId, Is.EqualTo("bank"));			
 			Assert.That(model.Accounts, Is.Not.Empty);			
-			Assert.That(model.Patterns, Is.Not.Empty);			
+			Assert.That(model.AvailablePatterns, Is.Not.Empty);			
 		}
 
 		[Test]
@@ -98,7 +144,7 @@ namespace HomeTrack.Web.Tests
 				}
 			};
 
-			_repository.Setup(x => x.Add(It.IsAny<AccountIdentifier>()))
+			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a => {
 					Assert.That(a.Account.Id, Is.EqualTo("groceries"));
 					Assert.That(a.Pattern, Is.InstanceOf<AmountPattern>());

@@ -162,6 +162,7 @@
     <Content Include="Views\Import\Preview.cshtml" />
     <Content Include="Views\AccountIdentifier\Index.cshtml" />
     <Content Include="Views\AccountIdentifier\Create.cshtml" />
+    <Content Include="Views\AccountIdentifier\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.csproj">

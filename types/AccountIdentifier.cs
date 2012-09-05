@@ -2,7 +2,7 @@
 {
 	public class AccountIdentifier
 	{
-		public string Id { get; set; }
+		public int Id { get; set; }
 		public IPattern Pattern { get; set; }
 		public Account Account { get; set; }
 

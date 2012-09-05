@@ -19,7 +19,7 @@ namespace HomeTrack.RavenStore
 
 		#region IAccountIdentifierRepository Members
 
-		public void Add(AccountIdentifier identifier)
+		public void AddOrUpdate(AccountIdentifier identifier)
 		{
 			var document = _mappingEngine.Map<Documents.AccountIdentifier>(identifier);
 			using ( var unitOfWork = _repository.DocumentStore.OpenSession() )
@@ -37,9 +37,9 @@ namespace HomeTrack.RavenStore
 			return documents.Hydrate<AccountIdentifier>(_mappingEngine);
 		}
 
-		public void Remove(string id)
+		public void Remove(int id)
 		{
-			if ( string.IsNullOrEmpty(id) )
+			if ( id == 0 )
 				throw new ArgumentNullException("id");
 
 			using ( var unitOfWork = _repository.DocumentStore.OpenSession() )
@@ -53,6 +53,11 @@ namespace HomeTrack.RavenStore
 				unitOfWork.Delete(e);
 				unitOfWork.SaveChanges();
 			}
+		}
+
+		public AccountIdentifier GetById(int id)
+		{
+			return _repository.UseOnceTo(x => x.Load<Documents.AccountIdentifier>(id).Hydrate<AccountIdentifier>(_mappingEngine));
 		}
 
 		#endregion
