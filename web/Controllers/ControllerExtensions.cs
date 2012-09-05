@@ -15,7 +15,7 @@ namespace HomeTrack.Web.Controllers
 
 		public static JsonResult ToJson(this RedirectToRouteResult state, ControllerContext context)
 		{
-			var redirectUrl = _routes == null
+			var redirectUrl = (_routes == null || context == null)
 			                  	? null
 			                  	: UrlHelper.GenerateUrl(state.RouteName, actionName: null, controllerName: null,
 			                  	                        routeValues: state.RouteValues, routeCollection: _routes,
