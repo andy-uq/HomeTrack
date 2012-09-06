@@ -122,6 +122,11 @@ namespace HomeTrack.Core
 			string value;
 			if ( p.TryGetValue(name, out value) )
 			{
+				if (typeof(T).IsEnum)
+				{
+					return (T)Enum.Parse(typeof (T), value);
+				}
+
 				return (T)Convert.ChangeType(value, typeof (T));
 			}
 

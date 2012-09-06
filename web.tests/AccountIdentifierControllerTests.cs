@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Tests;
@@ -140,14 +141,19 @@ namespace HomeTrack.Web.Tests
 				AccountId = "groceries",
 				Patterns = new[]
 				{
-					new PatternArgs {Name = "Amount", Properties = {{"Amount", "10"}}}
+					new PatternArgs {Name = "Amount", Properties = {{"Amount", "10"},{"Direction","Credit"}}},
+					new PatternArgs {Name = "Amount Range", Properties = {{"Min", "10"},{"Max", "100"},}},
 				}
 			};
 
 			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a => {
 					Assert.That(a.Account.Id, Is.EqualTo("groceries"));
-					Assert.That(a.Pattern, Is.InstanceOf<AmountPattern>());
+					Assert.That(a.Pattern, Is.InstanceOf<CompositePattern>());
+
+					var p = (CompositePattern) a.Pattern;
+					Assert.That(p.ElementAt(0), Is.InstanceOf<AmountPattern>());
+					Assert.That(p.ElementAt(1), Is.InstanceOf<AmountRangePattern>());
 				})
 				;
 

@@ -12,7 +12,7 @@ namespace HomeTrack.Tests
 		public void BuildAmountPattern()
 		{
 			var builder = PatternBuilder.GetPatterns().Single(x => x.Name == "Amount");
-			var pattern = builder.Build(Dictionary(new[] {"Amount", "10"}));
+			var pattern = builder.Build(Dictionary(new[] {"Amount", "10"}, new[] { "Direction", "Credit" }));
 			Assert.That(pattern, Is.InstanceOf<AmountPattern>());
 
 			var amount = (AmountPattern) pattern;

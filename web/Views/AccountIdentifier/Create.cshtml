@@ -19,8 +19,7 @@
 				<tbody data-bind="foreach: patterns">
 					<tr>
 						<td>
-							<select data-bind="options: $root.availableBuilders, value: pattern, optionsText: 'name', optionsCaption: 'Please select...'">
-							 </select>
+							<select data-bind="options: availableBuilders, value: pattern, optionsText: 'name', optionsCaption: 'Please select...'"></select>
 						</td>
 						<td>
 							<table>
@@ -59,22 +58,29 @@
 	// Class to represent a row in the patterns
 	function Pattern(p) {
 		var self = this;
-		self.pattern = ko.observable(p);
+
+		self.availableBuilders = builders.map(function(b) {
+			var clone = _.clone(b);
+			clone.properties = _(b.properties).map(function(p) {
+				return _.clone(p);
+			});
+			return clone;
+		});
+
+		self.pattern = ko.observable(self.availableBuilders[0]);		
 	}
 
 	// Overall viewmodel for this screen, along with initial state
 	function AccountIdentifierViewModel() {
 		var self = this;
 
-		// Non-editable account data - from the server
-		self.availableBuilders = builders;
-
 		// Editable data
 		self.patterns = ko.observableArray([]);
 
 		// Operations
 		self.addPattern = function() {
-			self.patterns.push(new Pattern(self.availableBuilders[0]));
+			var p = new Pattern();
+			self.patterns.push(p);
 		};
 		self.removePattern = function(p) {
 			self.patterns.remove(p);
