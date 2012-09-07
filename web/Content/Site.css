@@ -330,3 +330,7 @@ div#title {
 .has-account {
 	color: green;
 }
+
+.has-account.expense {
+	color: red;
+}

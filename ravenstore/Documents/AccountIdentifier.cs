@@ -5,8 +5,11 @@ namespace HomeTrack.RavenStore.Documents
 	public class AccountIdentifier
 	{
 		public int Id { get; set; }
+
 		public string AccountId { get; set; } 
 		public string AccountName { get; set; }
+		public AccountType AccountType { get; set; }
+	
 		public Pattern Pattern { get; set; }
 	}
 

@@ -2,6 +2,12 @@
 @model ImportPreview
 <h2>@Model.Import.ImportType</h2>
 
+@{
+	var importRows = Model.Import.GetData().ToArray();
+	int count = importRows.Count();
+	int matched = 0;
+}
+
 @if ( !Model.AccountIdentifiers.Any() )
 {
 	<p class="is-error">
@@ -29,11 +35,16 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach ( var row in Model.Import.GetData() )
+		@foreach ( var row in importRows )
 		{
 			var props = row.Properties.ToDictionary(p => p.Key, p => p.Value);
 			var account = row.IdentifyAccount(Model.AccountIdentifiers);
-			<tr @(account == null ? "" : "class='has-account'") >
+			if (account != null)
+			{
+				matched++;
+			}
+	  
+			<tr @Html.Raw(account == null ? "" : string.Format("class='has-account {0}'", account.Type.ToString().ToLower())) >
 				<td>
 					@row.Date.ToString("yyyy-M-d")
 				</td>
@@ -54,4 +65,7 @@
 			</tr>
 		}
 	</tbody>
+	<tfoot>
+		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())">Matched @matched of @count (@(((double )matched / count * 100.0).ToString("n2"))%)</td>
+	</tfoot>
 </table>
