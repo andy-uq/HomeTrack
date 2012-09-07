@@ -66,9 +66,9 @@
 	function Pattern(initialValue) {
 		var self = this;
 		var selected = 0, index = 0;
-		self.availableBuilders = _.union(builders.map(function(b) {
+		self.availableBuilders = builders.map(function(b) {
 
-			if (initialValue.name == b.name) {
+			if (initialValue && initialValue.name == b.name) {
 				selected = index;
 				return initialValue;
 			}
@@ -80,7 +80,7 @@
 
 			index++;
 			return clone;
-		}));
+		});
 		
 		self.pattern = ko.observable(self.availableBuilders[selected]);
 	}
@@ -99,7 +99,8 @@
 
 		// Operations
 		self.addPattern = function() {
-			self.patterns.push(new Pattern());
+			var p = new Pattern();
+			self.patterns.push(p);
 		};
 		self.removePattern = function(p) {
 			self.patterns.remove(p);
