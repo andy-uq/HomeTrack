@@ -34,7 +34,8 @@ namespace HomeTrack.RavenStore
 			return new Account
 			{
 				Id = x.AccountId.Substring(x.AccountId.LastIndexOf('/') + 1),
-				Name = x.AccountName
+				Name = x.AccountName,
+				Type = x.AccountType,
 			};
 		}
 
