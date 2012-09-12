@@ -113,7 +113,7 @@
     <Compile Include="AccountRepositoryTests.cs" />
     <Compile Include="AmountTests.cs" />
     <Compile Include="AutomaticPaymentTests.cs" />
-    <Compile Include="BudgetAccountGroup.cs" />
+    <Compile Include="BudgetAccountGroupTests.cs" />
     <Compile Include="CsvImportTests.cs" />
     <Compile Include="DateTimeServerTests.cs" />
     <Compile Include="DirectoryExplorerTests.cs" />

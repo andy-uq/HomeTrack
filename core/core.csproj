@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accumulator.cs" />
+    <Compile Include="BudgetAllocator.cs" />
     <Compile Include="CompositePattern.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="Import.cs" />

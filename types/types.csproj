@@ -60,6 +60,7 @@
     <Compile Include="AccountType.cs" />
     <Compile Include="Amount.cs" />
     <Compile Include="AutomaticPayment.cs" />
+    <Compile Include="BudgetAccountGroup.cs" />
     <Compile Include="DateTimeServer.cs" />
     <Compile Include="DirectoryExplorer.cs" />
     <Compile Include="EntryType.cs" />
