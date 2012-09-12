@@ -51,6 +51,11 @@ namespace HomeTrack.RavenStore
 			return _mappingEngine.Map<HomeTrack.Account>(account);
 		}
 
+		public IEnumerable<Account> GetBudgetAccounts(string accountId)
+		{
+			throw new NotImplementedException();
+		}
+
 		private static string QualifiedId(string @namespace, string id)
 		{
 			return string.Concat(@namespace + "/", id);
@@ -63,13 +68,19 @@ namespace HomeTrack.RavenStore
 
 		public string Add(HomeTrack.Account account)
 		{
-			var ravenEntity = _mappingEngine.Map<Documents.Account>(account);
-			_repository.UseOnceTo(x => x.Store(ravenEntity), saveChanges: true);
+			var document = _mappingEngine.Map<Documents.Account>(account);
+			_repository.UseOnceTo(x => x.Store(document), saveChanges: true);
 
-			return FromQualifiedId(ravenEntity.Id);
+			return FromQualifiedId(document.Id);
 		}
 
-		public bool Post(HomeTrack.Transaction transaction)
+		public void AddBudget(Budget budget)
+		{
+			var document = _mappingEngine.Map<Documents.Budget>(budget);
+			_repository.UseOnceTo(x => x.Store(document), saveChanges: true);
+		}
+
+		public bool Post(Transaction transaction)
 		{
 			if (transaction.Credit.Concat(transaction.Debit).Any(x => x.Account == null || x.Account.Id == null))
 				throw new InvalidOperationException("Cannot add a transaction where one or more accounts have a null Id");
@@ -88,13 +99,15 @@ namespace HomeTrack.RavenStore
 					
 					for (var i = 0; i < accountIds.Length; i++)
 					{
-						if ( accounts[i] == null )
+						if (accounts[i] != null)
 						{
-							var allAccounts = session.Query<Documents.Account>().Select(x => x.Id);
-							throw new InvalidOperationException(string.Format("Cannot find account {0} from ({1})",
-							                                                  accountIds[i],
-							                                                  string.Join(", ", allAccounts)));
+							continue;
 						}
+						
+						var allAccounts = session.Query<Documents.Account>().Select(x => x.Id);
+						throw new InvalidOperationException(string.Format("Cannot find account {0} from ({1})",
+						                                                  accountIds[i],
+						                                                  string.Join(", ", allAccounts)));
 					}
 
 					var accountLookup = accounts.ToDictionary(x => FromQualifiedId(x.Id));

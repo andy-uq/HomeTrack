@@ -2,11 +2,11 @@
 
 namespace HomeTrack
 {
-	public class BudgetAccountGroup
+	public class Budget
 	{
 		public Account BudgetAccount { get; set; }
 		public Account RealAccount { get; set; }
 
-		public decimal BudgetAmount { get; set; }
+		public decimal Amount { get; set; }
 	}
 }

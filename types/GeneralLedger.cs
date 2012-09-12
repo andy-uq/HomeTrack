@@ -74,5 +74,20 @@ namespace HomeTrack
 		{
 			_repository.Dispose();
 		}
+
+		public void AddBudget(Budget budget)
+		{
+			if (_repository.GetAccount(budget.BudgetAccount.Id) == null)
+			{
+				Add(budget.BudgetAccount);
+			}
+
+			_repository.AddBudget(budget);
+		}
+
+		public IEnumerable<Account> GetBudgetAccount(string accountId)
+		{
+			return _repository.GetBudgetAccounts(accountId);
+		}
 	}
 }

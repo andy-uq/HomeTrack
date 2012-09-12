@@ -8,7 +8,7 @@ namespace HomeTrack.Tests
 	[TestFixture]
 	public class BudgetAccountGroupTests
 	{
-		private BudgetAccountGroup _b;
+		private Budget _b;
 		private Account _expenseBudgetAccount;
 		private Account _expenseAccount;
 		private GeneralLedger _general;
@@ -20,12 +20,26 @@ namespace HomeTrack.Tests
 			_expenseAccount = AccountFactory.Expense("Groceries");
 			_general = new GeneralLedger(new InMemoryGeneralLedger()) { _expenseBudgetAccount, _expenseAccount };
 
-			_b = new BudgetAccountGroup
+			_b = new Budget
 			{
 				BudgetAccount = _expenseBudgetAccount, 
 				RealAccount = _expenseAccount,
-				BudgetAmount = 100M
+				Amount = 100M
 			};
+		}
+
+		[Test]
+		public void CreateBudget()
+		{
+			_general.AddBudget(_b);
+		}
+
+		[Test]
+		public void GetLinkedAccount()
+		{
+			_general.AddBudget(_b);
+			var account = _general.GetBudgetAccount(_b.RealAccount.Id);
+			Assert.That(account, Is.EquivalentTo(new[] { _b.BudgetAccount }));
 		}
 
 		[Test]
