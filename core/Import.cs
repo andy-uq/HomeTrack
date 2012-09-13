@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace HomeTrack.Core
 {
-	public class Import
+	public class Import : IImport
 	{
 		private readonly ImportDetector _importDetector;
 		private string _filename;
@@ -34,5 +34,10 @@ namespace HomeTrack.Core
 		{
 			return _import.Import(_stream);
 		}
+	}
+
+	public interface IImport
+	{
+		IEnumerable<IImportRow> GetData();
 	}
 }

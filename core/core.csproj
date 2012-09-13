@@ -57,6 +57,8 @@
     <Compile Include="ImportRowExtensions.cs" />
     <Compile Include="PatternBuilder.cs" />
     <Compile Include="Patterns.cs" />
+    <Compile Include="TransactionImport.cs" />
+    <Compile Include="TransactionImportContext.cs" />
     <Compile Include="VisaCsvImportDetector.cs" />
     <Compile Include="WestpacCsvImportDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

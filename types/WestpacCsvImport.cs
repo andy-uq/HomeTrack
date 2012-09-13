@@ -7,6 +7,7 @@ namespace HomeTrack
 	{
 		DateTime Date { get; }
 		decimal Amount { get; }
+		string Description { get; }
 
 		IEnumerable<KeyValuePair<string, string>> Properties { get; }
 	}
@@ -40,6 +41,11 @@ namespace HomeTrack
 		public DateTime Date { get { return ProcessDate; } }
 		public decimal Amount { get; set; }
 
+		public string Description
+		{
+			get { return OtherParty; }
+		}
+
 		public IEnumerable<KeyValuePair<string, string>> Properties
 		{
 			get
@@ -66,6 +72,11 @@ namespace HomeTrack
 	{
 		public DateTime Date { get; set; }
 		public decimal Amount { get; set; }
+
+		public string Description
+		{
+			get { return Payee; }
+		}
 
 		public IEnumerable<KeyValuePair<string, string>> Properties
 		{

@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using AutoMapper;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
@@ -38,6 +36,8 @@ namespace HomeTrack.Web.Tests
 
 			_repository.Setup(x => x.GetAccount("income"))
 				.Returns(_income);
+
+			_repository.Setup(x => x.GetBudgetsForAccount(It.IsAny<string>())).Returns(Enumerable.Empty<Budget>);
 
 			_generalLedger = new GeneralLedger(_repository.Object);
 			_controller = new TransactionController(_generalLedger, _mappingEngine);

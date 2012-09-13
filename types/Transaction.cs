@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
@@ -49,9 +48,28 @@ namespace HomeTrack
 			return Amount == Math.Abs(credit) && Amount == Math.Abs(debit);
 		}
 
+		public IEnumerable<Account> RelatedAccounts()
+		{
+			foreach (var amount in Debit)
+				yield return amount.Account;
+
+			foreach (var amount in Credit)
+				yield return amount.Account;
+		}
+
 		public bool Is(Account account)
 		{
 			return Debit.Concat(Credit).Any(x => x.Account == account);
+		}
+
+		public bool IsDebitAccount(Account account)
+		{
+			return Debit.Any(x => x.Account == account);
+		}
+
+		public bool IsCreditAccount(Account account)
+		{
+			return Credit.Any(x => x.Account == account);
 		}
 	}
 }
