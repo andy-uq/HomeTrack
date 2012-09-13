@@ -41,11 +41,16 @@ namespace HomeTrack.Tests
 
 		public IEnumerable<Account> GetBudgetAccounts(string accountId)
 		{
+			return GetBudgetsForAccount(accountId).Select(budget => budget.BudgetAccount);
+		}
+
+		public IEnumerable<Budget> GetBudgetsForAccount(string accountId)
+		{
 			return
 				(
 					from budget in _budgets
 					where budget.RealAccount.Id == accountId
-					select budget.BudgetAccount
+					select budget
 				);
 		}
 

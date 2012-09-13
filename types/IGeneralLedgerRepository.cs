@@ -9,7 +9,7 @@ namespace HomeTrack
 		IEnumerable<Account> DebitAccounts { get; }
 		IEnumerable<Account> CreditAccounts { get; }
 		Account GetAccount(string accountId);
-		IEnumerable<Account> GetBudgetAccounts(string accountId);
+		IEnumerable<Budget> GetBudgetsForAccount(string accountId);
 
 		string Add(Account account);
 		void AddBudget(Budget budget);

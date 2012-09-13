@@ -51,9 +51,19 @@ namespace HomeTrack.RavenStore
 			return _mappingEngine.Map<HomeTrack.Account>(account);
 		}
 
-		public IEnumerable<Account> GetBudgetAccounts(string accountId)
+		public IEnumerable<Budget> GetBudgetsForAccount(string accountId)
 		{
-			throw new NotImplementedException();
+			using ( var session = _repository.DocumentStore.OpenSession() )
+			{
+				var budgets =
+					(
+						from budget in session.Query<Documents.Budget>()
+						where budget.AccountId == accountId
+						select budget
+					).ToArray();
+
+				return budgets.Hydrate<HomeTrack.Budget>(_mappingEngine);
+			}
 		}
 
 		private static string QualifiedId(string @namespace, string id)

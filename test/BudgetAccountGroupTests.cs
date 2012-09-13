@@ -41,6 +41,24 @@ namespace HomeTrack.Tests
 			var account = _general.GetBudgetAccount(_b.RealAccount.Id);
 			Assert.That(account, Is.EquivalentTo(new[] { _b.BudgetAccount }));
 		}
+		
+		[Test]
+		public void PostTransactionToAccountWithBudget()
+		{
+			var budgetAccount = AccountFactory.Expense("Budget");
+			var bank = AccountFactory.Asset("Bank", 1000M);
+			_general.Add(budgetAccount);
+			_general.Add(bank);
+
+			_general.AddBudget(_b);
+			_general.Post(_b.Allocate(budgetAccount));
+			Assert.That(_b.BudgetAccount.Balance, Is.EqualTo(100M));
+
+			var transaction = new Transaction(_expenseAccount, bank, 25M);
+			_general.Post(transaction);
+
+			Assert.That(_b.BudgetAccount.Balance, Is.EqualTo(75M));
+		}
 
 		[Test]
 		public void AllocateBudget()

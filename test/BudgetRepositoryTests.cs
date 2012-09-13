@@ -24,5 +24,19 @@ namespace HomeTrack.Tests
 		{
 			GeneralLedger.AddBudget(new Budget { BudgetAccount = _groceryBudget, RealAccount = _groceries, Amount = 100M });
 		}
+
+		[Test]
+		public void GetBudgetAccount()
+		{
+			GeneralLedger.AddBudget(new Budget { BudgetAccount = _groceryBudget, RealAccount = _groceries, Amount = 100M });
+			Assert.That(GeneralLedger.GetBudgetAccount(_groceries.Id), Is.EquivalentTo(new[] { _groceryBudget }).Using(new AccountComparer()));
+		}
+
+		[Test]
+		public void PostTransactionToAccountWithBudget()
+		{
+			GeneralLedger.AddBudget(new Budget { BudgetAccount = _groceryBudget, RealAccount = _groceries, Amount = 100M });
+			Assert.That(GeneralLedger.GetBudgetAccount(_groceries.Id), Is.EquivalentTo(new[] { _groceryBudget }).Using(new AccountComparer()));
+		}
 	}
 }

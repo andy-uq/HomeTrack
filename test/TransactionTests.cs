@@ -49,12 +49,33 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void RelatedAccounts()
+		{
+			var t = new Transaction(_cashOnHand, _bank, 10M);
+			Assert.That(t.RelatedAccounts(), Is.EqualTo(new[] {_bank, _cashOnHand}).Using(new AccountComparer()));
+		}
+
+		[Test]
 		public void TransactionIs()
 		{
 			var t = new Transaction(_cashOnHand, _bank, 10M);
 			Assert.That(t.Is(_bank));
 			Assert.That(t.Is(_cashOnHand));
 			Assert.That(t.Is(_mortgage), Is.False);
+		}
+
+		[Test]
+		public void IsDebitOrIsCredit()
+		{
+			var t = new Transaction(_cashOnHand, _bank, 10M);
+
+			Assert.That(t.IsDebitAccount(_cashOnHand), Is.True);
+			Assert.That(t.IsDebitAccount(_bank), Is.False);
+			Assert.That(t.IsDebitAccount(_mortgage), Is.False);
+
+			Assert.That(t.IsCreditAccount(_cashOnHand), Is.False);
+			Assert.That(t.IsCreditAccount(_bank), Is.True);
+			Assert.That(t.IsCreditAccount(_mortgage), Is.False);
 		}
 
 		[Test]
