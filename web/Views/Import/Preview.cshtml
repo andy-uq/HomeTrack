@@ -6,6 +6,8 @@
 	var importRows = Model.Import.GetData().ToArray();
 	int count = importRows.Count();
 	int matched = 0;
+
+	var accountSelectList = Model.Accounts.AsSelectList(v => v.Id);
 }
 
 @if ( !Model.AccountIdentifiers.Any() )
@@ -22,9 +24,9 @@
 				Date
 			</td>
 			@foreach ( var p in @Model.Import.GetPropertyNames() )
-			{
+   {
 				<td>@p</td>
-			}
+   }
 			<td>
 				Cr
 			</td>
@@ -36,23 +38,23 @@
 	</thead>
 	<tbody>
 		@foreach ( var row in importRows )
-		{
-			var props = row.Properties.ToDictionary(p => p.Key, p => p.Value);
-			var account = row.IdentifyAccount(Model.AccountIdentifiers);
-			if (account != null)
-			{
-				matched++;
-			}
+  {
+	  var props = row.Properties.ToDictionary(p => p.Key, p => p.Value);
+	  var account = row.IdentifyAccount(Model.AccountIdentifiers);
+	  if ( account != null )
+	  {
+		  matched++;
+	  }
 	  
 			<tr @Html.Raw(account == null ? "" : string.Format("class='has-account {0}'", account.Type.ToString().ToLower())) >
 				<td>
 					@row.Date.ToString("yyyy-M-d")
 				</td>
-				@foreach (var p in @Model.Import.GetPropertyNames())
-				{
+				@foreach ( var p in @Model.Import.GetPropertyNames() )
+	{
 					<td>@props[p]
 					</td>
-				}
+	}
 				<td>
 					@AccountType.Asset.ToCr(row.Amount).AsAmount()
 				</td>
@@ -63,9 +65,30 @@
 					@(account == null ? "" : account.Name)
 				</td>
 			</tr>
-		}
+  }
 	</tbody>
 	<tfoot>
-		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())">Matched @matched of @count (@(((double )matched / count * 100.0).ToString("n2"))%)</td>
+		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())">Matched @matched of @count (@(((double)matched / count * 100.0).ToString("n2"))%)</td>
 	</tfoot>
 </table>
+
+@using ( Html.BeginForm("Import", controllerName:null, routeValues:new{ filename = Model.FileName }) )
+{
+	@Html.ValidationSummary(true)
+
+	<fieldset>
+		<legend>
+			Account details
+		</legend>
+		<div class="editor-label"> 
+			@Html.Label("destinationAccountId", "Destination") 
+		</div> 
+		<div class="editor-field"> 
+			@Html.DropDownList("destinationAccountId", accountSelectList, "Select an account to import into")
+			@Html.ValidationMessage("destinationAccountId") 
+		</div>        
+		<p> 
+			<input type="submit" value="Import" /> 
+		</p> 
+	</fieldset>
+}

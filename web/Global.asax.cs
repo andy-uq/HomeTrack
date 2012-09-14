@@ -81,6 +81,7 @@ namespace HomeTrack.Web
 			builder.RegisterInstance(new AsbCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterInstance(new VisaCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterType<ImportDetector>();
+			builder.RegisterType<TransactionImportContext>();
 
 			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
@@ -100,7 +101,7 @@ namespace HomeTrack.Web
 				       	_ravenDb = new ConfigureEmbeddedDocumentStore
 				       	{
 				       		DataDirectory = MapPath("~/App_Data/RavenDb"),
-				       		UseEmbeddedHttpServer = false
+				       		UseEmbeddedHttpServer = true
 				       	}
 				       );
 			}

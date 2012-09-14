@@ -27,11 +27,18 @@ namespace HomeTrack.Core
 				where row.Amount != 0M
 				let account = row.IdentifyAccount(_context.Patterns)
 				where account != null
-				select new Transaction(account, Credit, row.Amount)
-				{
-					Date = row.Date,
-					Description = row.Description
-				};
+				select AsTransaction(row, account);
+		}
+
+		private Transaction AsTransaction(IImportRow row, Account account)
+		{
+			var transaction = row.Amount > 0 
+				? new Transaction(Credit, account, row.Amount) 
+				: new Transaction(account, Credit, -row.Amount);
+
+			transaction.Date = row.Date;
+			transaction.Description = row.Description;
+			return transaction;
 		}
 	}
 }

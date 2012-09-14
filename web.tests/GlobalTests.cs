@@ -32,6 +32,7 @@ namespace web.tests
 			global.Container.Resolve<GeneralLedger>();
 			global.Container.Resolve<DirectoryExplorer>();
 			global.Container.Resolve<ImportDetector>();
+			global.Container.Resolve<TransactionImportContext>();
 		}
 
 		[TestCase("~/", "Home", "Index", null)]

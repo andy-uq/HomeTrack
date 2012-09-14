@@ -9,17 +9,15 @@ namespace HomeTrack.Web.Controllers
 {
 	public class ImportController : Controller
 	{
-		private readonly GeneralLedger _generalLedger;
+		private readonly TransactionImportContext _transactionImportContext;
 		private readonly DirectoryExplorer _directoryExplorer;
 		private readonly ImportDetector _importDetector;
-		private readonly IEnumerable<AccountIdentifier> _accountIdentifiers;
 
-		public ImportController(GeneralLedger generalLedger, DirectoryExplorer directoryExplorer, ImportDetector importDetector, IEnumerable<AccountIdentifier> accountIdentifiers)
+		public ImportController(TransactionImportContext transactionImportContext, DirectoryExplorer directoryExplorer, ImportDetector importDetector)
 		{
-			_generalLedger = generalLedger;
+			_transactionImportContext = transactionImportContext;
 			_directoryExplorer = directoryExplorer;
 			_importDetector = importDetector;
-			_accountIdentifiers = accountIdentifiers;
 		}
 
 		public ActionResult Directory(string path)
@@ -37,11 +35,11 @@ namespace HomeTrack.Web.Controllers
 
 		public ActionResult Preview(string filename)
 		{
-			filename = filename.Replace("@", "/");
+			var actualFilename = filename.Replace("@", "/");
 
-			string name = Path.GetFileName(filename);
+			string name = Path.GetFileName(actualFilename);
 
-			var directoryName = Path.GetDirectoryName(filename);
+			var directoryName = Path.GetDirectoryName(actualFilename);
 			if (directoryName != null)
 			{
 				string directory = directoryName.Replace('\\', '/');
@@ -53,9 +51,46 @@ namespace HomeTrack.Web.Controllers
 			var import = new Import(_importDetector);
 			import.Open(_directoryExplorer.GetFilename(name));
 
-			var model = new ImportPreview {Import = import, AccountIdentifiers = _accountIdentifiers };
+			var model = new ImportPreview
+			{
+				FileName = filename,
+				Accounts = _transactionImportContext.General,
+				Import = import, 
+				AccountIdentifiers = _transactionImportContext.Patterns
+			};
 
 			return View(model);
+		}
+
+		public ActionResult Import(string destinationAccountId, string filename)
+		{
+			filename = filename.Replace("@", "/");
+
+			string name = Path.GetFileName(filename);
+
+			var directoryName = Path.GetDirectoryName(filename);
+			if ( directoryName != null )
+			{
+				string directory = directoryName.Replace('\\', '/');
+
+				if ( !_directoryExplorer.NavigateTo(directory) )
+					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
+			}
+
+			var transactions = new List<Transaction>();
+
+			var import = new Import(_importDetector);
+			import.Open(_directoryExplorer.GetFilename(name));
+
+			var source = _transactionImportContext.General[destinationAccountId];
+			var transactionImport = _transactionImportContext.CreateImport(source);
+			foreach (var transaction in transactionImport.Process(import))
+			{
+				_transactionImportContext.General.Post(transaction);
+				transactions.Add(transaction);
+			}
+
+			return View(transactions);
 		}
 	}
 }

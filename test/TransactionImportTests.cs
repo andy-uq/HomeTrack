@@ -53,6 +53,10 @@ namespace HomeTrack.Tests
 			{
 				new VisaCsvImportRow
 				{
+					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+				},
+				new VisaCsvImportRow
+				{
 					Amount = 10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				}
 			};

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Core;
@@ -35,10 +37,17 @@ namespace HomeTrack.Web.Tests
 		public void ImportController()
 		{
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
+			
 			_bank = AccountFactory.Asset("bank", initialBalance: 100);
 			_groceries = AccountFactory.Asset("groceries");
 			_wow = AccountFactory.Asset("wow");
-			
+
+			_repository.Setup(x => x.GetBudgetsForAccount(It.IsAny<string>()))
+				.Returns(Enumerable.Empty<Budget>());
+
+			_repository.Setup(x => x.Post(It.IsAny<Transaction>()))
+				.Returns(true);
+
 			_repository.Setup(x => x.GetAccount("bank"))
 				.Returns(_bank);
 
@@ -47,7 +56,9 @@ namespace HomeTrack.Web.Tests
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(_repository.Object);
 
-			_controller = new ImportController(_generalLedger, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}), GetAccountIdentifers());
+			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers());
+
+			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
 		[Test]
@@ -92,8 +103,38 @@ namespace HomeTrack.Web.Tests
 
 			var model = (ImportPreview)result.Model;
 			Assert.That(model.Import, Is.Not.Null);
+			Assert.That(model.Accounts, Is.Not.Null);
 			Assert.That(model.Import.ImportType, Is.EqualTo("Mock"));
 			Assert.That(model.AccountIdentifiers, Is.Not.Empty);
+		}
+
+		[Test]
+		public void Import()
+		{
+			var filename = "imports@asb@export20120825200829.csv";
+
+			var t = filename.Replace("@", "/");
+			Assert.That(System.IO.Path.GetDirectoryName(t), Is.EqualTo("imports\\asb"));
+			Assert.That(System.IO.Path.GetFileName(t), Is.EqualTo("export20120825200829.csv"));
+
+			_importDetector.SetupGet(x => x.Name).Returns("Mock");
+			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
+				.Returns(true);
+
+			var i1 = new VisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 10M, OtherParty = "COUNTDOWN" };
+
+			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
+				.Returns<Stream>(_ => new[] { i1, });
+
+			var result = _controller.Import(_bank.Id, filename);
+			Assert.That(result, Is.InstanceOf<ViewResult>());
+
+			var model = ((ViewResult) result).Model;
+			Assert.That(model, Is.InstanceOf<IEnumerable<Transaction>>());
+
+			var transactions = (IEnumerable<Transaction>) model;
+			Assert.That(transactions.Count(), Is.EqualTo(1));
+			Assert.That(transactions.First().Amount, Is.EqualTo(10));
 		}
 	}
 }
