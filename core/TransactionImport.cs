@@ -14,6 +14,7 @@ namespace HomeTrack.Core
 		}
 
 		public Account Credit { get; private set; }
+		public Account UnclassifedDestination { get; set; }
 
 		public IEnumerable<Transaction> Process(IImport import)
 		{
@@ -25,7 +26,7 @@ namespace HomeTrack.Core
 			return
 				from row in import.GetData()
 				where row.Amount != 0M
-				let account = row.IdentifyAccount(_context.Patterns)
+				let account = row.IdentifyAccount(_context.Patterns) ?? UnclassifedDestination
 				where account != null
 				select AsTransaction(row, account);
 		}

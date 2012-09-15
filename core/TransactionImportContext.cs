@@ -24,9 +24,9 @@ namespace HomeTrack.Core
 			_patterns = patterns.ToArray();
 		}
 
-		public TransactionImport CreateImport(Account source)
+		public TransactionImport CreateImport(Account source, Account unclassifiedDestination = null)
 		{
-			return new TransactionImport(this, source);
+			return new TransactionImport(this, source) { UnclassifedDestination = unclassifiedDestination };
 		}
 	}
 }
