@@ -24,5 +24,15 @@ namespace HomeTrack.RavenStore
 		{
 			_documentStore.Dispose();
 		}
+
+		public void UseOnceTo(Action<IDocumentSession> func, bool saveChanges = false)
+		{
+			_documentStore.UseOnceTo(func, saveChanges);
+		}
+
+		public T UseOnceTo<T>(Func<IDocumentSession, T> func, bool saveChanges = false)
+		{
+			return _documentStore.UseOnceTo(func, saveChanges);
+		}
 	}
 }

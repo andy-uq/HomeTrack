@@ -46,7 +46,7 @@ namespace HomeTrack
 			var debit = Debit.Sum(x => x.DebitValue);
 			var credit = Credit.Sum(x => x.CreditValue);
 
-			return Amount == Math.Abs(credit) && Amount == Math.Abs(debit);
+			return debit > 0 && credit > 0 && debit == credit;
 		}
 
 		public IEnumerable<Account> RelatedAccounts()

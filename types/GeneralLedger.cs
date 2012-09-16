@@ -62,24 +62,24 @@ namespace HomeTrack
 
 		public bool Post(Transaction transaction)
 		{
-			if (_repository.Post(transaction))
+			var relatedAccounts = transaction
+				.RelatedAccounts()
+				.Distinct()
+				.ToArray();
+
+			foreach (var account in relatedAccounts)
 			{
-				foreach (var account in transaction.RelatedAccounts())
-				{
-					var budgets = GetBudgetsForAccount(account.Id).ToArray();
-					if (budgets.Length == 0)
-						continue;
+				var budgets = GetBudgetsForAccount(account.Id).ToArray();
+				if (budgets.Length == 0)
+					continue;
 
-					ProcessBudgetPayout(transaction, budgets, account);
-				}
-
-				return true;
+				ProcessBudgetPayout(transaction, account, budgets);
 			}
 
-			return false;
+			return _repository.Post(transaction);
 		}
 
-		private void ProcessBudgetPayout(Transaction transaction, IEnumerable<Budget> budgets, Account account)
+		private void ProcessBudgetPayout(Transaction transaction, Account account, IEnumerable<Budget> budgets)
 		{
 			Action<Account> setBudgetAccount;
 			Account debit = null, credit = null;
@@ -97,8 +97,9 @@ namespace HomeTrack
 
 			foreach (var budget in budgets)
 			{
-				setBudgetAccount(budget.BudgetAccount);
-				_repository.Post(new Transaction(debit, credit, transaction.Amount));
+				setBudgetAccount(this[budget.BudgetAccount.Id]);
+				transaction.Debit.Add(new Amount(debit, EntryType.Debit, transaction.Amount));
+				transaction.Credit.Add(new Amount(credit, EntryType.Credit, transaction.Amount));
 			}
 		}
 

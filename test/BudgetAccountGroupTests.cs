@@ -49,14 +49,19 @@ namespace HomeTrack.Tests
 			var bank = AccountFactory.Asset("Bank", 1000M);
 			_general.Add(budgetAccount);
 			_general.Add(bank);
-
 			_general.AddBudget(_b);
+			
 			_general.Post(_b.Allocate(budgetAccount));
 			Assert.That(_b.BudgetAccount.Balance, Is.EqualTo(100M));
 
 			var transaction = new Transaction(_expenseAccount, bank, 25M);
-			_general.Post(transaction);
+			Assert.That(_general.Post(transaction), Is.True);
 
+			Assert.That(transaction.Amount, Is.EqualTo(25M));
+			Assert.That(transaction.Debit.Sum(x => x.Value), Is.EqualTo(50M));
+			Assert.That(transaction.Credit.Sum(x => x.Value), Is.EqualTo(50M));
+
+			Assert.That(bank.Balance, Is.EqualTo(975M));
 			Assert.That(_b.BudgetAccount.Balance, Is.EqualTo(75M));
 		}
 
