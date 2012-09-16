@@ -53,10 +53,13 @@ namespace HomeTrack.Tests
 			var credit = AccountFactory.Liability("Mortgage");
 			credit.Id = "mortgage";
 
-			var transaction = new Transaction(debit, credit, 100M);
+			var transaction = new Transaction(debit, credit, 100M) { Description = "description", Reference = "r1" };
 			var document = _mappingEngine.Map<HomeTrack.RavenStore.Documents.Transaction>(transaction);
 
 			Assert.That(document.Amount, Is.EqualTo(100M));
+			Assert.That(document.Description, Is.EqualTo("description"));
+			Assert.That(document.Reference, Is.EqualTo("r1"));
+			
 			Assert.That(document.Credit, Is.Not.Empty);
 			Assert.That(document.Credit[0].AccountId, Is.EqualTo("accounts/mortgage"));
 			Assert.That(document.Credit[0].AccountName, Is.EqualTo("Mortgage"));
@@ -76,12 +79,14 @@ namespace HomeTrack.Tests
 			var transaction = new HomeTrack.RavenStore.Documents.Transaction
 			{
 				Amount = 100M,
+				Reference = "R1",
 				Debit = new[] {new HomeTrack.RavenStore.Documents.Amount { AccountId = "accounts/bank", Direction = EntryType.Credit, Value = 50M }, new HomeTrack.RavenStore.Documents.Amount { AccountId = "accounts/cashonhand", Direction = EntryType.Credit, Value = 50M }  },
 				Credit = new[] {new HomeTrack.RavenStore.Documents.Amount { AccountId = "accounts/mortgage",Direction = EntryType.Debit, Value = 100M } }
 			};
 
 			var entity = _mappingEngine.Map<HomeTrack.Transaction>(transaction);
-
+			Assert.That(entity.Amount, Is.EqualTo(100M));
+			Assert.That(entity.Reference, Is.EqualTo("R1"));
 		}
 		
 		[Test]

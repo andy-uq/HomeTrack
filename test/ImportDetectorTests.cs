@@ -161,19 +161,25 @@ namespace HomeTrack.Tests
 			
 			Assert.That(import.ImportType, Is.EqualTo(wp.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(wp.GetPropertyNames()));
-			import.GetData();
+			var data = import.GetData().ToArray();
+			Assert.That(data, Is.Not.Empty);
+			Assert.That(data.Last().Id, Is.EqualTo("A00_0000_0000000_000-12Aug12/18"));
 
 			import = new Import(importDetector);
 			import.Open(_asbFilename);
 			Assert.That(import.ImportType, Is.EqualTo(asb.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(asb.GetPropertyNames()));
-			import.GetData();
+			data = import.GetData().ToArray();
+			Assert.That(data, Is.Not.Empty);
+			Assert.That(data.Last().Id, Is.EqualTo("Export20120825200829/45"));
 
 			import = new Import(importDetector);
 			import.Open(_visaFilename);
 			Assert.That(import.ImportType, Is.EqualTo(visa.Name));
 			Assert.That(import.GetPropertyNames(), Is.EqualTo(visa.GetPropertyNames()));
-			import.GetData();
+			data = import.GetData().ToArray();
+			Assert.That(data, Is.Not.Empty);
+			Assert.That(data.Last().Id, Is.EqualTo("AXXXX_XXXX_XXXX_9623-01Apr12/64"));
 		}
 	}
 }

@@ -5,6 +5,8 @@ namespace HomeTrack
 {
 	public interface IImportRow
 	{
+		string Id { get; set; }
+
 		DateTime Date { get; }
 		decimal Amount { get; }
 		string Description { get; }
@@ -14,6 +16,7 @@ namespace HomeTrack
 
 	public class WestpacCsvImportRow : IImportRow
 	{
+		public string Id { get; set; }
 		public DateTime Date { get; set; }
 		public decimal Amount { get; set; }
 
@@ -38,6 +41,7 @@ namespace HomeTrack
 
 	public class VisaCsvImportRow : IImportRow
 	{
+		public string Id { get; set; }
 		public DateTime Date { get { return ProcessDate; } }
 		public decimal Amount { get; set; }
 
@@ -70,6 +74,7 @@ namespace HomeTrack
 
 	public class AsbCsvImportRow : IImportRow
 	{
+		public string Id { get; set; }
 		public DateTime Date { get; set; }
 		public decimal Amount { get; set; }
 
@@ -90,7 +95,7 @@ namespace HomeTrack
 			}
 		}
 
-		public string UniqueId { get;set; }
+		public string UniqueId { get; set; }
 		public string TranType { get; set; }
 		public string ChequeNumber { get; set; }
 		public string Payee { get; set; }

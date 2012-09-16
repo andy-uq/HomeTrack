@@ -53,11 +53,11 @@ namespace HomeTrack.Tests
 			{
 				new VisaCsvImportRow
 				{
-					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+					Id = "I/1", Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
 				},
 				new VisaCsvImportRow
 				{
-					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+					Id = "I/2", Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				}
 			};
 
@@ -73,6 +73,7 @@ namespace HomeTrack.Tests
 			Assert.That(t1.IsCreditAccount(_visa), Is.True);
 			Assert.That(t1.IsDebitAccount(_electricity), Is.True);
 			Assert.That(t1.Date, Is.EqualTo(DateTimeServer.Now));
+			Assert.That(t1.Reference, Is.EqualTo("I/2"));
 
 			Assert.That(_visa.Balance, Is.EqualTo(10M));
 			Assert.That(_electricity.Balance, Is.EqualTo(10M));

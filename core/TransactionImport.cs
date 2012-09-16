@@ -39,6 +39,8 @@ namespace HomeTrack.Core
 
 			transaction.Date = row.Date;
 			transaction.Description = row.Description;
+			transaction.Reference = row.Id;
+
 			return transaction;
 		}
 	}
