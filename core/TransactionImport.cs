@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,13 +12,19 @@ namespace HomeTrack.Core
 		{
 			_context = transactionImportContext;
 			Credit = source;
+
+			Result = new ImportResult();
 		}
 
+		public ImportResult Result { get; set; }
 		public Account Credit { get; private set; }
 		public Account UnclassifedDestination { get; set; }
 
 		public IEnumerable<Transaction> Process(IImport import)
 		{
+			Result.Date = DateTimeServer.Now;
+			Result.Name = import.Name;
+
 			return BuildTransaction(import).Where(transaction => _context.General.Post(transaction));
 		}
 
@@ -40,6 +47,12 @@ namespace HomeTrack.Core
 			transaction.Date = row.Date;
 			transaction.Description = row.Description;
 			transaction.Reference = row.Id;
+
+			Result.TransactionCount++;
+			if ( account == UnclassifedDestination )
+			{
+				Result.UnclassifiedTransactions++;
+			}
 
 			return transaction;
 		}

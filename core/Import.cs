@@ -12,7 +12,7 @@ namespace HomeTrack.Core
 		private Stream _stream;
 		private IImportDetector _import;
 
-		private string IdPrefix { get; set; }
+		public string Name { get; private set; }
 
 		public Import(ImportDetector importDetector)
 		{
@@ -25,7 +25,7 @@ namespace HomeTrack.Core
 			_import = _importDetector.GetImportDetector(_filename);
 			_stream = stream ?? File.OpenRead(filename);
 
-			IdPrefix = Path.GetFileNameWithoutExtension(filename);
+			Name = Path.GetFileNameWithoutExtension(filename);
 		}
 
 		public string ImportType { get { return _import.Name; } }
@@ -47,9 +47,9 @@ namespace HomeTrack.Core
 
 		private IImportRow BuildId(IImportRow row, int rowId)
 		{
-			row.Id = IdPrefix == null 
+			row.Id = Name == null 
 				? rowId.ToString(CultureInfo.InvariantCulture) 
-				: string.Concat(IdPrefix, '/', rowId);
+				: string.Concat(Name, '/', rowId);
 
 
 			return row;
@@ -58,6 +58,7 @@ namespace HomeTrack.Core
 
 	public interface IImport
 	{
+		string Name { get; }
 		IEnumerable<IImportRow> GetData();
 	}
 }

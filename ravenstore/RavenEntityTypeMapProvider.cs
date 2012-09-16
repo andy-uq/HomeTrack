@@ -17,6 +17,7 @@ namespace HomeTrack.RavenStore
 			MapTransaction(map);
 			MapIdentifiers(map);
 			MapBudget(map);
+			MapImport(map);
 		}
 
 		#endregion
@@ -199,6 +200,12 @@ namespace HomeTrack.RavenStore
 			map.CreateMap<Documents.Budget, Budget>()
 				.ForMember(x => x.RealAccount, m => m.ResolveUsing(x => new Account { Id = x.AccountId }))
 				.ForMember(x => x.BudgetAccount, m => m.ResolveUsing(x => new Account { Id = x.BudgetAccountId }));
+		}
+
+		private void MapImport(ConfigurationStore map)
+		{
+			map.CreateMap<ImportResult, Documents.ImportResult>();
+			map.CreateMap<Documents.ImportResult, ImportResult>();
 		}
 	}
 }

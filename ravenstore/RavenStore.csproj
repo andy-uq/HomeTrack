@@ -113,7 +113,9 @@
     <Compile Include="Documents\Account.cs" />
     <Compile Include="Documents\AccountIdentifier.cs" />
     <Compile Include="Documents\Budget.cs" />
+    <Compile Include="Documents\ImportResult.cs" />
     <Compile Include="GeneralLedgerRepository.cs" />
+    <Compile Include="ImportRepository.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenExtensions.cs" />

@@ -123,7 +123,9 @@
     <Compile Include="GeneralLedgerTests.cs" />
     <Compile Include="IdentifierMappings.cs" />
     <Compile Include="ImportDetectorTests.cs" />
-    <Compile Include="InMemoryGeneralLedger.cs" />
+    <Compile Include="ImportMappingTests.cs" />
+    <Compile Include="ImportRepositoryTests.cs" />
+    <Compile Include="InMemoryRepository.cs" />
     <Compile Include="PatternBuilderTests.cs" />
     <Compile Include="TransactionImportTests.cs" />
     <Compile Include="TransactionMappings.cs" />

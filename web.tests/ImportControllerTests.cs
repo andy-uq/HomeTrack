@@ -45,7 +45,7 @@ namespace HomeTrack.Web.Tests
 			_directoryExplorer = new DirectoryExplorer(_directory);
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
-			_generalLedger = new GeneralLedger(new InMemoryGeneralLedger())
+			_generalLedger = new GeneralLedger(new InMemoryRepository())
 			{
 				_bank,
 				_groceries,
@@ -53,7 +53,7 @@ namespace HomeTrack.Web.Tests
 				_unclassifiedExpense
 			};
 
-			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers());
+			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), new InMemoryRepository());
 			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 

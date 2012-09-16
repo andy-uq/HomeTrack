@@ -157,7 +157,7 @@ namespace HomeTrack.Tests
 	{
 		protected override IGeneralLedgerRepository LedgerRepository
 		{
-			get { return new InMemoryGeneralLedger(); }
+			get { return new InMemoryRepository(); }
 		}
 	}
 

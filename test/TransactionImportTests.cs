@@ -17,21 +17,24 @@ namespace HomeTrack.Tests
 
 		private Mock<IImport> _import;
 		private Account _electricity;
+		private Mock<IImportRepository> _repository;
 
 		[SetUp]
 		public void SetUpForImport()
 		{
-			DateTimeServer.SetLocal(new TestDateTimeServer(DateTime.Now));
+			DateTimeServer.SetLocal(new TestDateTimeServer(DateTime.Parse("2012-1-1")));
 
 			_visa = AccountFactory.Liability("visa");
 			_electricity = AccountFactory.Expense("electricity");
 
-			_general = new GeneralLedger(new InMemoryGeneralLedger()) {_visa, _electricity};
+			_general = new GeneralLedger(new InMemoryRepository()) {_visa, _electricity};
+			_repository = new Mock<IImportRepository>(MockBehavior.Strict);
 
 			var patterns = GetPatterns();
 
-			_importContext = new TransactionImportContext(_general, patterns);
+			_importContext = new TransactionImportContext(_general, patterns, _repository.Object);
 			_import = new Moq.Mock<IImport>(MockBehavior.Strict);
+			_import.SetupGet(x => x.Name).Returns("Mock Import");
 		}
 
 		private IEnumerable<AccountIdentifier> GetPatterns()
@@ -77,6 +80,12 @@ namespace HomeTrack.Tests
 
 			Assert.That(_visa.Balance, Is.EqualTo(10M));
 			Assert.That(_electricity.Balance, Is.EqualTo(10M));
+
+			var result = import.Result;
+			Assert.That(result.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
+			Assert.That(result.Name, Is.EqualTo("Mock Import"));
+			Assert.That(result.TransactionCount, Is.EqualTo(1));
+			Assert.That(result.UnclassifiedTransactions, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -126,6 +135,43 @@ namespace HomeTrack.Tests
 			Assert.That(_visa.Balance, Is.EqualTo(30M));
 			Assert.That(_electricity.Balance, Is.EqualTo(10M));
 			Assert.That(unclassified.Balance, Is.EqualTo(20M));
+
+			var result = import.Result;
+			Assert.That(result.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
+			Assert.That(result.Name, Is.EqualTo("Mock Import"));
+			Assert.That(result.TransactionCount, Is.EqualTo(2));
+			Assert.That(result.UnclassifiedTransactions, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void PersistImportResult()
+		{
+			Account unclassified = AccountFactory.Expense("Unclassified expenses");
+			var import = _importContext.CreateImport(_visa, unclassifiedDestination: unclassified);
+			Assert.That(import.Credit, Is.EqualTo(_visa));
+
+			var data = new[]
+			{
+				new VisaCsvImportRow
+				{
+					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+				},
+				new VisaCsvImportRow
+				{
+					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+				},
+				new VisaCsvImportRow
+				{
+					Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
+				}
+			};
+
+			_import.Setup(x => x.GetData()).Returns(data);
+
+			var transactions = import.Process(_import.Object).ToList();
+			Assert.That(transactions.Count, Is.EqualTo(2));
+
+			_importContext.SaveResult(import.Result, transactions);
 		}
 	}
 }

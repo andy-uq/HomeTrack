@@ -18,7 +18,7 @@ namespace HomeTrack.Tests
 		{
 			_expenseBudgetAccount = AccountFactory.Expense("Grocery Budget");
 			_expenseAccount = AccountFactory.Expense("Groceries");
-			_general = new GeneralLedger(new InMemoryGeneralLedger()) { _expenseBudgetAccount, _expenseAccount };
+			_general = new GeneralLedger(new InMemoryRepository()) { _expenseBudgetAccount, _expenseAccount };
 
 			_b = new Budget
 			{

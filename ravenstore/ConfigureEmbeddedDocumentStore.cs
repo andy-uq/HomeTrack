@@ -39,6 +39,10 @@ namespace HomeTrack.RavenStore
 				.As<IAccountIdentifierRepository>()
 				.SingleInstance();
 
+			containerBuilder.RegisterType<ImportRepository>()
+				.As<IImportRepository>()
+				.SingleInstance();
+
 			containerBuilder.Register(r => r.Resolve<IAccountIdentifierRepository>().GetAll());
 
 			containerBuilder.RegisterType<RavenRepository>()

@@ -5,11 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace HomeTrack.Tests
 {
-	public class InMemoryGeneralLedger : IGeneralLedgerRepository
+	public class InMemoryRepository : IGeneralLedgerRepository, IImportRepository
 	{
 		private readonly ISet<Account> _accounts;
 		private readonly ISet<Budget> _budgets;
 		private readonly List<Transaction> _transactions;
+		private readonly List<Tuple<ImportResult, Transaction[]>> _imports;
 		private int nextId = 1;
 
 		public IEnumerable<Account> Accounts
@@ -27,11 +28,12 @@ namespace HomeTrack.Tests
 			get { return _accounts.Where(x => x.Direction == EntryType.Credit); }
 		}
 
-		public InMemoryGeneralLedger()
+		public InMemoryRepository()
 		{
 			_accounts = new HashSet<Account>();
 			_transactions = new List<Transaction>();
 			_budgets = new HashSet<Budget>();
+			_imports = new List<Tuple<ImportResult, Transaction[]>>();
 		}
 
 		public Account GetAccount(string accountId)
@@ -104,6 +106,11 @@ namespace HomeTrack.Tests
 
 		public void Dispose()
 		{			
+		}
+
+		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		{
+			_imports.Add(new Tuple<ImportResult, Transaction[]>(result, transactions.ToArray()));
 		}
 	}
 }

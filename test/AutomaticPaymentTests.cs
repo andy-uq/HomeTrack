@@ -21,7 +21,7 @@ namespace HomeTrack.Tests
 			_pocketMoney = AccountFactory.Income("Pocket Money", initialBalance: 100M);
 			_automaticPayment = new AutomaticPayment() { Debit = _income, Credit = _pocketMoney, Amount = 10M, Description = "Weekly pocket money" };
 
-			_generalLedger = new GeneralLedger(new InMemoryGeneralLedger())
+			_generalLedger = new GeneralLedger(new InMemoryRepository())
 			{
 				_income,
 				_pocketMoney

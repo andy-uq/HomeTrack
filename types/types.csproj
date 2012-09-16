@@ -68,6 +68,8 @@
     <Compile Include="IAccountIdentifierRepository.cs" />
     <Compile Include="IDemandBuilder.cs" />
     <Compile Include="IGeneralLedgerRepository.cs" />
+    <Compile Include="IImportRepository.cs" />
+    <Compile Include="ImportResult.cs" />
     <Compile Include="IPattern.cs" />
     <Compile Include="ITypeMapProvider.cs" />
     <Compile Include="IUnitOfWork.cs" />

@@ -112,7 +112,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void PostTransaction()
 		{
-			var generalLedger = new GeneralLedger(new InMemoryGeneralLedger());
+			var generalLedger = new GeneralLedger(new InMemoryRepository());
 			Assert.That(generalLedger.Post(_transaction), Is.True);
 		}
 	}
