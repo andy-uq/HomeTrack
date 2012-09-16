@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,6 +23,8 @@ namespace HomeTrack.Core
 		{
 			_general = general;
 			_patterns = patterns.ToArray();
+
+			Array.ForEach(_patterns, p => p.Account = general[p.Account.Id]);
 		}
 
 		public TransactionImport CreateImport(Account source, Account unclassifiedDestination = null)

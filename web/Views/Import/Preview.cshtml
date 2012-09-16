@@ -87,6 +87,13 @@
 			@Html.DropDownList("destinationAccountId", accountSelectList, "Select an account to import into")
 			@Html.ValidationMessage("destinationAccountId") 
 		</div>        
+		<div class="editor-label"> 
+			@Html.Label("unclassifiedAccountId", "Unclassifed Expense Account") 
+		</div> 
+		<div class="editor-field"> 
+			@Html.DropDownList("unclassifiedAccountId", accountSelectList, "Select an account to hold unclassified transactions")
+			@Html.ValidationMessage("unclassifiedAccountId") 
+		</div>        
 		<p> 
 			<input type="submit" value="Import" /> 
 		</p> 

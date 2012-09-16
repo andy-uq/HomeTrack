@@ -1,0 +1,68 @@
+﻿@model System.Collections.Generic.List<HomeTrack.Transaction>
+
+@{
+	var summary =
+		(
+			from account in Model.SelectMany(x => x.RelatedAccounts()).Distinct()
+			let debit =
+				(
+					from t in Model
+					let amount = t.Debit.SingleOrDefault(x => x.Account == account)
+					where amount != null
+					select amount.Value
+				).Sum()
+			let credit =
+				(
+					from t in Model
+					let amount = t.Credit.SingleOrDefault(x => x.Account == account)
+					where amount != null
+					select amount.Value
+				).Sum()
+
+			select new
+			{
+				account, 
+				debit = debit == 0M ? (decimal? )null : debit,
+				credit = credit == 0M ? (decimal?)null : credit
+			}
+		);
+}
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Import Results</title>
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr></tr>					
+			</thead>
+			<tbody>
+				<tr>
+					<th>Number of transactions</th>
+					<td colspan="2">@Model.Count()</td>
+				</tr>
+				<tr>
+					<th>Value</th>
+					<td colspan="2" >@Model.Sum(x => x.Amount)</td>
+				</tr>
+				@foreach ( var row in summary )
+				{
+					<tr>
+						<td>
+							@row.account.Name
+						</td>
+						<td>
+							@row.debit.AsAmount()
+						</td>
+						<td>
+							@row.credit.AsAmount()
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</body>
+</html>

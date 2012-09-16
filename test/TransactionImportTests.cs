@@ -23,9 +23,10 @@ namespace HomeTrack.Tests
 		{
 			DateTimeServer.SetLocal(new TestDateTimeServer(DateTime.Now));
 
-			_general = new GeneralLedger(new InMemoryGeneralLedger());
 			_visa = AccountFactory.Liability("visa");
 			_electricity = AccountFactory.Expense("electricity");
+
+			_general = new GeneralLedger(new InMemoryGeneralLedger()) {_visa, _electricity};
 
 			var patterns = GetPatterns();
 

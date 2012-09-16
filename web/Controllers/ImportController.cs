@@ -62,7 +62,7 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ActionResult Import(string destinationAccountId, string filename)
+		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId)
 		{
 			filename = filename.Replace("@", "/");
 
@@ -83,7 +83,9 @@ namespace HomeTrack.Web.Controllers
 			import.Open(_directoryExplorer.GetFilename(name));
 
 			var source = _transactionImportContext.General[destinationAccountId];
-			var transactionImport = _transactionImportContext.CreateImport(source);
+			var unclassifiedAccount = (unclassifiedAccountId == null) ? null : _transactionImportContext.General[unclassifiedAccountId];
+
+			var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination:unclassifiedAccount);
 			foreach (var transaction in transactionImport.Process(import))
 			{
 				_transactionImportContext.General.Post(transaction);

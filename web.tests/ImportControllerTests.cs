@@ -17,11 +17,11 @@ namespace HomeTrack.Web.Tests
 	public class ImportControllerTests
 	{
 		private ImportController _controller;
-		private Mock<IGeneralLedgerRepository> _repository;
 		private GeneralLedger _generalLedger;
 		private Account _bank;
 		private Account _groceries;
 		private Account _wow;
+		private Account _unclassifiedExpense;
 		private DirectoryExplorer _directoryExplorer;
 		private Mock<IImportDetector> _importDetector;
 
@@ -36,28 +36,24 @@ namespace HomeTrack.Web.Tests
 		[SetUp]
 		public void ImportController()
 		{
-			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
-			
 			_bank = AccountFactory.Asset("bank", initialBalance: 100);
 			_groceries = AccountFactory.Asset("groceries");
 			_wow = AccountFactory.Asset("wow");
+			_unclassifiedExpense = AccountFactory.Expense("unclassified");
 
-			_repository.Setup(x => x.GetBudgetsForAccount(It.IsAny<string>()))
-				.Returns(Enumerable.Empty<Budget>());
-
-			_repository.Setup(x => x.Post(It.IsAny<Transaction>()))
-				.Returns(true);
-
-			_repository.Setup(x => x.GetAccount("bank"))
-				.Returns(_bank);
 
 			_directoryExplorer = new DirectoryExplorer(_directory);
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
-			_generalLedger = new GeneralLedger(_repository.Object);
+			_generalLedger = new GeneralLedger(new InMemoryGeneralLedger())
+			{
+				_bank,
+				_groceries,
+				_wow,
+				_unclassifiedExpense
+			};
 
 			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers());
-
 			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
@@ -122,19 +118,21 @@ namespace HomeTrack.Web.Tests
 				.Returns(true);
 
 			var i1 = new VisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 10M, OtherParty = "COUNTDOWN" };
+			var i2 = new VisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 20M, OtherParty = "MERCURY ENERGY" };
 
 			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
-				.Returns<Stream>(_ => new[] { i1, });
+				.Returns<Stream>(_ => new[] { i1, i2 });
 
-			var result = _controller.Import(_bank.Id, filename);
+			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id);
 			Assert.That(result, Is.InstanceOf<ViewResult>());
 
 			var model = ((ViewResult) result).Model;
 			Assert.That(model, Is.InstanceOf<IEnumerable<Transaction>>());
 
 			var transactions = (IEnumerable<Transaction>) model;
-			Assert.That(transactions.Count(), Is.EqualTo(1));
+			Assert.That(transactions.Count(), Is.EqualTo(2));
 			Assert.That(transactions.First().Amount, Is.EqualTo(10));
+			Assert.That(transactions.Last().Amount, Is.EqualTo(20));
 		}
 	}
 }

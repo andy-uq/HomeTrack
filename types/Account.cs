@@ -22,7 +22,18 @@ namespace HomeTrack
 		public string Description { get; set; }
 		public AccountType Type { get; set; }
 
-		public EntryType Direction { get { return Type.IsDebitOrCredit(); } }
+		public EntryType Direction
+		{
+			get
+			{
+				if ( Type == AccountType.NotSet )
+				{
+					throw new InvalidOperationException("The account \"" + Name + "\" does not have an account type set.");
+				}
+				
+				return Type.IsDebitOrCredit();
+			}
+		}
 
 		public decimal Balance { get; set; }
 

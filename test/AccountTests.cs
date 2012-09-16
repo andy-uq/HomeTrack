@@ -30,6 +30,15 @@ namespace HomeTrack.Tests
 			Assert.That(type.ToDr(10), Is.EqualTo(10));
 			Assert.That(type.ToCr(10), Is.EqualTo(null));
 		}
+
+		[Test, ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "The account \"XXX\" does not have an account type set.")]
+		public void UnknownAccountTypeThrowsException()
+		{
+			var account = new Account() { Name = "XXX" };
+			var entryType = account.Direction;
+			Assert.Fail(entryType.ToString());
+		}
+
 		[Test]
 		public void AccountToString()
 		{
