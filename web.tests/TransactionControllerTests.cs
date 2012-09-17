@@ -23,7 +23,7 @@ namespace HomeTrack.Web.Tests
 		private Account _income;
 
 		[SetUp]
-		public void AccountController()
+		public void TransactionController()
 		{
 			_mappingEngine = new MappingProvider(new ViewModelTypeMapProvider()).Build();
 			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
@@ -71,8 +71,11 @@ namespace HomeTrack.Web.Tests
 				.Setup(x => x.GetTransaction(1))
 				.Returns(t1);
 
-			var result = _controller.Details(1);
+			var result = _controller.Details(1, _income.Id);
 			Assert.That(result.Model, Is.InstanceOf<ViewModels.TransactionDetails>());
+
+			var model = (ViewModels.TransactionDetails) result.Model;
+			Assert.That(model.AccountId, Is.EqualTo(_income.Id));
 		}
 
 		[Test]

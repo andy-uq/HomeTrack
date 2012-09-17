@@ -19,7 +19,7 @@
 				<td>@transaction.Description</td>
 				<td class="amount">@transaction.Debit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
 				<td class="amount">@transaction.Credit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
-				<td>@Html.ActionLink("Details", "details", new { transaction.Id })</td>
+				<td>@Html.ActionLink("Details", "details", new { transaction.Id, AccountId = Model.Account.Id })</td>
 			</tr>
 		}
 	</tbody>

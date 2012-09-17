@@ -7,6 +7,11 @@ namespace HomeTrack.Web.ViewModels
 {
 	public static class ViewExtensions
 	{
+		public static string Format(this DateTime date, bool fullDate = false, bool showTime = false)
+		{
+			return fullDate ? date.ToString(showTime ? "d MMM, yyyy, h:mm tt" : "d MMM, yyyy") : date.ToString("d MMM");
+		}
+
 		public static string AsAmount(this decimal amount, string format = null)
 		{
 			return AsAmount((decimal?) amount, format);

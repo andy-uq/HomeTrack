@@ -178,6 +178,7 @@
     <Content Include="Views\AccountIdentifier\Create.cshtml" />
     <Content Include="Views\AccountIdentifier\Edit.cshtml" />
     <Content Include="Views\Import\Import.cshtml" />
+    <Content Include="Views\Import\History.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.csproj">

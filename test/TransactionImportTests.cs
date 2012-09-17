@@ -35,6 +35,7 @@ namespace HomeTrack.Tests
 			_importContext = new TransactionImportContext(_general, patterns, _repository.Object);
 			_import = new Moq.Mock<IImport>(MockBehavior.Strict);
 			_import.SetupGet(x => x.Name).Returns("Mock Import");
+			_import.SetupGet(x => x.ImportType).Returns("Mock");
 		}
 
 		private IEnumerable<AccountIdentifier> GetPatterns()
@@ -84,6 +85,7 @@ namespace HomeTrack.Tests
 			var result = import.Result;
 			Assert.That(result.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
 			Assert.That(result.Name, Is.EqualTo("Mock Import"));
+			Assert.That(result.ImportType, Is.EqualTo("Mock"));
 			Assert.That(result.TransactionCount, Is.EqualTo(1));
 			Assert.That(result.UnclassifiedTransactions, Is.EqualTo(0));
 		}
@@ -171,7 +173,7 @@ namespace HomeTrack.Tests
 			var transactions = import.Process(_import.Object).ToList();
 			Assert.That(transactions.Count, Is.EqualTo(2));
 
-			_importContext.SaveResult(import.Result, transactions);
+			Assert.That(_visa.Balance, Is.EqualTo(30M));
 		}
 	}
 }

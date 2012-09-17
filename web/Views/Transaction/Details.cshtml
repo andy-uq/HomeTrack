@@ -1,21 +1,29 @@
 ﻿@model HomeTrack.Web.ViewModels.TransactionDetails
-	<fieldset>
-		<legend>Transaction</legend>
+<fieldset>
+	<legend>Transaction</legend>
 	
-		<div class="display-label">Date</div>
-		<div class="display-field">
-			@Html.DisplayFor(model => model.Date)
-		</div>
-		<div class="display-label">Amount</div>
-		<div class="display-field">
-			@Model.Amount.ToString("c")
-		</div>
+	<div class="display-label">Date</div>
+	<div class="display-field">
+		@Html.DisplayFor(model => model.Date)
+	</div>
+	<div class="display-label">Amount</div>
+	<div class="display-field">
+		@Model.Amount.ToString("c")
+	</div>
 	
-		<div class="display-label">Description</div>
+	<div class="display-label">Description</div>
+	<div class="display-field">
+		@Html.DisplayFor(model => model.Description)
+	</div>
+	@if ( !string.IsNullOrWhiteSpace(Model.Reference) )
+	{
+		<div class="display-label">Reference</div>
 		<div class="display-field">
-			@Html.DisplayFor(model => model.Description)
+			@Html.DisplayFor(model => model.Reference)
 		</div>
-	
+	}
+</fieldset>
+
 	<table>
 	<thead>
 		<tr>
@@ -36,8 +44,8 @@
 	</tbody>
 </table>	
 
-	</fieldset>
-	<p>
+
+<p>
 		@Html.ActionLink("Edit", "Edit", new { Model.Id }) |
-		@Html.ActionLink("Back to List", "Index")
+		@Html.ActionLink("Back to List", "Index", new { Id = Model.AccountId })
 	</p>

@@ -127,6 +127,7 @@
     <Compile Include="ImportRepositoryTests.cs" />
     <Compile Include="InMemoryRepository.cs" />
     <Compile Include="PatternBuilderTests.cs" />
+    <Compile Include="TestExtensions.cs" />
     <Compile Include="TransactionImportTests.cs" />
     <Compile Include="TransactionMappings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

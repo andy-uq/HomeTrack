@@ -26,6 +26,7 @@ namespace HomeTrack.Web.Tests
 		private Mock<IImportDetector> _importDetector;
 
 		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
+		private Mock<IImportRepository> _repository;
 
 		private IEnumerable<AccountIdentifier> GetAccountIdentifers()
 		{
@@ -41,8 +42,8 @@ namespace HomeTrack.Web.Tests
 			_wow = AccountFactory.Asset("wow");
 			_unclassifiedExpense = AccountFactory.Expense("unclassified");
 
-
 			_directoryExplorer = new DirectoryExplorer(_directory);
+			_repository = new Mock<IImportRepository>();
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(new InMemoryRepository())
@@ -53,7 +54,7 @@ namespace HomeTrack.Web.Tests
 				_unclassifiedExpense
 			};
 
-			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), new InMemoryRepository());
+			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), _repository.Object);
 			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
@@ -133,6 +134,18 @@ namespace HomeTrack.Web.Tests
 			Assert.That(transactions.Count(), Is.EqualTo(2));
 			Assert.That(transactions.First().Amount, Is.EqualTo(10));
 			Assert.That(transactions.Last().Amount, Is.EqualTo(20));
+		}
+
+		[Test]
+		public void History()
+		{
+			_repository.Setup(x => x.GetAll()).Returns(new[] {new ImportResult()});
+
+			var result = _controller.History();
+			Assert.That(result.Model, Is.InstanceOf<IEnumerable<ImportResult>>());
+
+			var model = (IEnumerable<ImportResult>)result.Model;
+			Assert.That(model, Is.Not.Empty);
 		}
 	}
 }

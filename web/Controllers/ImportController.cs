@@ -77,8 +77,6 @@ namespace HomeTrack.Web.Controllers
 					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
 			}
 
-			var transactions = new List<Transaction>();
-
 			var import = new Import(_importDetector);
 			import.Open(_directoryExplorer.GetFilename(name));
 
@@ -86,13 +84,16 @@ namespace HomeTrack.Web.Controllers
 			var unclassifiedAccount = (unclassifiedAccountId == null) ? null : _transactionImportContext.General[unclassifiedAccountId];
 
 			var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination:unclassifiedAccount);
-			foreach (var transaction in transactionImport.Process(import))
-			{
-				_transactionImportContext.General.Post(transaction);
-				transactions.Add(transaction);
-			}
+			var transactions = transactionImport.Process(import).ToList();
+			_transactionImportContext.Repository.Save(transactionImport.Result, transactions);
 
 			return View(transactions);
+		}
+
+		public ViewResult History()
+		{
+			var model = _transactionImportContext.Repository.GetAll();
+			return View(model);
 		}
 	}
 }

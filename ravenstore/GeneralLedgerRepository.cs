@@ -66,16 +66,6 @@ namespace HomeTrack.RavenStore
 			}
 		}
 
-		private static string QualifiedId(string @namespace, string id)
-		{
-			return string.Concat(@namespace + "/", id);
-		}
-
-		private static string FromQualifiedId(string id)
-		{
-			return id.Substring(id.LastIndexOf('/') + 1);
-		}
-
 		public string Add(HomeTrack.Account account)
 		{
 			var document = _mappingEngine.Map<Documents.Account>(account);
@@ -171,6 +161,16 @@ namespace HomeTrack.RavenStore
 		public HomeTrack.Transaction GetTransaction(int id)
 		{
 			return _repository.UseOnceTo(s => s.Load<Documents.Transaction>(id).Hydrate<HomeTrack.Transaction>(_mappingEngine));
+		}
+
+		private static string QualifiedId(string @namespace, string id)
+		{
+			return string.Concat(@namespace + "/", id);
+		}
+
+		private static string FromQualifiedId(string id)
+		{
+			return id.Substring(id.LastIndexOf('/') + 1);
 		}
 
 		public void Dispose()

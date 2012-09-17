@@ -116,6 +116,9 @@
     <Compile Include="Documents\ImportResult.cs" />
     <Compile Include="GeneralLedgerRepository.cs" />
     <Compile Include="ImportRepository.cs" />
+    <Compile Include="Indexes\ImportsByImportType.cs" />
+    <Compile Include="Indexes\TransactionByAccountIds.cs" />
+    <Compile Include="Indexes\TransactionByIdAndReference.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenExtensions.cs" />

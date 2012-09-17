@@ -51,7 +51,6 @@ namespace HomeTrack.Core
 				? rowId.ToString(CultureInfo.InvariantCulture) 
 				: string.Concat(Name, '/', rowId);
 
-
 			return row;
 		}
 	}
@@ -59,6 +58,7 @@ namespace HomeTrack.Core
 	public interface IImport
 	{
 		string Name { get; }
+		string ImportType { get; }
 		IEnumerable<IImportRow> GetData();
 	}
 }

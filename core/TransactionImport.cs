@@ -24,6 +24,7 @@ namespace HomeTrack.Core
 		{
 			Result.Date = DateTimeServer.Now;
 			Result.Name = import.Name;
+			Result.ImportType = import.ImportType;
 
 			return BuildTransaction(import).Where(transaction => _context.General.Post(transaction));
 		}

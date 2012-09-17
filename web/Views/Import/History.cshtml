@@ -1,0 +1,17 @@
+﻿@model IEnumerable<ImportResult>
+
+<table>
+	<thead></thead>
+	<tbody>
+		@foreach(var import in Model.OrderBy(x => x.Date))
+		{
+			<tr>
+				<td>@import.Date.Format()</td>
+				<td>@import.ImportType</td>
+				<td>@import.Name</td>
+				<td>@import.TransactionCount</td>
+			</tr>	
+	  
+		}
+	</tbody>
+</table>

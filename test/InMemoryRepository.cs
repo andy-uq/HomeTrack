@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using AutoMapper;
 
 namespace HomeTrack.Tests
 {
 	public class InMemoryRepository : IGeneralLedgerRepository, IImportRepository
 	{
+		private readonly IMappingEngine _mappingEngine;
 		private readonly ISet<Account> _accounts;
 		private readonly ISet<Budget> _budgets;
 		private readonly List<Transaction> _transactions;
-		private readonly List<Tuple<ImportResult, Transaction[]>> _imports;
+		private readonly List<Tuple<ImportResult, ImportedTransaction[]>> _imports;
 		private int nextId = 1;
 
 		public IEnumerable<Account> Accounts
@@ -28,12 +30,13 @@ namespace HomeTrack.Tests
 			get { return _accounts.Where(x => x.Direction == EntryType.Credit); }
 		}
 
-		public InMemoryRepository()
+		public InMemoryRepository(IMappingEngine mappingEngine = null)
 		{
+			_mappingEngine = mappingEngine;
 			_accounts = new HashSet<Account>();
 			_transactions = new List<Transaction>();
 			_budgets = new HashSet<Budget>();
-			_imports = new List<Tuple<ImportResult, Transaction[]>>();
+			_imports = new List<Tuple<ImportResult, ImportedTransaction[]>>();
 		}
 
 		public Account GetAccount(string accountId)
@@ -87,6 +90,16 @@ namespace HomeTrack.Tests
 			return false;
 		}
 
+		public IEnumerable<ImportResult> GetAll()
+		{
+			return _imports.Select(x => x.Item1);
+		}
+
+		public IEnumerable<ImportedTransaction> GetTransactionIds(string importId)
+		{
+			return _imports.Single(x => x.Item1.Name == importId).Item2;
+		}
+
 		public IEnumerable<Transaction> GetTransactions(string accountId)
 		{
 			return
@@ -110,7 +123,7 @@ namespace HomeTrack.Tests
 
 		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
-			_imports.Add(new Tuple<ImportResult, Transaction[]>(result, transactions.ToArray()));
+			_imports.Add(new Tuple<ImportResult, ImportedTransaction[]>(result, transactions.Select(_mappingEngine.Map<ImportedTransaction>).ToArray()));
 		}
 	}
 }

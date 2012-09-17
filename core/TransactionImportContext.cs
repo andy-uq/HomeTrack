@@ -15,6 +15,11 @@ namespace HomeTrack.Core
 			get { return _general; }
 		}
 
+		public IImportRepository Repository
+		{
+			get { return _repository; }
+		}
+
 		public IEnumerable<AccountIdentifier> Patterns
 		{
 			get { return _patterns; }
@@ -32,11 +37,6 @@ namespace HomeTrack.Core
 		public TransactionImport CreateImport(Account source, Account unclassifiedDestination = null)
 		{
 			return new TransactionImport(this, source) { UnclassifedDestination = unclassifiedDestination };
-		}
-
-		public void SaveResult(ImportResult result, IEnumerable<Transaction> transactions)
-		{
-			
 		}
 	}
 }

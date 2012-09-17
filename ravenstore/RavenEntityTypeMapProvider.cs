@@ -204,8 +204,15 @@ namespace HomeTrack.RavenStore
 
 		private void MapImport(ConfigurationStore map)
 		{
-			map.CreateMap<ImportResult, Documents.ImportResult>();
+			map.CreateMap<ImportResult, Documents.ImportResult>()
+				.ForMember(x => x.Id, m => m.ResolveUsing(x => string.Concat("imports/", x.Name.ToLowerInvariant())));
+
 			map.CreateMap<Documents.ImportResult, ImportResult>();
+
+			map.CreateMap<Transaction, ImportedTransaction>()
+				.ForMember(x => x.TransactionId, m => m.MapFrom(x => x.Id))
+				.ForMember(x => x.Id, m => m.MapFrom(x => x.Reference));
+
 		}
 	}
 }

@@ -98,10 +98,13 @@ namespace HomeTrack.Web.Controllers
 			return ModelState.ToJson();
 		}
 
-		public ViewResult Details(int id)
+		public ViewResult Details(int id, string accountId)
 		{
 			var transaction = _generalLedger.GetTransaction(id);
-			return View(_mappingEngine.Map<ViewModels.TransactionDetails>(transaction));
+			var model = _mappingEngine.Map<ViewModels.TransactionDetails>(transaction);
+			model.AccountId = accountId;
+
+			return View(model);
 		}
 	}
 }
