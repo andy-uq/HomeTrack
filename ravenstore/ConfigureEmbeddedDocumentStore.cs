@@ -90,6 +90,8 @@ namespace HomeTrack.RavenStore
 
 		private void OnInitialise(DocumentStore documentStore)
 		{
+			Raven.Client.Indexes.IndexCreation.CreateIndexes(typeof(ConfigureEmbeddedDocumentStore).Assembly, documentStore);
+
 			using (var session = documentStore.OpenSession())
 			{
 				foreach (var account in session.Query<Documents.Account>())
