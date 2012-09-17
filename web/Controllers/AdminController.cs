@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using HomeTrack.RavenStore;
 using Raven.Abstractions.Data;
 using Raven.Client;
 using Raven.Client.Document;
@@ -27,20 +28,21 @@ namespace HomeTrack.Web.Controllers
             return Content(string.Join("<br />", indexes));
         }
 
+        public ActionResult IndexDefinition(string name)
+        {
+			var index = _documentStore.DatabaseCommands.GetIndex(name);
+            return Content(index.ToJson());
+        }
+
         //
         // GET: /Admin/Details/5
 
-        public ActionResult DeleteTransactions()
+        public ActionResult Reset()
         {
-        	int tCount = 0;
-
-			using ( var session = _documentStore.OpenSession() )
+        	using ( var session = _documentStore.OpenSession() )
 			{
-				foreach (var t in session.Query<RavenStore.Documents.Transaction>())
-				{
-					session.Delete(t);
-					tCount++;
-				}
+				_documentStore.DatabaseCommands.DeleteByIndex("Transactions", new IndexQuery());
+				_documentStore.DatabaseCommands.DeleteByIndex("ImportsByImportType", new IndexQuery());
 
 				foreach ( var a in session.Query<RavenStore.Documents.Account>() )
 				{
@@ -50,7 +52,7 @@ namespace HomeTrack.Web.Controllers
 				session.SaveChanges();
 			}
 
-        	return Content(string.Format("{0} transactions deleted", tCount));
+        	return Content("Database has been reset");
         }
     }
 }
