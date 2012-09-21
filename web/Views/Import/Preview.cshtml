@@ -7,6 +7,21 @@
 	int matched = 0;
 
 	var accountSelectList = Model.Accounts.AsSelectList(v => v.Id);
+	var import =
+		(
+			from row in importRows
+			let props = row.Properties.ToDictionary(p => p.Key, p => p.Value)
+			let account = row.IdentifyAccount(Model.AccountIdentifiers)
+			select new
+			{
+				id = row.Id,
+				account = account == null ? null : account.Id,
+				date = row.Date,
+				drAmount = AccountType.Asset.ToDr(row.Amount),
+				crAmount = AccountType.Asset.ToCr(row.Amount),			
+				props
+			}
+		);
 }
 
 @if ( !Model.AccountIdentifiers.Any() )
@@ -22,10 +37,10 @@
 			<td>
 				Date
 			</td>
-			@foreach ( var p in @Model.Import.GetPropertyNames() )
-   {
-				<td>@p</td>
-   }
+@foreach ( var p in @Model.Import.GetPropertyNames() )
+{
+	<td>@p</td>
+}
 			<td>
 				Cr
 			</td>
@@ -35,39 +50,19 @@
 			<td></td>
 		</tr>
 	</thead>
-	<tbody>
-		@foreach ( var row in importRows )
-  {
-	  var props = row.Properties.ToDictionary(p => p.Key, p => p.Value);
-	  var account = row.IdentifyAccount(Model.AccountIdentifiers);
-	  if ( account != null )
-	  {
-		  matched++;
-	  }
-	  
-			<tr @Html.Raw(account == null ? "" : string.Format("class='has-account {0}'", account.Type.ToString().ToLower())) >
-				<td>
-					@row.Date.ToString("yyyy-M-d")
-				</td>
-				@foreach ( var p in @Model.Import.GetPropertyNames() )
-	{
-					<td>@props[p]
-					</td>
-	}
-				<td>
-					@AccountType.Asset.ToCr(row.Amount).AsAmount()
-				</td>
-				<td>
-					@AccountType.Asset.ToDr(row.Amount).AsAmount()
-				</td>
-				<td>
-					@(account == null ? "" : account.Name)
-				</td>
-			</tr>
-  }
+	<tbody data-bind="foreach: data">
+		<tr data-bind="class:account">
+			<td data-bind="text: date"></td>
+@foreach ( var p in @Model.Import.GetPropertyNames() )
+{
+	<td data-bind="text: props['@p']"></td>
+}			<td data-bind="text: drAmount"></td>
+			<td data-bind="text: crAmount"></td>
+			<td><select data-bind="options: $root.availableAccounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
+		</tr>	
 	</tbody>
 	<tfoot>
-		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())">Matched @matched of @count (@(((double)matched / count * 100.0).ToString("n2"))%)</td>
+		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())"></td>
 	</tfoot>
 </table>
 
@@ -98,3 +93,68 @@
 		</p> 
 	</fieldset>
 }
+
+<script type="text/javascript">
+	var accounts = @Html.Raw(Model.Accounts.ToJson());
+	var importData = @Html.Raw(import.ToJson());
+	
+	function Import(row) {
+		var self = this;
+		self.date = row.date;
+		self.props = row.props;
+		self.drAmount = row.drAmount;
+		self.crAmount = row.crAmount;
+		self.account = row.account;
+	}
+
+	// Overall viewmodel for this screen, along with initial state
+	function ImportViewModel() {
+		var self = this;
+
+		// Non-editable account data - from the server
+		self.availableAccounts = accounts;
+
+		// Editable data
+		self.data = ko.observableArray(importData.map(function (i) {
+			return new Import(i);
+		}));
+
+		self.save = function() {
+
+			var relatedAccounts = new Array();
+			for(var i=0; i < self.accounts().length; i++)
+				relatedAccounts.push({ AccountId: self.accounts()[i].account.id, amount: self.accounts()[i].amount() });
+
+			$.ajax({
+				url: location.href,
+				contentType: 'application/json; charset=utf-8',
+				type: "POST",
+				data: JSON.stringify({
+					newTransaction: {
+						Amount: self.amount(),
+						Description: self.description(),
+						Direction: self.direction(),
+						Date: self.date(),
+						Related: relatedAccounts
+					}
+				}),
+				dataType: 'json',
+				success: function(result) {
+					$('#exception').html(null).hide();
+					if (result) {
+						if (result.redirectUrl) {
+							window.location = result.redirectUrl;
+						}
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					$('#exception').html(xhr.responseText).show();
+					alert(xhr.statusText);
+				}
+			});
+		};
+	}
+
+	var vm = new ImportViewModel();
+	ko.applyBindings(vm);
+</script>
