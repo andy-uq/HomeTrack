@@ -137,7 +137,9 @@
     <Compile Include="ViewModels\ViewModelTypeMapProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Images\tick.png" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\front-end.js" />
     <Content Include="Scripts\jquery-1.8.2-vsdoc.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />

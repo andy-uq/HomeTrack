@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace HomeTrack.Web
 {
@@ -6,7 +7,7 @@ namespace HomeTrack.Web
 	{
 		public static string ToJson<T>(this T objectGraph)
 		{
-			return JsonConvert.SerializeObject(objectGraph, Formatting.Indented);
+			return JsonConvert.SerializeObject(objectGraph, Formatting.Indented, new StringEnumConverter());
 		}
 	}
 }

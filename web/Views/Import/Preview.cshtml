@@ -31,7 +31,7 @@
 	</p>
 }
 
-<table>
+<table id="import-preview">
 	<thead>
 		<tr>
 			<td>
@@ -51,18 +51,25 @@
 		</tr>
 	</thead>
 	<tbody data-bind="foreach: data">
-		<tr data-bind="class:account">
+		<tr data-bind="class:accountClass">
 			<td data-bind="text: date"></td>
-@foreach ( var p in @Model.Import.GetPropertyNames() )
-{
-	<td data-bind="text: props['@p']"></td>
-}			<td data-bind="text: drAmount"></td>
+			@foreach ( var p in @Model.Import.GetPropertyNames() )
+			{
+				<td data-bind="text: props['@p']"></td>
+			}			
+			<td data-bind="text: drAmount"></td>
 			<td data-bind="text: crAmount"></td>
 			<td><select data-bind="options: $root.availableAccounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
-		</tr>	
+			<td><img style="width:32px;height:32px" src="@Url.Content("~/Content/Images/tick.png")" data-bind="visible:account() != null" /></td>
+			<td data-bind="text:accountClass"></td>
+		</tr>
 	</tbody>
 	<tfoot>
-		<td colspan="@(4 + Model.Import.GetPropertyNames().Count())"></td>
+		<tr>
+			<td colspan="@(4 + Model.Import.GetPropertyNames().Count())">
+				
+		  </td>
+		</tr>
 	</tfoot>
 </table>
 
@@ -104,7 +111,18 @@
 		self.props = row.props;
 		self.drAmount = row.drAmount;
 		self.crAmount = row.crAmount;
-		self.account = row.account;
+		self.account = ko.observable(row.account);
+		self.accountClass = ko.computed(function() {
+			if (!self.account())
+				return null;
+				
+			var account = _(accounts).find(function(i) {
+				return i.Id === self.account();
+			});
+			var foo = 'has-account ' + account.Type;
+			console.log(foo);
+			return foo;
+		});
 	}
 
 	// Overall viewmodel for this screen, along with initial state

@@ -15,8 +15,8 @@ namespace HomeTrack.Web.Tests
   ""Id"": ""bank"",
   ""Name"": ""bank"",
   ""Description"": null,
-  ""Type"": 1,
-  ""Direction"": 1,
+  ""Type"": ""Asset"",
+  ""Direction"": ""Debit"",
   ""Balance"": 0.0
 }"));
 		}
