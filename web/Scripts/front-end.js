@@ -1,4 +1,6 @@
-﻿ko.bindingHandlers['class'] = {
+﻿jQuery.ajaxSettings.traditional = true;
+
+ko.bindingHandlers['class'] = {
 	'update': function (element, valueAccessor) {
 		if (element['__ko__previousClassValue__']) {
 			$(element).removeClass(element['__ko__previousClassValue__']);

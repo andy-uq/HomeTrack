@@ -37,6 +37,32 @@ namespace web.tests
 		}
 
 		[Test]
+		public void Delete()
+		{
+			var result = (ViewResult )_controller.Delete();
+			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
+			Assert.That(result.Model, Is.EqualTo(_generalLedger));
+		}
+
+		[Test]
+		public void DeletePostEmpty()
+		{
+			var result = _controller.Delete(new string[0]);
+			Assert.That(result.Data, Is.Null);
+		}
+
+		[Test]
+		public void DeletePost()
+		{
+			_repository.Setup(x => x.DeleteAccount(_bank.Id)).Returns(true).Verifiable();
+
+			var result = _controller.Delete(new[] { _bank.Id });
+			Assert.That(result.Data, Has.Property("success").EqualTo(true));
+
+			_repository.Verify(x => x.DeleteAccount(_bank.Id));
+		}
+
+		[Test]
 		public void Details()
 		{
 			var account = new Account();

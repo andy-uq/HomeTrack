@@ -11,6 +11,18 @@ namespace HomeTrack.Tests
 			var bank = AccountFactory.Asset("Bank");
 			GeneralLedger.Add(bank);
 			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.Account>()), Is.Not.Empty);
+		}
+		
+		[Test]
+		public void DeleteAccount()
+		{
+			var bank = AccountFactory.Asset("Bank");
+			GeneralLedger.Add(bank);
+			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.Account>()), Is.Not.Empty);
+
+			var result = GeneralLedger.DeleteAccount(bank.Id);
+			Assert.That(result, Is.True);
+			Assert.That(Repository.UseOnceTo(s => s.Query<HomeTrack.RavenStore.Documents.Account>()), Is.Empty);
 		}		
 		
 		[Test]

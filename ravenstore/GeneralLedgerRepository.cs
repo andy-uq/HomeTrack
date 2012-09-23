@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Raven.Client;
 using Raven.Client.Linq;
 
 namespace HomeTrack.RavenStore
@@ -49,6 +50,26 @@ namespace HomeTrack.RavenStore
 			var qualifiedId = QualifiedId("accounts", accountId);
 			var account = _repository.UseOnceTo(x => x.Load<Documents.Account>(qualifiedId));
 			return _mappingEngine.Map<HomeTrack.Account>(account);
+		}
+
+		public bool DeleteAccount(string accountId)
+		{
+			using ( var session = _repository.DocumentStore.OpenSession() )
+			{
+				if ( GetTransactions(session, accountId).Any() )
+					throw new InvalidOperationException("Cannot delete an account that has transactions");
+
+				var qualifiedId = QualifiedId("accounts", accountId);
+				var account = session.Load<Documents.Account>(qualifiedId);
+
+				if ( account == null )
+					return false;
+
+				session.Delete(account);
+				session.SaveChanges();
+
+				return true;
+			}
 		}
 
 		public IEnumerable<Budget> GetBudgetsForAccount(string accountId)
@@ -142,20 +163,22 @@ namespace HomeTrack.RavenStore
 
 			using ( var session = _repository.DocumentStore.OpenSession() )
 			{
-				var query =
-					(
-						from t in session.Query<Documents.Transaction>()
-						where
-							t.Credit.Any(x => x.AccountId == accountId)
-							|| t.Debit.Any(x => x.AccountId == accountId)
-						orderby t.Date, t.Id
-						select t
-					);
-
+				var query = GetTransactions(session, accountId);
 				return query
 					.Hydrate<HomeTrack.Transaction>(_mappingEngine)
 					.ToArray();
 			}
+		}
+
+		private static IOrderedQueryable<Documents.Transaction> GetTransactions(IDocumentSession session, string accountId)
+		{
+			return
+				from t in session.Query<Documents.Transaction>()
+				where
+					t.Credit.Any(x => x.AccountId == accountId)
+					|| t.Debit.Any(x => x.AccountId == accountId)
+				orderby t.Date , t.Id
+				select t;
 		}
 
 		public HomeTrack.Transaction GetTransaction(int id)

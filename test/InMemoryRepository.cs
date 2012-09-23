@@ -44,6 +44,19 @@ namespace HomeTrack.Tests
 			return _accounts.SingleOrDefault(x => x.Id.Equals(accountId, StringComparison.OrdinalIgnoreCase));
 		}
 
+		public bool DeleteAccount(string accountId)
+		{
+			if ( GetTransactions(accountId).Any() )
+				throw new InvalidOperationException("Cannot delete an account that has transactions");
+
+			var account = GetAccount(accountId);
+			if ( account == null )
+				return false;
+
+			_accounts.Remove(account);
+			return true;
+		}
+
 		public IEnumerable<Account> GetBudgetAccounts(string accountId)
 		{
 			return GetBudgetsForAccount(accountId).Select(budget => budget.BudgetAccount);

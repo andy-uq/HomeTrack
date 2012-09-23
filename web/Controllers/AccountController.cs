@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Transactions;
+using System.Web.Mvc;
 using HomeTrack.RavenStore;
 
 namespace HomeTrack.Web.Controllers
@@ -73,6 +75,30 @@ namespace HomeTrack.Web.Controllers
 			
 			_generalLedger.Add(account);
 			return RedirectToAction("Index");
+		}
+
+		public ViewResult Delete()
+		{
+			return View(_generalLedger);
+		}
+
+		[AcceptVerbs(HttpVerbs.Post)]
+		public JsonResult Delete(string[] accountIds)
+		{
+			if (accountIds == null || accountIds.Length == 0)
+				return Json(null);
+
+			using ( var transaction = new TransactionScope() )
+			{
+				foreach (var accountId in accountIds)
+				{
+					_generalLedger.DeleteAccount(accountId);
+				}
+
+				transaction.Complete();
+			}
+
+			return Json(new{ success = true });
 		}
 	}
 }

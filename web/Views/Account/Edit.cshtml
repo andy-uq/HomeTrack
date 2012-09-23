@@ -13,22 +13,22 @@
 		<legend>
 			Account details
 		</legend>
-       <div class="editor-label"> 
-            @Html.Label("name", "Name") 
-        </div> 
-        <div class="editor-field"> 
-            @Html.TextBox("name", Model.Name)
-            @Html.ValidationMessage("name") 
-        </div> 
+	   <div class="editor-label"> 
+			@Html.Label("name", "Name") 
+		</div> 
+		<div class="editor-field"> 
+			@Html.TextBox("name", Model.Name)
+			@Html.ValidationMessage("name") 
+		</div> 
 		<div class="editor-label"> 
-            @Html.Label("description") 
-        </div> 
-        <div class="editor-field"> 
-            @Html.TextArea("description", Model.Description) 
-            @Html.ValidationMessage("description") 
-        </div> 
+			@Html.Label("description") 
+		</div> 
+		<div class="editor-field"> 
+			@Html.TextArea("description", Model.Description) 
+			@Html.ValidationMessage("description") 
+		</div> 
 		<p> 
-            <input type="submit" value="Update" /> 
-        </p> 
+			<input type="submit" value="Update" /> 
+		</p> 
 	</fieldset>
 }

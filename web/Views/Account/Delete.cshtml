@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Account>
+
+<h2>Accounts</h2>
+
+<table>
+	<thead>
+		<tr>
+			<td rowspan="2"></td>
+			<td rowspan="2">Name</td>
+			<td rowspan="2">Type</td>
+			<td colspan="2">Balance</td>
+		</tr>
+		<tr>
+			<td>Dr</td>
+			<td>Cr</td>
+		</tr>
+	</thead>
+	<tbody id="account-list" class="is-hover">
+		@foreach ( var account in Model.OrderBy(x => x.Type).ThenBy(x => x.Name) )
+		{
+			<tr>
+				<td><input id="checkbox-@account.Id" type="checkbox" value="@account.Id" /></td>
+				<td><label for="checkbox-@account.Id">@account.Name</label></td>
+				<td>@account.Type</td>
+				<td>@account.Type.ToDr(account.Balance).AsAmount()</td>
+				<td>@account.Type.ToCr(account.Balance).AsAmount()</td>
+			</tr>
+		}
+	</tbody>
+	<tfoot>
+		<td><input id="checkbox-selectAll" type="checkbox" /></td>
+		<td colspan="4">Select all</td>
+	</tfoot>
+</table>
+
+<input type="submit" value="Delete"/>
+
+<script>
+	$(document).ready(function () {
+
+		$('#checkbox-selectAll').click(function (e) {
+			var val = $('#checkbox-selectAll').is(':checked');
+			$('#account-list input[type=checkbox]').each(function () {
+				$(this).prop('checked', val);
+			});
+		});
+
+		$('#account-list tr').click(function (e) {
+			var c = $(e.target).closest('tr').find('input[type=checkbox]');
+			c.prop('checked', !c.is(':checked'));
+		});
+
+		$('input[type=submit]').click(function (e) {
+			e.preventDefault();
+			var accountIds = [];
+			$('#account-list input[type=checkbox]').each(function () {
+				if ($(this).is(':checked'))
+					accountIds.push($(this).val());
+			});
+
+			if (!accountIds.length)
+				return;
+
+			if (confirm('Are you sure you want to delete ' + accountIds.length + ' accounts?')) {
+				$.ajax({
+					url: window.location,
+					type: 'post',
+					data: {
+						accountIds: accountIds
+					},
+					success: function (r) {
+						if (r.success) {
+							$('#account-list input[type=checkbox]').each(function() {
+								if ($(this).is(':checked'))
+									$(this).closest('tr').remove();
+							});
+						}
+					}
+				});
+			}
+		});
+	})
+</script>

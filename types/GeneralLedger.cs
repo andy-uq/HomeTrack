@@ -132,5 +132,10 @@ namespace HomeTrack
 		{
 			return _repository.GetBudgetsForAccount(accountId).Select(x => x.BudgetAccount);
 		}
+
+		public bool DeleteAccount(string id)
+		{
+			return _repository.DeleteAccount(id);
+		}
 	}
 }

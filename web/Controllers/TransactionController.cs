@@ -89,7 +89,7 @@ namespace HomeTrack.Web.Controllers
 
 				if ( _generalLedger.Post(transaction) )
 				{
-					return Json(new {redirectUrl = Url.Action("Index", new {account.Id})});
+					return this.JsonRedirect(redirectUrl: Url.Action("Index", new { account.Id }));
 				}
 
 				ModelState.AddModelError("Amount", string.Format("Right hand amount must equal {0:c}", newTransaction.Amount));

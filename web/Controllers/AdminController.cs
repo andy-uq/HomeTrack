@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using HomeTrack.RavenStore;
+using HomeTrack.RavenStore.Indexes;
 using Raven.Abstractions.Data;
 using Raven.Client;
 using Raven.Client.Document;
@@ -34,6 +35,12 @@ namespace HomeTrack.Web.Controllers
             return Content(index.ToJson());
         }
 
+
+		private class AccountCount
+		{
+			public RavenStore.Documents.Account account;
+			public int count;
+		}
 
         //
         // GET: /Admin/Details/5

@@ -13,6 +13,11 @@ namespace HomeTrack.Web.Controllers
 			_routes = routes;
 		}
 
+		public static JsonResult JsonRedirect(this Controller controller, string redirectUrl)
+		{
+			return new JsonResult { Data = new { redirectUrl }};
+		}
+
 		public static JsonResult ToJson(this RedirectToRouteResult state, ControllerContext context)
 		{
 			var redirectUrl = (_routes == null || context == null)

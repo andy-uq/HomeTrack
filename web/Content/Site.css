@@ -327,6 +327,10 @@ div#title {
 	text-align: right;
 }
 
+.is-hover tr:hover {
+	background-color: gainsboro;
+}
+
 tr.has-account td {
 	background-color: rgb(190, 245, 190);
 	color: green;
