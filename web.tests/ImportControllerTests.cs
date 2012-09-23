@@ -124,10 +124,10 @@ namespace HomeTrack.Web.Tests
 			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
 				.Returns<Stream>(_ => new[] { i1, i2 });
 
-			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id);
-			Assert.That(result, Is.InstanceOf<ViewResult>());
+			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id, new Dictionary<string, string>());
+			Assert.That(result, Is.InstanceOf<PartialViewResult>());
 
-			var model = ((ViewResult) result).Model;
+			var model = ((PartialViewResult)result).Model;
 			Assert.That(model, Is.InstanceOf<IEnumerable<Transaction>>());
 
 			var transactions = (IEnumerable<Transaction>) model;

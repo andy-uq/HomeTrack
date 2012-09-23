@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 using System.Web.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Web.ViewModels;
@@ -54,7 +55,7 @@ namespace HomeTrack.Web.Controllers
 			var model = new ImportPreview
 			{
 				FileName = filename,
-				Accounts = _transactionImportContext.General,
+				Accounts = _transactionImportContext.General.OrderBy(x => x.Type).ThenBy(x => x.Name),
 				Import = import, 
 				AccountIdentifiers = _transactionImportContext.Patterns
 			};
@@ -62,7 +63,7 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId)
+		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId, Dictionary<string, string> importRowMapping)
 		{
 			filename = filename.Replace("@", "/");
 
@@ -77,17 +78,24 @@ namespace HomeTrack.Web.Controllers
 					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
 			}
 
-			var import = new Import(_importDetector);
-			import.Open(_directoryExplorer.GetFilename(name));
+			using ( var transaction = new TransactionScope() )
+			{
+				var import = new Import(_importDetector);
+				import.Open(_directoryExplorer.GetFilename(name));
 
-			var source = _transactionImportContext.General[destinationAccountId];
-			var unclassifiedAccount = (unclassifiedAccountId == null) ? null : _transactionImportContext.General[unclassifiedAccountId];
+				var source = _transactionImportContext.General[destinationAccountId];
+				var unclassifiedAccount = (unclassifiedAccountId == null)
+				                          	? null
+				                          	: _transactionImportContext.General[unclassifiedAccountId];
 
-			var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination:unclassifiedAccount);
-			var transactions = transactionImport.Process(import).ToList();
-			_transactionImportContext.Repository.Save(transactionImport.Result, transactions);
+				var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination: unclassifiedAccount);
+				var transactions = transactionImport.Process(import, importRowMapping).ToList();
+				_transactionImportContext.Repository.Save(transactionImport.Result, transactions);
 
-			return View(transactions);
+				transaction.Complete();
+			
+				return PartialView(transactions);
+			}
 		}
 
 		public ViewResult History()

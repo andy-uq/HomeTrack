@@ -3,8 +3,6 @@
 
 @{
 	var importRows = Model.Import.GetData().ToArray();
-	int count = importRows.Count();
-	int matched = 0;
 
 	var accountSelectList = Model.Accounts.AsSelectList(v => v.Id);
 	var import =
@@ -17,8 +15,8 @@
 				id = row.Id,
 				account = account == null ? null : account.Id,
 				date = row.Date,
-				drAmount = AccountType.Asset.ToDr(row.Amount),
-				crAmount = AccountType.Asset.ToCr(row.Amount),			
+				drAmount = AccountType.Asset.ToDr(row.Amount).AsAmount(),
+				crAmount = AccountType.Asset.ToCr(row.Amount).AsAmount(),			
 				props
 			}
 		);
@@ -98,10 +96,12 @@
 			@Html.ValidationMessage("unclassifiedAccountId") 
 		</div>        
 		<p> 
-			<input type="submit" value="Import" /> 
+			<input type="submit" value="Import" data-bind="click: save" /> 
 		</p> 
 	</fieldset>
 }
+
+<div id="import-results" title="Import Results"></div>
 
 <script type="text/javascript">
 	var accounts = @Html.Raw(Model.Accounts.ToJson());
@@ -109,10 +109,12 @@
 	
 	function Import(row) {
 		var self = this;
+		self.rowId = row.id;
 		self.date = row.date;
 		self.props = row.props;
 		self.drAmount = row.drAmount;
 		self.crAmount = row.crAmount;
+		self.initialAccount = row.account;
 		self.account = ko.observable(row.account);
 		self.accountClass = ko.computed(function() {
 			if (!self.account())
@@ -140,25 +142,25 @@
 
 		self.save = function() {
 
-			var relatedAccounts = new Array();
-			for(var i=0; i < self.accounts().length; i++)
-				relatedAccounts.push({ AccountId: self.accounts()[i].account.id, amount: self.accounts()[i].amount() });
-
+			var importRowMapping = new Array();
+			var data = self.data();
+			_(data).each(function(i) {
+				if (i.account() != i.initialAccount) {
+					importRowMapping.push({ key: i.rowId, value: i.account() });
+				}
+			});
+			
 			$.ajax({
-				url: location.href,
+				url: '@Url.Action("Import", controllerName: null, routeValues: new { filename = Model.FileName })',
 				contentType: 'application/json; charset=utf-8',
 				type: "POST",
-				data: {
-					
-				},
-				dataType: 'json',
-				success: function(result) {
-					$('#exception').html(null).hide();
-					if (result) {
-						if (result.redirectUrl) {
-							window.location = result.redirectUrl;
-						}
-					}
+				data: JSON.stringify({
+					destinationAccountId: $('#destinationAccountId').val(), 
+					unclassifiedAccountId: $('#unclassifiedAccountId').val(), 
+					importRowMapping: importRowMapping
+				}),
+				success: function(h) {					
+					$('#import-results').html(h).dialog();
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 					$('#exception').html(xhr.responseText).show();

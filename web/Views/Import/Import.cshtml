@@ -28,41 +28,32 @@
 		);
 }
 
-<!DOCTYPE html>
-
-<html>
-	<head>
-		<title>Import Results</title>
-	</head>
-	<body>
-		<table>
-			<thead>
-				<tr></tr>					
-			</thead>
-			<tbody>
-				<tr>
-					<th>Number of transactions</th>
-					<td colspan="2">@Model.Count()</td>
-				</tr>
-				<tr>
-					<th>Value</th>
-					<td colspan="2" >@Model.Sum(x => x.Amount)</td>
-				</tr>
-				@foreach ( var row in summary )
-				{
-					<tr>
-						<td>
-							@row.account.Name
-						</td>
-						<td>
-							@row.debit.AsAmount()
-						</td>
-						<td>
-							@row.credit.AsAmount()
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</body>
-</html>
+<table>
+	<thead>
+		<tr></tr>					
+	</thead>
+	<tbody>
+		<tr>
+			<th>Number of transactions</th>
+			<td colspan="2">@Model.Count()</td>
+		</tr>
+		<tr>
+			<th>Value</th>
+			<td colspan="2" >@Model.Sum(x => x.Amount)</td>
+		</tr>
+		@foreach ( var row in summary )
+		{
+			<tr>
+				<td>
+					@row.account.Name
+				</td>
+				<td>
+					@row.debit.AsAmount()
+				</td>
+				<td>
+					@row.credit.AsAmount()
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
