@@ -55,8 +55,11 @@
 			<td data-bind="text: date"></td>
 			@foreach ( var p in @Model.Import.GetPropertyNames() )
 			{
-				<td data-bind="text: props['@p']"></td>
-			}			
+				<td>
+					<input type="checkbox" data-bind="visible:props['@p'],value:props['@p']" />
+					<label data-bind="text: props['@p']"></label>
+				</td>
+			}
 			<td data-bind="text: drAmount"></td>
 			<td data-bind="text: crAmount"></td>
 			<td><select data-bind="options: $root.accounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
@@ -145,15 +148,9 @@
 				url: location.href,
 				contentType: 'application/json; charset=utf-8',
 				type: "POST",
-				data: JSON.stringify({
-					newTransaction: {
-						Amount: self.amount(),
-						Description: self.description(),
-						Direction: self.direction(),
-						Date: self.date(),
-						Related: relatedAccounts
-					}
-				}),
+				data: {
+					
+				},
 				dataType: 'json',
 				success: function(result) {
 					$('#exception').html(null).hide();
@@ -173,6 +170,36 @@
 
 	var vm = new ImportViewModel();
 	ko.applyBindings(vm);
+
+	$('#import-preview tbody input[type=checkbox]').each(function(i) {
+		var name = 'chk-' + i;
+		var val = $(this).val();
+		$(this).attr('id', name);
+		$(this).next('label').attr('for', name);
+
+		$(this).change(function() {
+			var checked = $(this).is(':checked');
+			$('#import-preview tbody input[type=checkbox]').each(function() {
+				$(this).prop('checked', checked && ($(this).val() == val));
+			});
+		});
+	});
+
+	var changing = false;
+	$('#import-preview tbody select').change(function() {
+		if (changing)
+			return;
+
+		changing = true;
+		var newValue = $(this).val();
+		$('#import-preview tbody input[type=checkbox]').each(function() {
+			if ($(this).prop('checked'))
+				$(this).closest('tr').find('select').val(newValue).trigger('change');
+
+			$(this).prop('checked', false);
+		});
+		changing = false;
+	});
 
 	$(document).bind('keydown', 'Ctrl+a', function (e) {
 		e.preventDefault();
