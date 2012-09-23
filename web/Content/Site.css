@@ -332,7 +332,7 @@ tr.has-account td {
 	color: green;
 }
 
-tr.has-account.Expense td {
+tr.has-account.expense td {
 	background-color: rgb(242, 175, 175);
 	color: red;
 }
