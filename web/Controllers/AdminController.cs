@@ -34,6 +34,7 @@ namespace HomeTrack.Web.Controllers
             return Content(index.ToJson());
         }
 
+
         //
         // GET: /Admin/Details/5
 

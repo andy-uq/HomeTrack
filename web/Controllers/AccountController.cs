@@ -43,7 +43,14 @@ namespace HomeTrack.Web.Controllers
 		public ActionResult Create(Account account)
 		{
 			_generalLedger.Add(account);
-			return RedirectToAction("Index");
+			if ( Request.IsAjaxRequest() )
+			{
+				return Json(account);
+			}
+			else
+			{
+				return RedirectToAction("Index");
+			}
 		}
 		
 		//

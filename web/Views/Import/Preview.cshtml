@@ -59,9 +59,8 @@
 			}			
 			<td data-bind="text: drAmount"></td>
 			<td data-bind="text: crAmount"></td>
-			<td><select data-bind="options: $root.availableAccounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
+			<td><select data-bind="options: $root.accounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
 			<td><img style="width:32px;height:32px" src="@Url.Content("~/Content/Images/tick.png")" data-bind="visible:account() != null" /></td>
-			<td data-bind="text:accountClass"></td>
 		</tr>
 	</tbody>
 	<tfoot>
@@ -119,9 +118,8 @@
 			var account = _(accounts).find(function(i) {
 				return i.Id === self.account();
 			});
-			var foo = 'has-account ' + account.Type;
-			console.log(foo);
-			return foo;
+			
+			return 'has-account ' + account.Type.toLowerCase();
 		});
 	}
 
@@ -130,7 +128,7 @@
 		var self = this;
 
 		// Non-editable account data - from the server
-		self.availableAccounts = accounts;
+		self.accounts = ko.observableArray(accounts);
 
 		// Editable data
 		self.data = ko.observableArray(importData.map(function (i) {
@@ -175,4 +173,30 @@
 
 	var vm = new ImportViewModel();
 	ko.applyBindings(vm);
+
+	$(document).bind('keydown', 'Ctrl+a', function (e) {
+		e.preventDefault();
+		$.ajax({
+			url: '/account/create',
+			type: 'get',
+			success: function (r) {
+				$('#create-account-dialog').html(r);
+				$("#create-account-dialog input[type=submit]").on('click', function (e) {
+					e.preventDefault();
+					$.ajax({
+						url: $('#create-account-dialog form').attr('action'),
+						type:'post',
+						data: $('#create-account-dialog form').serialize(),
+						success: function (a) {
+							vm.accounts.push(a);
+							$("#create-account-dialog").dialog('close');
+						}
+					});
+				});
+				$("#create-account-dialog").dialog();
+			}
+		});
+	});
 </script>
+
+<div id="create-account-dialog" title="Create account"></div>

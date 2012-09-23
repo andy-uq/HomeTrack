@@ -27,16 +27,25 @@ namespace web.tests
 				return context.Object;
 			}
 
-			public static HttpContextBase FakeHttpContext(string url)
+			public static HttpContextBase FakeHttpContext(string url, bool isAjax = false)
 			{
-				HttpContextBase context = FakeHttpContext();
+				var context = FakeHttpContext();
 				context.Request.SetupRequestUrl(url);
+				if ( isAjax )
+				{
+					var mock = Mock.Get(context.Request);
+					var headers = new NameValueCollection();
+					headers.Add("X-Requested-With", "XMLHttpRequest");
+
+					mock.SetupGet(x => x.Headers).Returns(headers);
+				}
+
 				return context;
 			}
 
-			public static void SetFakeControllerContext(this Controller controller, string url)
+			public static void SetFakeControllerContext(this Controller controller, string url, bool isAjax = false)
 			{
-				var httpContext = FakeHttpContext(url);
+				var httpContext = FakeHttpContext(url, isAjax);
 
 				var routeTable = new RouteCollection();
 				MvcApplication.RegisterRoutes(routeTable);

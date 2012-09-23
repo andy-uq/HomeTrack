@@ -60,13 +60,29 @@ namespace web.tests
 		[Test]
 		public void CreateAccount()
 		{
+			_controller.SetFakeControllerContext("~/account/create");
+
 			var args = new Account() {Name = "Name", Description = "Description", Type = AccountType.Asset};
 
 			_repository.Setup(x => x.Add(args))
 				.Returns("name");
 
 			var result = (RedirectToRouteResult)_controller.Create(args);
-			AssertRouteData(result.RouteValues, null, action: "Index");
+			AssertRouteData(result.RouteValues, controller: "account", action: "Index");
+		}
+
+		[Test]
+		public void CreateAccountAjax()
+		{
+			_controller.SetFakeControllerContext("~/account/create", isAjax:true);
+
+			var args = new Account() {Name = "Name", Description = "Description", Type = AccountType.Asset};
+
+			_repository.Setup(x => x.Add(args))
+				.Returns("name");
+
+			var result = (JsonResult)_controller.Create(args);
+			Assert.That(result.Data, Is.EqualTo(args));
 		}
 
 		[Test]
