@@ -13,7 +13,7 @@ namespace HomeTrack.Core
 
 		public IImportDetector GetImportDetector(string filename)
 		{
-			return _importDetectors.Single(x => x.Matches(filename));
+			return _importDetectors.SingleOrDefault(x => x.Matches(filename));
 		}
 	}
 }

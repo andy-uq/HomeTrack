@@ -79,8 +79,9 @@ namespace HomeTrack.Web
 			PatternBuilder.Register(builder);
 
 			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new AsbCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new VisaCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterInstance(new AsbOrbitFastTrackCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterInstance(new AsbVisaCsvImportDetector()).As<IImportDetector>();
+			builder.RegisterInstance(new WestpacVisaCsvImportDetector()).As<IImportDetector>();
 			builder.RegisterType<ImportDetector>();
 			builder.RegisterType<TransactionImportContext>();
 
@@ -98,7 +99,7 @@ namespace HomeTrack.Web
 			var raven = ConfigurationManager.ConnectionStrings["raven"];
 
 			return raven.ConnectionString == "embedded"
-			                    	? new ConfigureEmbeddedDocumentStore {DataDirectory = Server.MapPath("~/App_Data")}
+			                    	? new ConfigureEmbeddedDocumentStore {DataDirectory = Server.MapPath("~/App_Data/RavenDb")}
 			                    	: new ConfigureDocumentStore();
 		}
 	}

@@ -87,8 +87,9 @@ namespace HomeTrack.Tests
 			var filename = TestSettings.GetFilename(ASB_FILENAME);
 			using (var reader = new CsvReader(filename))
 			{
-				reader.GetHeader(skip: 6);
-				AsbCsvImportRow actual = reader.GetData<AsbCsvImportRow>().First();
+				reader.GetHeader(skip: l => !l.StartsWith("Date", StringComparison.OrdinalIgnoreCase));
+				
+				AsbOrbitFastTrackCsvImportRow actual = reader.GetData<AsbOrbitFastTrackCsvImportRow>().First();
 				Assert.That(actual.Date, Is.EqualTo(DateTime.Parse("2012/08/05")));
 				Assert.That(actual.UniqueId, Is.EqualTo("2012080501"));
 				Assert.That(actual.Amount, Is.EqualTo(-3.80M));

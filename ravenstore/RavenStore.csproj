@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="AccountIdentifierRepository.cs" />
     <Compile Include="BudgetRepository.cs" />
+    <Compile Include="ConfigureDocumentStore.cs" />
     <Compile Include="ConfigureEmbeddedDocumentStore.cs" />
     <Compile Include="Documents\Account.cs" />
     <Compile Include="Documents\AccountIdentifier.cs" />

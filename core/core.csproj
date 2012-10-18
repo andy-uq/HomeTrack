@@ -49,9 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accumulator.cs" />
+    <Compile Include="AsbOrbitFastTrackCsvImportDetector.cs" />
+    <Compile Include="AsbVisaCsvImportDetector.cs" />
     <Compile Include="BudgetAllocator.cs" />
     <Compile Include="CompositePattern.cs" />
     <Compile Include="CsvReader.cs" />
+    <Compile Include="IImportDetector.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="ImportDetector.cs" />
     <Compile Include="ImportRowExtensions.cs" />
@@ -59,7 +62,7 @@
     <Compile Include="Patterns.cs" />
     <Compile Include="TransactionImport.cs" />
     <Compile Include="TransactionImportContext.cs" />
-    <Compile Include="VisaCsvImportDetector.cs" />
+    <Compile Include="WestpacVisaCsvImportDetector.cs" />
     <Compile Include="WestpacCsvImportDetector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

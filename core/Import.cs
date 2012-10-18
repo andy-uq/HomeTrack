@@ -19,13 +19,15 @@ namespace HomeTrack.Core
 			_importDetector = importDetector;
 		}
 
-		public void Open(string filename, Stream stream = null)
+		public bool Open(string filename, Stream stream = null)
 		{
 			_filename = filename;
-			_import = _importDetector.GetImportDetector(_filename);
 			_stream = stream ?? File.OpenRead(filename);
 
 			Name = Path.GetFileNameWithoutExtension(filename);
+
+			_import = _importDetector.GetImportDetector(_filename);
+			return _import != null;
 		}
 
 		public string ImportType { get { return _import.Name; } }
@@ -47,9 +49,12 @@ namespace HomeTrack.Core
 
 		private IImportRow BuildId(IImportRow row, int rowId)
 		{
-			row.Id = Name == null 
-				? rowId.ToString(CultureInfo.InvariantCulture) 
-				: string.Concat(Name, '/', rowId);
+			if ( row.Id == null )
+			{
+				row.Id = Name == null
+				         	? rowId.ToString(CultureInfo.InvariantCulture)
+				         	: string.Concat(Name, '/', rowId);
+			}
 
 			return row;
 		}

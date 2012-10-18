@@ -34,17 +34,20 @@ namespace HomeTrack.Core
 			}
 		}
 
-		public IEnumerable<string> GetHeader(int skip = 0)
+		public IEnumerable<string> GetHeader(Func<string, bool> skip = null)
 		{
 			if ( _header == null )
 			{
-				while ( skip > 0 )
+				string line;
+				do
 				{
-					_stream.ReadLine();
-					skip--;
-				}
+					line = _stream.ReadLine();
+					if ( line == null )
+					{
+						return Enumerable.Empty<string>();
+					}
+				} while (skip != null && skip(line));
 
-				var line = _stream.ReadLine();
 				_header = Decode(line).ToArray();
 			}
 
@@ -67,7 +70,7 @@ namespace HomeTrack.Core
 				v => (Action<T, string>)((instance, value) => {
 					var nativeValue = Convert.ChangeType(value, v.PropertyType);
 					v.SetValue(instance, nativeValue, null);
-				}));
+				}), StringComparer.OrdinalIgnoreCase);
 
 			Func<string[], T> map = data => {
 				var o = new T();
@@ -76,7 +79,15 @@ namespace HomeTrack.Core
 				{
 					var key = Regex.Replace(_header[i], @"\W+", string.Empty);
 					var value = data[i];
-					propertyMap[key](o, value);
+					Action<T, string> property;
+					if ( propertyMap.TryGetValue(key, out property) )
+					{
+						property(o, value);
+					}
+					else
+					{
+						throw new KeyNotFoundException("Cannot find key: " + key);
+					}
 				}
 
 				return o;

@@ -7,15 +7,6 @@ using System.Text.RegularExpressions;
 
 namespace HomeTrack.Core
 {
-	public interface IImportDetector
-	{
-		string Name { get; }
-		bool Matches(string filename);
-		IEnumerable<IImportRow> Import(Stream stream);
-
-		IEnumerable<string> GetPropertyNames();
-	}
-
 	public class WestpacCsvImportDetector : IImportDetector
 	{
 		public static readonly string[] PropertyNames = new[] {"Other Party", "Description", "Particulars", "Analysis Code", "Reference"};
@@ -62,53 +53,5 @@ namespace HomeTrack.Core
 				return reader.GetData<WestpacCsvImportRow>().ToArray();
 			}
 		}
-	}
-
-	public class AsbCsvImportDetector : IImportDetector
-	{
-		public static readonly string[] PropertyNames = new[] { "Cheque Number", "Memo", "Payee", "Transaction Type", "Unique Id" };
-
-		#region IImportDetector Members
-
-		public string Name
-		{
-			get { return "ASB"; }
-		}
-
-		public bool Matches(string asbFilename)
-		{
-			string filename = Path.GetFileName(asbFilename);
-			Debug.Assert(filename != null, "filename != null");
-
-			return Regex.IsMatch(filename, @"^Export\d{4}\d{2}\d{2}\d{2}\d{2}\d{2}\.csv$", RegexOptions.IgnoreCase);
-		}
-
-		public IEnumerable<IImportRow> Import(string wpFilename)
-		{
-			var reader = new CsvReader(wpFilename);
-			return ImportRows(reader);
-		}
-
-		public IEnumerable<IImportRow> Import(Stream stream)
-		{
-			var reader = new CsvReader(stream);
-			return ImportRows(reader);
-		}
-
-		public IEnumerable<string> GetPropertyNames()
-		{
-			return PropertyNames;
-		}
-
-		private static IEnumerable<IImportRow> ImportRows(CsvReader reader)
-		{
-			using ( reader )
-			{
-				reader.GetHeader(skip:6);
-				return reader.GetData<AsbCsvImportRow>().ToArray();
-			}
-		}
-
-		#endregion
 	}
 }

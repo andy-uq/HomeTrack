@@ -57,11 +57,11 @@ namespace HomeTrack.Tests
 
 			var data = new[]
 			{
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Id = "I/1", Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Id = "I/2", Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				}
@@ -101,15 +101,15 @@ namespace HomeTrack.Tests
 
 			var data = new[]
 			{
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
 				}
@@ -133,15 +133,15 @@ namespace HomeTrack.Tests
 
 			var data = new[]
 			{
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Id = "i/1", Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Id = "i/2", Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Id = "i/3", Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
 				}
@@ -198,15 +198,15 @@ namespace HomeTrack.Tests
 
 			var data = new[]
 			{
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
 				},
-				new VisaCsvImportRow
+				new WestpacVisaCsvImportRow
 				{
 					Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
 				}

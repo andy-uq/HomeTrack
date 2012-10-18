@@ -118,8 +118,8 @@ namespace HomeTrack.Web.Tests
 			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
 				.Returns(true);
 
-			var i1 = new VisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 10M, OtherParty = "COUNTDOWN" };
-			var i2 = new VisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 20M, OtherParty = "MERCURY ENERGY" };
+			var i1 = new WestpacVisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 10M, OtherParty = "COUNTDOWN" };
+			var i2 = new WestpacVisaCsvImportRow { ProcessDate = DateTime.Now.Date, Amount = 20M, OtherParty = "MERCURY ENERGY" };
 
 			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
 				.Returns<Stream>(_ => new[] { i1, i2 });
