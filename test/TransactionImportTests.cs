@@ -149,14 +149,16 @@ namespace HomeTrack.Tests
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
-			var mappings = new Dictionary<string, string>
+			var mappings = new Dictionary<string, ImportRowOptions>
 			{
-				{data[1].Id, _electricity.Id},
-				{data[2].Id, _groceries.Id},
+				{data[1].Id, new ImportRowOptions { Account = _electricity.Id } },
+				{data[2].Id, new ImportRowOptions { Account = _groceries.Id, Description = "Special event" }},
 			};
 
 			var transactions = import.Process(_import.Object, mappings).ToList();
 			AssertResult(import, transactions, _groceries);
+
+			Assert.That(transactions[1].Description, Is.EqualTo("Special event"));
 		}
 
 		private void AssertResult(TransactionImport import, ICollection<Transaction> transactions, Account expectedSecondAccount)

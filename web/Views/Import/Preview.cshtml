@@ -15,6 +15,7 @@
 				id = row.Id,
 				account = account == null ? null : account.Id,
 				date = row.Date,
+				description = row.Description,
 				drAmount = AccountType.Asset.ToDr(row.Amount).AsAmount(),
 				crAmount = AccountType.Asset.ToCr(row.Amount).AsAmount(),			
 				props
@@ -45,7 +46,8 @@
 			<td>
 				Dr
 			</td>
-			<td></td>
+			<td>Account</td>
+			<td>Description</td>
 		</tr>
 	</thead>
 	<tbody data-bind="foreach: data">
@@ -61,6 +63,7 @@
 			<td data-bind="text: drAmount"></td>
 			<td data-bind="text: crAmount"></td>
 			<td><select data-bind="options: $root.accounts, value: account, optionsText: 'Name', optionsValue: 'Id', optionsCaption: 'Please select...'"></select></td>
+			<td><input data-bind="value: description" /></td>
 			<td><img style="width:32px;height:32px" src="@Url.Content("~/Content/Images/tick.png")" data-bind="visible:account() != null" /></td>
 		</tr>
 	</tbody>
@@ -116,6 +119,7 @@
 		self.crAmount = row.crAmount;
 		self.initialAccount = row.account;
 		self.account = ko.observable(row.account);
+		self.description = ko.observable(row.description);
 		self.accountClass = ko.computed(function() {
 			if (!self.account())
 				return null;
@@ -146,7 +150,7 @@
 			var data = self.data();
 			_(data).each(function(i) {
 				if (i.account() != i.initialAccount) {
-					importRowMapping.push({ key: i.rowId, value: i.account() });
+					importRowMapping.push({ key: i.rowId, value: { account: i.account(), description: i.description() } });
 				}
 			});
 			

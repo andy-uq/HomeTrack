@@ -1,24 +1,47 @@
 ﻿@model TransactionIndexViewModel
 
+@{
+
+	var query =
+		(
+			from t in Model.Transactions
+			from a in t.RelatedAccounts()
+			where a != Model.Account
+			select new
+			{
+				t.Date,
+				AccountId = a.Id,
+				a.Name,
+				t.Description,
+				Debit = t.Debit.Where(x => x.Account == a).Select(x => (decimal?) x.Value).SingleOrDefault().AsAmount(),
+				Credit = t.Credit.Where(x => x.Account == a).Select(x => (decimal?) x.Value).SingleOrDefault().AsAmount(),
+				t.Id,
+			}
+		);
+	
+}
+
 <h2>@Model.Account.Name Transactions</h2>
 
 <table>
 	<thead>
 		<tr>
 			<td>Date</td>
-			<td>Name</td>
+			<td>Account</td>
+			<td>Description</td>
 			<td>Dr</td>
 			<td>Cr</td>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach ( var transaction in Model.Transactions )
+		@foreach ( var transaction in query )
 		{
 			<tr>
 				<td>@transaction.Date.ToString("d MMM")</td>
+				<td>@Html.ActionLink(transaction.Name, "index", new { id = transaction.AccountId })</td>
 				<td>@transaction.Description</td>
-				<td class="amount">@transaction.Debit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
-				<td class="amount">@transaction.Credit.Where(x => x.Account.Id == Model.Account.Id).Select(x => (decimal?)x.Value).SingleOrDefault().AsAmount()</td>
+				<td class="amount">@transaction.Debit</td>
+				<td class="amount">@transaction.Credit</td>
 				<td>@Html.ActionLink("Details", "details", new { transaction.Id, AccountId = Model.Account.Id })</td>
 			</tr>
 		}

@@ -72,6 +72,7 @@
     <Compile Include="IGeneralLedgerRepository.cs" />
     <Compile Include="IImportRepository.cs" />
     <Compile Include="ImportResult.cs" />
+    <Compile Include="ImportRowOptions.cs" />
     <Compile Include="IPattern.cs" />
     <Compile Include="ITypeMapProvider.cs" />
     <Compile Include="IUnitOfWork.cs" />

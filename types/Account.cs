@@ -3,7 +3,7 @@ using EnsureThat;
 
 namespace HomeTrack
 {
-	public class Account
+	public class Account : IEquatable<Account>
 	{
 		public Account()
 		{
@@ -15,6 +15,39 @@ namespace HomeTrack
 
 			Name = name;
 			Type = type;
+		}
+
+		public bool Equals(Account other)
+		{
+			if (ReferenceEquals(null, other)) return false;
+			if (ReferenceEquals(this, other)) return true;
+			
+			return Id == null 
+				? Equals(other.Name, Name) 
+				: Equals(other.Id, Id);
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != typeof (Account)) return false;
+			return Equals((Account) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return (Id ?? Name).GetHashCode();
+		}
+
+		public static bool operator ==(Account left, Account right)
+		{
+			return Equals(left, right);
+		}
+
+		public static bool operator !=(Account left, Account right)
+		{
+			return !Equals(left, right);
 		}
 
 		public string Id { get; set; }

@@ -7,7 +7,7 @@ namespace HomeTrack.Core
 	public class TransactionImport
 	{
 		private readonly TransactionImportContext _context;
-		private IDictionary<string, string> _mappings;
+		private IDictionary<string, ImportRowOptions> _mappings;
 
 		public TransactionImport(TransactionImportContext transactionImportContext, Account source)
 		{
@@ -21,7 +21,7 @@ namespace HomeTrack.Core
 		public Account Credit { get; private set; }
 		public Account UnclassifedDestination { get; set; }
 
-		public IEnumerable<Transaction> Process(IImport import, IDictionary<string, string> mappings = null)
+		public IEnumerable<Transaction> Process(IImport import, IDictionary<string, ImportRowOptions> mappings = null)
 		{
 			Result.Date = DateTimeServer.Now;
 			Result.Name = import.Name;
@@ -38,8 +38,22 @@ namespace HomeTrack.Core
 				from row in import.GetData()
 				where row.Amount != 0M
 				let account = GetAccount(row) ?? row.IdentifyAccount(_context.Patterns) ?? UnclassifedDestination
+				let description = GetDescription(row)
 				where account != null
-				select AsTransaction(row, account);
+				select AsTransaction(row, account, description);
+		}
+
+		private string GetDescription(IImportRow row)
+		{
+			if ( _mappings == null )
+			{
+				return null;
+			}
+
+			ImportRowOptions options;
+			return _mappings.TryGetValue(row.Id, out options)
+				? options.Description
+				: null;
 		}
 
 		private Account GetAccount(IImportRow row)
@@ -49,20 +63,20 @@ namespace HomeTrack.Core
 				return null;
 			}
 
-			string accountId;
-			return _mappings.TryGetValue(row.Id, out accountId) 
-				? _context.General[accountId] 
+			ImportRowOptions options;
+			return _mappings.TryGetValue(row.Id, out options) 
+				? _context.General[options.Account] 
 				: null;
 		}
 
-		private Transaction AsTransaction(IImportRow row, Account account)
+		private Transaction AsTransaction(IImportRow row, Account account, string description)
 		{
 			var transaction = row.Amount > 0 
 				? new Transaction(Credit, account, row.Amount) 
 				: new Transaction(account, Credit, -row.Amount);
 
 			transaction.Date = row.Date;
-			transaction.Description = row.Description;
+			transaction.Description = description ?? row.Description;
 			transaction.Reference = row.Id;
 
 			Result.TransactionCount++;

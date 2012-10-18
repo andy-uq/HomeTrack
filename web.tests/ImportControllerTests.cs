@@ -124,7 +124,7 @@ namespace HomeTrack.Web.Tests
 			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
 				.Returns<Stream>(_ => new[] { i1, i2 });
 
-			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id, new Dictionary<string, string>());
+			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id, new Dictionary<string, ImportRowOptions>());
 			Assert.That(result, Is.InstanceOf<PartialViewResult>());
 
 			var model = ((PartialViewResult)result).Model;

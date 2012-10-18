@@ -63,7 +63,7 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId, Dictionary<string, string> importRowMapping)
+		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId, Dictionary<string, ImportRowOptions> importRowMapping)
 		{
 			filename = filename.Replace("@", "/");
 
