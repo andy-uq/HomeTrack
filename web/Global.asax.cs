@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -20,7 +21,7 @@ namespace HomeTrack.Web
 		{
 		}
 
-		public MvcApplication(Func<string, string> mapPath)
+		protected MvcApplication(Func<string, string> mapPath)
 		{
 			_mapPath = mapPath;
 		}
@@ -66,7 +67,7 @@ namespace HomeTrack.Web
 
 		private IContainer RegisterIoc(ContainerBuilder builder)
 		{
-			EmbeddedDocumentStore.Build(builder);
+			RegisterRavenDb().Build(builder);
 
 			builder.RegisterType<MappingProvider>();
 			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
@@ -92,19 +93,13 @@ namespace HomeTrack.Web
 			return container;
 		}
 
-		public ConfigureEmbeddedDocumentStore EmbeddedDocumentStore
+		protected virtual IDemandBuilder RegisterRavenDb()
 		{
-			get
-			{
-				return _ravenDb ??
-				       (
-				       	_ravenDb = new ConfigureEmbeddedDocumentStore
-				       	{
-				       		DataDirectory = MapPath("~/App_Data/RavenDb"),
-				       		UseEmbeddedHttpServer = true
-				       	}
-				       );
-			}
+			var raven = ConfigurationManager.ConnectionStrings["raven"];
+
+			return raven.ConnectionString == "embedded"
+			                    	? new ConfigureEmbeddedDocumentStore {DataDirectory = Server.MapPath("~/App_Data")}
+			                    	: new ConfigureDocumentStore();
 		}
 	}
 }

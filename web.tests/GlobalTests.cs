@@ -7,6 +7,7 @@ using AutoMapper;
 using Autofac;
 using HomeTrack;
 using HomeTrack.Core;
+using HomeTrack.RavenStore;
 using HomeTrack.Web;
 using Moq;
 using NUnit.Framework;
@@ -16,17 +17,29 @@ namespace web.tests
 	[TestFixture]
 	public class GlobalTests
 	{
+		private class StubMvcApplication : MvcApplication
+		{
+			public StubMvcApplication() : base(path => path)
+			{
+			}
+
+			protected override IDemandBuilder RegisterRavenDb()
+			{
+				return new ConfigureEmbeddedDocumentStore { RunInMemory = true, };
+			}
+		}
+
 		[Test]
 		public void Start()
 		{
-			var global = new MvcApplication(p => p) { EmbeddedDocumentStore = { RunInMemory = true } };
+			var global = new StubMvcApplication();
 			global.Start(new GlobalFilterCollection(), new RouteCollection());
 		}
 
 		[Test]
 		public void ResolveIoc()
 		{
-			var global = new MvcApplication(p => p) { EmbeddedDocumentStore = { RunInMemory = true } };
+			var global = new StubMvcApplication();
 			global.Start(new GlobalFilterCollection(), new RouteCollection());
 			global.Container.Resolve<IMappingEngine>();
 			global.Container.Resolve<GeneralLedger>();
