@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using Newtonsoft.Json;
 using Raven.Client;
 using Raven.Client.Document;
+using Raven.Client.Embedded;
+using Raven.Imports.Newtonsoft.Json;
 
 namespace HomeTrack.RavenStore
 {
@@ -49,10 +50,14 @@ namespace HomeTrack.RavenStore
 
 		protected virtual void InitialiseDocumentStore(DocumentStore documentStore)
 		{
-			documentStore.DefaultDatabase = "HomeTrack";
-			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
+			if (!(documentStore is EmbeddableDocumentStore))
+			{
+				documentStore.DefaultDatabase = "HomeTrack";
+			}
 
+			documentStore.Conventions.CustomizeJsonSerializer = ConfigureJsonSerialiser;
 			documentStore.Initialize();
+
 			OnInitialise(documentStore);
 		}
 

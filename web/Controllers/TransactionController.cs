@@ -106,5 +106,10 @@ namespace HomeTrack.Web.Controllers
 
 			return View(model);
 		}
+
+		public ActionResult Edit(int id)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
