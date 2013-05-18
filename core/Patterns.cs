@@ -92,7 +92,7 @@ namespace HomeTrack.Core
 		public bool IsMatch(IImportRow importRow)
 		{
 			var value = importRow.Properties.SingleOrDefault(x => x.Key == Name);
-			return value.Value != null && Regex.IsMatch(value.Value);
+			return value.Value != null && Regex.IsMatch(value.Value.Trim());
 		}
 
 		public override string ToString()
