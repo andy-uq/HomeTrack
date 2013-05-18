@@ -27,6 +27,20 @@ namespace HomeTrack
 			}
 		}
 
+		public bool NavigateToRoot()
+		{
+			while (_path.Count > 1)
+			{
+				if ( _directory == null )
+					throw new InvalidOperationException("Invalid path stack");
+
+				_path.Pop();
+				_directory = _directory.Parent;
+			}
+
+			return true;
+		}
+
 		public bool NavigateTo(string path)
 		{
 			DirectoryInfo current = _directory;

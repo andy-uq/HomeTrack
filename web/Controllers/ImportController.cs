@@ -41,7 +41,11 @@ namespace HomeTrack.Web.Controllers
 			string name = Path.GetFileName(actualFilename);
 
 			var directoryName = Path.GetDirectoryName(actualFilename);
-			if (directoryName != null)
+			if (string.IsNullOrEmpty(directoryName))
+			{
+				_directoryExplorer.NavigateToRoot();
+			}
+			else
 			{
 				string directory = directoryName.Replace('\\', '/');
 
@@ -50,7 +54,11 @@ namespace HomeTrack.Web.Controllers
 			}
 
 			var import = new Import(_importDetector);
-			import.Open(_directoryExplorer.GetFilename(name));
+			var importDetected = import.Open(_directoryExplorer.GetFilename(name));
+			if (!importDetected)
+			{
+				return View("CouldNotDetectFileType");
+			}
 
 			var model = new ImportPreview
 			{
@@ -70,7 +78,11 @@ namespace HomeTrack.Web.Controllers
 			string name = Path.GetFileName(filename);
 
 			var directoryName = Path.GetDirectoryName(filename);
-			if ( directoryName != null )
+			if ( string.IsNullOrEmpty(directoryName) )
+			{
+				_directoryExplorer.NavigateToRoot();
+			}
+			else
 			{
 				string directory = directoryName.Replace('\\', '/');
 

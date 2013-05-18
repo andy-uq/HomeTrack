@@ -264,6 +264,7 @@
     <Content Include="Views\Import\History.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
     <Content Include="Scripts\jquery-2.0.0.min.map" />
+    <Content Include="Views\Import\CouldNotDetectFileType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.csproj">

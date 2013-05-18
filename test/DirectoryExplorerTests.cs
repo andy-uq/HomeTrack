@@ -28,6 +28,14 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
+		public void NavigateToRoot()
+		{
+			var explorer = new DirectoryExplorer(_directory);
+			Assert.That(explorer.NavigateToRoot(), Is.True);
+			Assert.That(explorer.Name, Is.EqualTo("/"));
+		}
+
+		[Test]
 		public void GetFiles()
 		{
 			var files = Directory.GetFiles(_directory);
