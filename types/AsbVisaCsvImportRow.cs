@@ -18,6 +18,7 @@ namespace HomeTrack
 				yield return new KeyValuePair<string, string>("Transaction Type", TranType);
 				yield return new KeyValuePair<string, string>("Unique Id", UniqueId);
 				yield return new KeyValuePair<string, string>("Reference", Reference);
+				yield return new KeyValuePair<string, string>("Description", Description);
 			}
 		}
 

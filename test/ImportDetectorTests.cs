@@ -137,7 +137,7 @@ namespace HomeTrack.Tests
 			};
 
 			Assert.That(asb.Properties.Select(x => x.Key), Is.EquivalentTo(AsbVisaCsvImportDetector.PropertyNames));
-			Assert.That(asb.Properties.Select(x => x.Value), Is.EquivalentTo(new[] { "2000-01-01", "TranType", "UniqueId", "Reference" }));
+			Assert.That(asb.Properties.Select(x => x.Value), Is.EquivalentTo(new[] { "2000-01-01", "TranType", "UniqueId", "Reference", null }));
 		}
 
 		[Test]
