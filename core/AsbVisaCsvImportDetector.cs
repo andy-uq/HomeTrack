@@ -9,7 +9,7 @@ namespace HomeTrack.Core
 {
 	public class AsbVisaCsvImportDetector : IImportDetector
 	{
-		public static readonly string[] PropertyNames = new[] { "Transaction Date", "Transaction Type", "Unique Id", "Reference" };
+		public static readonly string[] PropertyNames = new[] { "Transaction Date", "Transaction Type", "Unique Id", "Reference", "Description" };
 
 		#region IImportDetector Members							
 
