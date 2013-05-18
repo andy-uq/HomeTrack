@@ -142,7 +142,7 @@ namespace HomeTrack.Tests
 		public bool Equals(Account x, Account y)
 		{
 			return
-				x.Id == y.Id
+				x.Equals(y)
 				&& x.Balance == y.Balance;
 		}
 

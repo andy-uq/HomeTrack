@@ -51,11 +51,23 @@ namespace HomeTrack
 
 		public IEnumerable<Account> RelatedAccounts()
 		{
-			foreach (var amount in Debit)
-				yield return amount.Account;
+			var set = new HashSet<Account>();
 
-			foreach (var amount in Credit)
-				yield return amount.Account;
+			foreach ( var amount in Debit )
+			{
+				var account = amount.Account;
+
+				if (set.Add(account))
+					yield return account;
+			}
+
+			foreach ( var amount in Credit )
+			{
+				var account = amount.Account;
+
+				if (set.Add(account))
+					yield return amount.Account;
+			}
 		}
 
 		public bool Is(Account account)

@@ -16,7 +16,7 @@ namespace HomeTrack.Tests
 		public void SetUp()
 		{
 			_bank = AccountFactory.Asset("Bank");
-			_cashOnHand = AccountFactory.Asset("Bank");
+			_cashOnHand = AccountFactory.Asset("Cash on hand");
 			_mortgage = AccountFactory.Liability("Mortgage");
 
 			_transaction = new Transaction
@@ -52,7 +52,7 @@ namespace HomeTrack.Tests
 		public void RelatedAccounts()
 		{
 			var t = new Transaction(_cashOnHand, _bank, 10M);
-			Assert.That(t.RelatedAccounts(), Is.EqualTo(new[] {_bank, _cashOnHand}).Using(new AccountComparer()));
+			Assert.That(t.RelatedAccounts(), Is.EquivalentTo(new[] {_bank, _cashOnHand}).Using(new AccountComparer()));
 		}
 
 		[Test]
@@ -67,7 +67,7 @@ namespace HomeTrack.Tests
 		[Test]
 		public void IsDebitOrIsCredit()
 		{
-			var t = new Transaction(_cashOnHand, _bank, 10M);
+			var t = new Transaction(debit: _cashOnHand, credit: _bank, amount: 10M);
 
 			Assert.That(t.IsDebitAccount(_cashOnHand), Is.True);
 			Assert.That(t.IsDebitAccount(_bank), Is.False);
