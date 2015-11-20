@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web.tests", "web.tests\web.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "core\core.csproj", "{50504179-F2F9-4536-BE2F-F208C62D9DBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlstore", "sqlstore\sqlstore.csproj", "{7048E589-FE7F-4D58-87EE-118D65B4C6DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlstore.tests", "sqlstore.tests\sqlstore.tests.csproj", "{A35E1BC8-FD03-4415-A566-3370210DEA59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +56,14 @@ Global
 		{50504179-F2F9-4536-BE2F-F208C62D9DBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50504179-F2F9-4536-BE2F-F208C62D9DBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50504179-F2F9-4536-BE2F-F208C62D9DBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7048E589-FE7F-4D58-87EE-118D65B4C6DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7048E589-FE7F-4D58-87EE-118D65B4C6DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7048E589-FE7F-4D58-87EE-118D65B4C6DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7048E589-FE7F-4D58-87EE-118D65B4C6DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
