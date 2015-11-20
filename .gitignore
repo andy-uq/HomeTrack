@@ -164,3 +164,4 @@ pip-log.txt
 
 /web/App_Data
 /web/App_Data/RavenDb
+/.vs
