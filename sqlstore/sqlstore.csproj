@@ -7,8 +7,8 @@
     <ProjectGuid>{7048E589-FE7F-4D58-87EE-118D65B4C6DD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sqlstore</RootNamespace>
-    <AssemblyName>sqlstore</AssemblyName>
+    <RootNamespace>HomeTrack.SqlStore</RootNamespace>
+    <AssemblyName>HomeTrack.SqlStore</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,7 +52,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
