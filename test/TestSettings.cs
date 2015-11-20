@@ -8,7 +8,7 @@ namespace HomeTrack.Tests
 		private static readonly Dictionary<string, string> _mapPath = new Dictionary<string, string>()
 		{
 			{ "TBPC16", @"D:\Users\andy\Documents\GitHub\HomeTrack" },
-			{ "ARCHANGEL", @"C:\Users\andy\Documents\GitHub\HomeTrack" }
+			{ "ARCHANGEL", @"C:\dotnet\HomeTrack" }
 		};
 
 		public static string GetFilename(string filename)
