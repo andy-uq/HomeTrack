@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountIdentifierRepository.cs" />
+    <Compile Include="GeneralLedgerRepository.cs" />
+    <Compile Include="ImportRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
