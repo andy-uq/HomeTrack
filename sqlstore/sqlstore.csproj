@@ -42,6 +42,10 @@
       <HintPath>..\packages\FluentMigrator.1.6.1\lib\40\FluentMigrator.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FluentMigrator.Runner, Version=1.6.1.0, Culture=neutral, PublicKeyToken=aacfc7de5acabf05, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentMigrator.Runner.1.6.1\lib\40\FluentMigrator.Runner.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountIdentifierRepository.cs" />
+    <Compile Include="CreateDatabase.cs" />
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\AccountIdentifier.cs" />
+    <Compile Include="Models\Budget.cs" />
+    <Compile Include="Models\ImportResult.cs" />
+    <Compile Include="Models\Transaction.cs" />
     <Compile Include="GeneralLedgerRepository.cs" />
     <Compile Include="ImportRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

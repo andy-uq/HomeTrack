@@ -1,10 +1,18 @@
 ﻿using System.Collections.Generic;
-using HomeTrack;
+using System.Data.SqlClient;
+using Dapper;
 
-namespace sqlstore
+namespace HomeTrack.SqlStore
 {
 	public class AccountIdentifierRepository : IAccountIdentifierRepository
 	{
+		private readonly SqlConnection _database;
+
+		public AccountIdentifierRepository(SqlConnection database)
+		{
+			_database = database;
+		}
+
 		public void AddOrUpdate(AccountIdentifier identifier)
 		{
 		}

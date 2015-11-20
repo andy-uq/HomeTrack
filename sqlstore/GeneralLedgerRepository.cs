@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
-using HomeTrack;
+using System.Data.SqlClient;
+using Dapper;
 
-namespace sqlstore
+namespace HomeTrack.SqlStore
 {
 	public class GeneralLedgerRepository : IGeneralLedgerRepository
 	{
-		public void Dispose()
+		private readonly SqlConnection _database;
+
+		public GeneralLedgerRepository(SqlConnection database)
 		{
+			_database = database;
 		}
 
 		public IEnumerable<Account> Accounts { get; }
@@ -15,7 +19,8 @@ namespace sqlstore
 
 		public Account GetAccount(string accountId)
 		{
-			return null;
+			var account = _database.Query<Models.Account>("SELECT * FROM Account WHERE Id=@accountId", new {accountId});
+			return account.MapTo<Account>();
 		}
 
 		public bool DeleteAccount(string accountId)
@@ -50,6 +55,10 @@ namespace sqlstore
 		public Transaction GetTransaction(int id)
 		{
 			return null;
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }
