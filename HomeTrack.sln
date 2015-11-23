@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlstore", "sqlstore\sqlsto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlstore.tests", "sqlstore.tests\sqlstore.tests.csproj", "{A35E1BC8-FD03-4415-A566-3370210DEA59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csproj", "{15894576-3828-48EA-9EF1-F735169F6430}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A35E1BC8-FD03-4415-A566-3370210DEA59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15894576-3828-48EA-9EF1-F735169F6430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15894576-3828-48EA-9EF1-F735169F6430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15894576-3828-48EA-9EF1-F735169F6430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15894576-3828-48EA-9EF1-F735169F6430}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
