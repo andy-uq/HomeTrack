@@ -18,7 +18,7 @@ namespace HomeTrack.SqlStore.Tests
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterFeature<MappingFeature>();
-			//builder.RegisterMappings(Assembly.GetAssembly(typeof(Models.Tracking.RawTrackingEvent)));
+			builder.RegisterMappings(Assembly.GetAssembly(typeof(Models.Account)));
 
 			builder.RegisterFeature<TestLogging>();
 

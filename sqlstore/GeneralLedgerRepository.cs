@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Dapper;
+using HomeTrack.Mapping;
 
 namespace HomeTrack.SqlStore
 {
@@ -22,12 +23,8 @@ namespace HomeTrack.SqlStore
 
 		public Account GetAccount(string accountId)
 		{
-			var account = _database.Query<Models.Account>("SELECT Account.* FROM Account WHERE Id=@accountId", new {accountId}).Single();
-			return new Account(account.Name, (AccountType )Enum.Parse(typeof(AccountType), account.AccountTypeName, ignoreCase: false))
-			{
-				Description = account.Description,
-				Id = account.Id,
-			};
+			var account = _database.Query<Models.Account>("SELECT Id, Name, Description, AccountTypeName FROM Account WHERE Id=@accountId", new {accountId}).Single();
+			return account.Map<HomeTrack.Account>();
 		}
 
 		public bool DeleteAccount(string accountId)

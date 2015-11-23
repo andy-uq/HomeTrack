@@ -87,6 +87,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{15894576-3828-48EA-9EF1-F735169F6430}</Project>
+      <Name>common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\types\types.csproj">
       <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>
       <Name>types</Name>
