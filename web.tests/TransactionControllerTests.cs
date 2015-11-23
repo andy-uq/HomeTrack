@@ -68,10 +68,10 @@ namespace HomeTrack.Web.Tests
 			var t1 = new Transaction(_bank, _income, 10M);
 
 			_repository
-				.Setup(x => x.GetTransaction(1))
+				.Setup(x => x.GetTransaction("1"))
 				.Returns(t1);
 
-			var result = _controller.Details(1, _income.Id);
+			var result = _controller.Details("1", _income.Id);
 			Assert.That(result.Model, Is.InstanceOf<ViewModels.TransactionDetails>());
 
 			var model = (ViewModels.TransactionDetails) result.Model;

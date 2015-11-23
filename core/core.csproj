@@ -44,6 +44,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Autofac.3.0.2\lib\net40\Autofac.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accumulator.cs" />
+    <Compile Include="ApplicationFeature.cs" />
     <Compile Include="AsbOrbitFastTrackCsvImportDetector.cs" />
     <Compile Include="AsbVisaCsvImportDetector.cs" />
     <Compile Include="BudgetAllocator.cs" />
@@ -72,13 +85,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{15894576-3828-48ea-9ef1-f735169f6430}</Project>
+      <Name>common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\types\types.csproj">
       <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>
       <Name>types</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

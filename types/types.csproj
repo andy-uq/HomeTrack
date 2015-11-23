@@ -44,13 +44,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Autofac.3.0.2\lib\net40\Autofac.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="AutoMapper, Version=2.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AutoMapper.2.2.1\lib\net40\AutoMapper.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EnsureThat, Version=0.10.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Ensure.That.0.10.1\lib\net40\EnsureThat.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.FullNetFx.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -74,7 +82,7 @@
     <Compile Include="EntryType.cs" />
     <Compile Include="GeneralLedger.cs" />
     <Compile Include="IAccountIdentifierRepository.cs" />
-    <Compile Include="IDemandBuilder.cs" />
+    <Compile Include="IAccountLookup.cs" />
     <Compile Include="IGeneralLedgerRepository.cs" />
     <Compile Include="IImportRepository.cs" />
     <Compile Include="ImportResult.cs" />
@@ -90,6 +98,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{15894576-3828-48ea-9ef1-f735169f6430}</Project>
+      <Name>common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

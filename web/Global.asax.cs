@@ -7,7 +7,9 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using HomeTrack.Core;
-using HomeTrack.RavenStore;
+using HomeTrack.Ioc;
+using HomeTrack.Mapping;
+using HomeTrack.SqlStore;
 using HomeTrack.Web.Controllers;
 
 namespace HomeTrack.Web
@@ -15,7 +17,6 @@ namespace HomeTrack.Web
 	public class MvcApplication : HttpApplication
 	{
 		private readonly Func<string, string> _mapPath;
-		private ConfigureEmbeddedDocumentStore _ravenDb;
 
 		public MvcApplication()
 		{
@@ -67,8 +68,6 @@ namespace HomeTrack.Web
 
 		private IContainer RegisterIoc(ContainerBuilder builder)
 		{
-			RegisterRavenDb().Build(builder);
-
 			builder.RegisterType<MappingProvider>();
 			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
 			builder.Register(c => c.Resolve<MappingProvider>().Build());
@@ -76,16 +75,10 @@ namespace HomeTrack.Web
 			var path = MapPath("~/App_Data");
 			builder.Register(c => new DirectoryExplorer(path));
 
-			PatternBuilder.Register(builder);
+			builder.RegisterFeature<ApplicationFeature>();
+			builder.RegisterFeature<SqlStoreFeature>();
+			RegisterDataProvider(builder);
 
-			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new AsbOrbitFastTrackCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new AsbVisaCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new WestpacVisaCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterType<ImportDetector>();
-			builder.RegisterType<TransactionImportContext>();
-
-			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 
 			IContainer container = builder.Build();
@@ -94,13 +87,13 @@ namespace HomeTrack.Web
 			return container;
 		}
 
-		protected virtual IDemandBuilder RegisterRavenDb()
+		protected virtual void RegisterDataProvider(ContainerBuilder builder)
 		{
-			var raven = ConfigurationManager.ConnectionStrings["raven"];
+			var connection = ConfigurationManager.ConnectionStrings["sqldb"];
+			if (connection == null)
+				throw new InvalidOperationException("Cannot find connectionString \"HomeTrackDatabase\"");
 
-			return raven.ConnectionString == "embedded"
-			                    	? new ConfigureEmbeddedDocumentStore {DataDirectory = Server.MapPath("~/App_Data/RavenDb")}
-			                    	: new ConfigureDocumentStore();
+			builder.Register(resolver => new System.Data.SqlClient.SqlConnection(connection.ConnectionString));
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace HomeTrack.RavenStore
 			_mappingEngine = mappingEngine;
 		}
 
-		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{
@@ -30,6 +30,8 @@ namespace HomeTrack.RavenStore
 
 				session.Store(document);
 				session.SaveChanges();
+
+				return result.Id;
 			}
 		}
 
@@ -39,7 +41,7 @@ namespace HomeTrack.RavenStore
 			return results.Hydrate<HomeTrack.ImportResult>(_mappingEngine);
 		}
 
-		public IEnumerable<ImportedTransaction> GetTransactionIds(string importId)
+		public IEnumerable<ImportedTransaction> GetTransactionIds(int importId)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{
@@ -48,12 +50,12 @@ namespace HomeTrack.RavenStore
 			}
 		}
 
-		public IEnumerable<Transaction> GetTransactions(string importId)
+		public IEnumerable<Transaction> GetTransactions(int importId)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{
 				var import = session.Load<Documents.ImportResult>(QualifiedId("imports", importId));
-				var transactions = session.Load<Documents.Transaction>(import.Transactions.Select(x => QualifiedId("transactions", x.TransactionId)));
+				var transactions = session.Load<Documents.Transaction>(import.Transactions.Select(x => x.TransactionId));
 				return transactions.Hydrate<Transaction>(_mappingEngine);
 			}
 		}

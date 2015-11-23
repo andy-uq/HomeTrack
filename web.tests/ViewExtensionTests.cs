@@ -22,7 +22,7 @@ namespace HomeTrack.Web.Tests
 		{
 			Assert.That(DateTime.Parse("2012-1-1").Format(), Is.EqualTo("1 Jan"));
 			Assert.That(DateTime.Parse("2012-1-1").Format(fullDate:true), Is.EqualTo("1 Jan, 2012"));
-			Assert.That(DateTime.Parse("2012-1-1 9:30").Format(fullDate:true, showTime:true), Is.EqualTo("1 Jan, 2012, 9:30 AM"));
+			Assert.That(DateTime.Parse("2012-1-1 9:30").Format(fullDate:true, showTime:true), Is.EqualTo("1 Jan, 2012, 9:30 a.m."));
 		}
 
 		[Test]

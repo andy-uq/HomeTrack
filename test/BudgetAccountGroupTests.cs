@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using FluentAssertions;
 using HomeTrack.Core;
 using NUnit.Framework;
 
 namespace HomeTrack.Tests
 {
+	// TODO: Change to fixie to stop breaking on parallel execution
 	[TestFixture]
 	public class BudgetAccountGroupTests
 	{
@@ -89,13 +91,18 @@ namespace HomeTrack.Tests
 		{
 			var budgetAccount = AccountFactory.Expense("Expense Budget");
 			var bank = AccountFactory.Asset("Bank", 1000M);
-			
+
+			_general.Add(budgetAccount);
+			_general.Add(bank);
+
 			var allocateTransaction = _b.Allocate(budgetAccount);
 			_general.Post(allocateTransaction);
 
-			var tuple = _b.Pay(budgetAccount, bank, 50M);
-			_general.Post(tuple.Item1);
-			_general.Post(tuple.Item2);
+			Assert.That(_expenseBudgetAccount.Balance, Is.EqualTo(100M));
+			Assert.That(_expenseAccount.Balance, Is.EqualTo(0M));
+
+			var transaction = _b.Pay(budgetAccount, bank, 50M);
+			_general.Post(transaction);
 
 			Assert.That(_expenseBudgetAccount.Balance, Is.EqualTo(50M));
 			Assert.That(_expenseAccount.Balance, Is.EqualTo(50M));
@@ -109,14 +116,14 @@ namespace HomeTrack.Tests
 			var allocateTransaction = _b.Allocate(budgetAccount);
 			_general.Post(allocateTransaction);
 
-			var tuple = _b.Pay(budgetAccount, bank, 150M);
-			_general.Post(tuple.Item1);
-			_general.Post(tuple.Item2);
+			var transaction = _b.Pay(budgetAccount, bank, 150M);
+			_general.Post(transaction).Should().BeTrue();
 	
-			Assert.That(_expenseBudgetAccount.Balance, Is.EqualTo(-50M));
 			Assert.That(_expenseAccount.Balance, Is.EqualTo(150M));
 			Assert.That(bank.Balance, Is.EqualTo(850M));
 			Assert.That(budgetAccount.Balance, Is.EqualTo(50M));
+
+			Assert.That(_expenseBudgetAccount.Balance, Is.EqualTo(-50M));
 		}
 
 		[Test]
@@ -128,9 +135,8 @@ namespace HomeTrack.Tests
 			var allocateTransaction = _b.Allocate(budgetAccount);
 			_general.Post(allocateTransaction);
 
-			var tuple = _b.Pay(budgetAccount, bank, 50M);
-			_general.Post(tuple.Item1);
-			_general.Post(tuple.Item2);
+			var transaction = _b.Pay(budgetAccount, bank, 50M);
+			_general.Post(transaction);
 
 			Assert.That(_expenseBudgetAccount.Balance, Is.EqualTo(50M));
 			Assert.That(_expenseAccount.Balance, Is.EqualTo(50M));

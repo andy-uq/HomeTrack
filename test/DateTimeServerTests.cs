@@ -18,7 +18,7 @@ namespace HomeTrack.Tests
 		}
 
 		[Test]
-		public void TheadGlobalTimeServerIsShared()
+		public void ThreadGlobalTimeServerIsShared()
 		{
 			var ts1 = new TestDateTimeServer(now: new DateTime(2011, 1, 1));
 			var ts2 = new TestDateTimeServer(now: new DateTime(2012, 1, 1));

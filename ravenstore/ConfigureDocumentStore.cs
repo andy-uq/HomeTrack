@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
+using HomeTrack.Ioc;
 using Raven.Client;
 using Raven.Client.Document;
 using Raven.Client.Embedded;
@@ -8,7 +9,7 @@ using Raven.Imports.Newtonsoft.Json;
 
 namespace HomeTrack.RavenStore
 {
-	public class ConfigureDocumentStore : IDemandBuilder
+	public class ConfigureDocumentStore : IFeatureRegistration
 	{
 		protected virtual DocumentStore CreateDocumentStore()
 		{
@@ -18,7 +19,7 @@ namespace HomeTrack.RavenStore
 			};
 		}
 
-		public void Build(ContainerBuilder builder)
+		public void Register(ContainerBuilder builder)
 		{
 			var store = CreateDocumentStore();
 			InitialiseDocumentStore(store);

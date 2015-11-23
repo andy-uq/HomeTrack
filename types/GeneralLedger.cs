@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace HomeTrack
 {
-	public class GeneralLedger : IEnumerable<Account>
+	public class GeneralLedger : IAccountLookup
 	{
 		private readonly IGeneralLedgerRepository _repository;
 
@@ -40,7 +40,7 @@ namespace HomeTrack
 			return debit == credit;
 		}
 
-		public Transaction GetTransaction(int id)
+		public Transaction GetTransaction(string id)
 		{
 			return _repository.GetTransaction(id);
 		}
@@ -76,7 +76,22 @@ namespace HomeTrack
 				ProcessBudgetPayout(transaction, account, budgets);
 			}
 
-			return _repository.Post(transaction);
+			if (transaction.Check())
+			{
+				transaction.Id = TransactionId.From(transaction);
+				if (_repository.Post(transaction))
+				{
+					foreach (var debitAmount in transaction.Debit)
+						debitAmount.Post();
+
+					foreach (var creditAmount in transaction.Credit)
+						creditAmount.Post();
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		private void ProcessBudgetPayout(Transaction transaction, Account account, IEnumerable<Budget> budgets)

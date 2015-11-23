@@ -4,9 +4,9 @@ namespace HomeTrack
 {
 	public interface IImportRepository
 	{
-		void Save(ImportResult result, IEnumerable<Transaction> transactions);
+		int Save(ImportResult result, IEnumerable<Transaction> transactions);
 		IEnumerable<ImportResult> GetAll();
-		IEnumerable<ImportedTransaction> GetTransactionIds(string importId);
-		IEnumerable<Transaction> GetTransactions(string importId);
+		IEnumerable<ImportedTransaction> GetTransactionIds(int importId);
+		IEnumerable<Transaction> GetTransactions(int importId);
 	}
 }
