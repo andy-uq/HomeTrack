@@ -32,7 +32,7 @@ namespace HomeTrack
 
 		public IMappingEngine Build()
 		{
-			var map = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.AllMappers());
+			var map = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.Mappers);
 			foreach (var provider in _providers)
 				provider.RegisterTypeMaps(map);
 

@@ -38,7 +38,7 @@ namespace HomeTrack.Mapping
 		private object GetObjectMappers(IComponentContext resolveContext)
 		{
 			var mappers = new List<IObjectMapper>(resolveContext.Resolve<IEnumerable<IObjectMapper>>());
-			//mappers.AddRange(MapperRegistry.Mappers);
+			mappers.AddRange(MapperRegistry.Mappers);
 
 			return mappers;
 		}
