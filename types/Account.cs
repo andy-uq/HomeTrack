@@ -21,7 +21,6 @@ namespace HomeTrack
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public AccountType Type { get; set; }
-		public decimal Balance { get; set; }
 
 		public EntryType Direction
 		{
@@ -35,6 +34,8 @@ namespace HomeTrack
 				return Type.IsDebitOrCredit();
 			}
 		}
+
+		public decimal Balance { get; set; }
 
 		public void Post(decimal amount, EntryType entryType)
 		{

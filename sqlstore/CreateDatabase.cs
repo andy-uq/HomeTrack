@@ -9,6 +9,7 @@ namespace HomeTrack.SqlStore
 		public const string AccountType = nameof(AccountType);
 	}
 
+	[Migration(1)]
 	public class CreateDatabase : Migration
 	{
 		public override void Up()
@@ -23,7 +24,7 @@ namespace HomeTrack.SqlStore
 			Create.Table(TableNames.Account)
 				.WithColumn("Id").AsString(50).PrimaryKey()
 				.WithColumn("Name").AsString()
-				.WithColumn("Description").AsString()
+				.WithColumn("Description").AsString().Nullable()
 				.WithColumn("AccountTypeName").AsString(20).ForeignKey(TableNames.AccountType, "Name")
 				;
 		}

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Dapper;
 
 namespace HomeTrack.SqlStore
@@ -19,8 +22,12 @@ namespace HomeTrack.SqlStore
 
 		public Account GetAccount(string accountId)
 		{
-			var account = _database.Query<Models.Account>("SELECT * FROM Account WHERE Id=@accountId", new {accountId});
-			return account.MapTo<Account>();
+			var account = _database.Query<Models.Account>("SELECT Account.* FROM Account WHERE Id=@accountId", new {accountId}).Single();
+			return new Account(account.Name, (AccountType )Enum.Parse(typeof(AccountType), account.AccountTypeName, ignoreCase: false))
+			{
+				Description = account.Description,
+				Id = account.Id,
+			};
 		}
 
 		public bool DeleteAccount(string accountId)
@@ -35,7 +42,12 @@ namespace HomeTrack.SqlStore
 
 		public string Add(Account account)
 		{
-			return null;
+			var id = account.Id ?? Regex.Replace(account.Name.ToLower(), "[^a-z0-9-/]", "");
+
+			_database.Execute("INSERT INTO [Account] (Id, Name, Description, AccountTypeName) VALUES (@id, @name, @description, @accountTypeName)",
+				new { Id = id, account.Name, account.Description, accountTypeName = account.Type.ToString() });
+
+			return id;
 		}
 
 		public void AddBudget(Budget budget)
@@ -59,6 +71,7 @@ namespace HomeTrack.SqlStore
 
 		public void Dispose()
 		{
+			_database.Dispose();
 		}
 	}
 }

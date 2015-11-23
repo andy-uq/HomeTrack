@@ -7,7 +7,7 @@ namespace HomeTrack.Tests
 	{
 		private static readonly Dictionary<string, string> _mapPath = new Dictionary<string, string>()
 		{
-			{ "TBPC16", @"D:\Users\andy\Documents\GitHub\HomeTrack" },
+			{ "ANDYCLARKE", @"C:\Users\andy.clarke\Documents\GitHub\HomeTrack" },
 			{ "ARCHANGEL", @"C:\dotnet\HomeTrack" }
 		};
 
