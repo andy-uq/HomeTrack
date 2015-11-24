@@ -7,6 +7,7 @@ using AutoMapper;
 using Autofac;
 using HomeTrack;
 using HomeTrack.Core;
+using HomeTrack.Ioc;
 using HomeTrack.RavenStore;
 using HomeTrack.Web;
 using Moq;
@@ -23,7 +24,7 @@ namespace web.tests
 			{
 			}
 
-			protected override IDemandBuilder RegisterRavenDb()
+			protected override IFeatureRegistration RegisterRavenDb()
 			{
 				return new ConfigureEmbeddedDocumentStore { RunInMemory = true, };
 			}

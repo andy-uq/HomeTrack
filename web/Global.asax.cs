@@ -7,6 +7,7 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using HomeTrack.Core;
+using HomeTrack.Ioc;
 using HomeTrack.RavenStore;
 using HomeTrack.Web.Controllers;
 
@@ -67,7 +68,7 @@ namespace HomeTrack.Web
 
 		private IContainer RegisterIoc(ContainerBuilder builder)
 		{
-			RegisterRavenDb().Build(builder);
+			RegisterRavenDb().Register(builder);
 
 			builder.RegisterType<MappingProvider>();
 			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
@@ -76,16 +77,8 @@ namespace HomeTrack.Web
 			var path = MapPath("~/App_Data");
 			builder.Register(c => new DirectoryExplorer(path));
 
-			PatternBuilder.Register(builder);
+			builder.RegisterFeature<ApplicationFeature>();
 
-			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new AsbOrbitFastTrackCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new AsbVisaCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterInstance(new WestpacVisaCsvImportDetector()).As<IImportDetector>();
-			builder.RegisterType<ImportDetector>();
-			builder.RegisterType<TransactionImportContext>();
-
-			builder.RegisterType<GeneralLedger>();
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 
 			IContainer container = builder.Build();
@@ -94,7 +87,7 @@ namespace HomeTrack.Web
 			return container;
 		}
 
-		protected virtual IDemandBuilder RegisterRavenDb()
+		protected virtual IFeatureRegistration RegisterRavenDb()
 		{
 			var raven = ConfigurationManager.ConnectionStrings["raven"];
 

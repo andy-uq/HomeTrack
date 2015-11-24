@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accumulator.cs" />
+    <Compile Include="ApplicationFeature.cs" />
     <Compile Include="AsbOrbitFastTrackCsvImportDetector.cs" />
     <Compile Include="AsbVisaCsvImportDetector.cs" />
     <Compile Include="BudgetAllocator.cs" />
@@ -84,6 +85,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{15894576-3828-48ea-9ef1-f735169f6430}</Project>
+      <Name>common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\types\types.csproj">
       <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>
       <Name>types</Name>

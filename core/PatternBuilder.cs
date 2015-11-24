@@ -4,16 +4,26 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Autofac;
+using HomeTrack.Ioc;
 
 namespace HomeTrack.Core
 {
+	public class PatternsFeature : IFeatureRegistration
+	{
+		public void Register(ContainerBuilder builder)
+		{
+			foreach (var b in PatternBuilder.GetPatterns())
+				builder.RegisterInstance(b);
+		}
+	}
+
 	public class PatternBuilder
 	{
 		private readonly Func<Dictionary<string, string>, IPattern> _build;
 		private readonly Func<IPattern, Dictionary<string, string>> _parse;
 
-		public string Name { get; set; }
-		public Dictionary<string, string> Properties { get; set; }
+		public string Name { get; }
+		public Dictionary<string, string> Properties { get; private set; }
 
 		private PatternBuilder(string name, IEnumerable<string> properties, Func<Dictionary<string, string>, IPattern> build, Func<IPattern, Dictionary<string,string>> parse)
 		{
@@ -26,12 +36,6 @@ namespace HomeTrack.Core
 		private void SetValues(IPattern pattern)
 		{
 			Properties = _parse(pattern);
-		}
-
-		public static void Register(ContainerBuilder builder)
-		{
-			foreach ( var b in GetPatterns() )
-				builder.RegisterInstance(b);
 		}
 
 		public static IEnumerable<PatternBuilder> GetPatterns()
