@@ -15,11 +15,17 @@ namespace HomeTrack.SqlStore
 		public override void Up()
 		{
 			Create.Table(TableNames.AccountType)
-				.WithColumn("Name").AsString(20).PrimaryKey();
+				.WithColumn("Name").AsString(20).PrimaryKey()
+				.WithColumn("IsDebitOrCredit").AsString(20);
 
-			foreach (var name in Enum.GetNames(typeof (AccountType)))
+			foreach (AccountType value in Enum.GetValues(typeof (AccountType)))
+			{
+				if (value == AccountType.NotSet)
+					continue;
+
 				Insert.IntoTable(TableNames.AccountType)
-					.Row(new {name});
+					.Row(new {name = value.ToString(), isDebitOrCredit = value.IsDebitOrCredit().ToString() });
+			}
 
 			Create.Table(TableNames.Account)
 				.WithColumn("Id").AsString(50).PrimaryKey()

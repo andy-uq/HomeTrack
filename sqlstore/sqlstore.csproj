@@ -82,6 +82,7 @@
     <Compile Include="GeneralLedgerRepository.cs" />
     <Compile Include="ImportRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlStoreFeature.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

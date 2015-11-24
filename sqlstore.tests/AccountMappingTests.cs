@@ -6,7 +6,6 @@ namespace HomeTrack.SqlStore.Tests
 {
 	public class AccountMappingTests
 	{
-		[Test]
 		public void ToModel()
 		{
 			var account = new HomeTrack.Account("Bank", AccountType.Asset);
@@ -15,7 +14,6 @@ namespace HomeTrack.SqlStore.Tests
 			model.AccountTypeName.Should().Be("Asset");
 		}
 
-		[Test]
 		public void FromModel()
 		{
 			var model = new Models.Account { AccountTypeName = "Asset" };

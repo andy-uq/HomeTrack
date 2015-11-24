@@ -17,13 +17,46 @@ namespace HomeTrack.SqlStore
 			_database = database;
 		}
 
-		public IEnumerable<Account> Accounts { get; }
-		public IEnumerable<Account> DebitAccounts { get; }
-		public IEnumerable<Account> CreditAccounts { get; }
+		public IEnumerable<Account> Accounts
+		{
+			get
+			{
+				var accounts = _database.Query<Models.Account>("SELECT Account.* FROM Account");
+				return accounts.MapAll<HomeTrack.Account>();
+			}
+		}
+
+		public IEnumerable<Account> DebitAccounts
+		{
+			get
+			{
+				var accounts = GetAccounts(EntryType.Debit);
+				return accounts.MapAll<HomeTrack.Account>();
+			}
+		}
+
+		public IEnumerable<Account> CreditAccounts
+		{
+			get
+			{
+				var accounts = GetAccounts(EntryType.Credit);
+				return accounts.MapAll<HomeTrack.Account>();
+			}
+		}
+
+		private IEnumerable<Models.Account> GetAccounts(EntryType entryType)
+		{
+			return _database.Query<Models.Account>(
+				@"SELECT Account.* 
+					FROM Account 
+						INNER JOIN AccountType ON AccountType.Name = AccountTypeName 
+					WHERE AccountType.IsDebitOrCredit = @debitOrCredit",
+				new {debitOrCredit = entryType.ToString()});
+		}
 
 		public Account GetAccount(string accountId)
 		{
-			var account = _database.Query<Models.Account>("SELECT Id, Name, Description, AccountTypeName FROM Account WHERE Id=@accountId", new {accountId}).Single();
+			var account = _database.Query<Models.Account>("SELECT Account.* FROM Account WHERE Id=@accountId", new {accountId}).Single();
 			return account.Map<HomeTrack.Account>();
 		}
 

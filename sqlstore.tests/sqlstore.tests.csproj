@@ -61,6 +61,10 @@
       <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Fixie, Version=1.0.0.29, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fixie.1.0.0.29\lib\net45\Fixie.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FluentAssertions, Version=4.0.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.4.0.1\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
@@ -77,8 +81,8 @@
       <HintPath>..\packages\FluentMigrator.Runner.1.6.1\lib\40\FluentMigrator.Runner.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
@@ -106,6 +110,7 @@
     <Compile Include="CreateTestData.cs" />
     <Compile Include="DatabaseExtensions.cs" />
     <Compile Include="IntegrationSettings.cs" />
+    <Compile Include="IoC.cs" />
     <Compile Include="MigrationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDatabase.cs" />
@@ -136,6 +141,14 @@
       <Project>{15894576-3828-48EA-9EF1-F735169F6430}</Project>
       <Name>common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\core\core.csproj">
+      <Project>{50504179-f2f9-4536-be2f-f208c62d9dbb}</Project>
+      <Name>core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\fixie.shim\fixie.shim.csproj">
+      <Project>{3970f251-0ada-4daf-9571-a3a60beac7c5}</Project>
+      <Name>fixie.shim</Name>
+    </ProjectReference>
     <ProjectReference Include="..\sqlstore\sqlstore.csproj">
       <Project>{7048e589-fe7f-4d58-87ee-118d65b4c6dd}</Project>
       <Name>sqlstore</Name>
@@ -147,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Compile Include="TestRunner.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
