@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base32.cs" />
     <Compile Include="Collections\EnumerableExtensions.cs" />
     <Compile Include="Ioc\AutofacExtensions.cs" />
     <Compile Include="Ioc\IFeatureRegistration.cs" />
