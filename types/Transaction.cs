@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using EnsureThat;
 
 namespace HomeTrack
@@ -30,7 +32,7 @@ namespace HomeTrack
 		public ISet<Amount> Debit { get; set; }
 		public ISet<Amount> Credit { get; set; }
 
-		public int Id { get; set; }
+		public string Id { get; set; }
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
 		public string Reference { get; set; }
@@ -83,6 +85,30 @@ namespace HomeTrack
 		public bool IsCreditAccount(Account account)
 		{
 			return Credit.Any(x => x.Account == account);
+		}
+	}
+
+	public static class TransactionId
+	{
+		public static string From(Transaction transaction)
+		{
+			var date = transaction.Date;
+			var amount = transaction.Amount;
+			var reference = transaction.Reference;
+			var description = transaction.Description;
+
+			return From(date, amount, reference, description);
+		}
+
+		public static string From(DateTime date, decimal amount, string reference, string description)
+		{
+			using (var sha1 = System.Security.Cryptography.SHA1.Create())
+			{
+				var raw = Encoding.ASCII.GetBytes($"{date.ToString("o")}|{amount:F4)}|{reference}|{description}");
+				var hash = sha1.ComputeHash(raw);
+
+				return hash.ToBase32();
+			}
 		}
 	}
 }
