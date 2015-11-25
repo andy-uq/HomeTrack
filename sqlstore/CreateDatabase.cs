@@ -7,6 +7,9 @@ namespace HomeTrack.SqlStore
 	{
 		public const string Account = nameof(Account);
 		public const string AccountType = nameof(AccountType);
+
+		public const string ImportResult = nameof(ImportResult);
+		public const string ImportedTransaction = nameof(ImportedTransaction);
 	}
 
 	[Migration(1)]
@@ -29,9 +32,23 @@ namespace HomeTrack.SqlStore
 
 			Create.Table(TableNames.Account)
 				.WithColumn("Id").AsString(50).PrimaryKey()
-				.WithColumn("Name").AsString()
+				.WithColumn("Name").AsString(250)
 				.WithColumn("Description").AsString().Nullable()
 				.WithColumn("AccountTypeName").AsString(20).ForeignKey(TableNames.AccountType, "Name")
+				;
+
+			Create.Table(TableNames.ImportResult)
+				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
+				.WithColumn("Name").AsString(250)
+				.WithColumn("ImportTypeName").AsString(50)
+				.WithColumn("Date").AsDateTime()
+				;
+
+			Create.Table(TableNames.ImportedTransaction)
+				.WithColumn("Id").AsAnsiString(32).PrimaryKey()
+				.WithColumn("ImportId").AsInt32().ForeignKey(TableNames.ImportResult, "Id").Indexed()
+				.WithColumn("Unclassified").AsBoolean()
+				.WithColumn("Amount").AsDecimal(19, 4)
 				;
 		}
 

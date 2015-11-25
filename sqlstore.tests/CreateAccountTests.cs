@@ -9,7 +9,7 @@ namespace HomeTrack.SqlStore.Tests
 	public class CreateAccountTests
 	{
 		private readonly GeneralLedgerRepository _generalLedger;
-		private string _id;
+		private readonly string _id;
 
 		public CreateAccountTests(GeneralLedgerRepository generalLedger)
 		{
