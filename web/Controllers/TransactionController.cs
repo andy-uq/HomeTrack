@@ -98,7 +98,7 @@ namespace HomeTrack.Web.Controllers
 			return ModelState.ToJson();
 		}
 
-		public ViewResult Details(int id, string accountId)
+		public ViewResult Details(string id, string accountId)
 		{
 			var transaction = _generalLedger.GetTransaction(id);
 			var model = _mappingEngine.Map<ViewModels.TransactionDetails>(transaction);

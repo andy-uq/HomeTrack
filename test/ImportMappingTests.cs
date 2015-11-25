@@ -20,11 +20,11 @@ namespace HomeTrack.Tests
 		[Test]
 		public void TransactionToImportedTransaction()
 		{
-			var t = new Transaction { Id = 101, Reference = "I1" };
+			var t = new Transaction { Id = "101", Reference = "I1" };
 			var document = _mappingEngine.Map<ImportedTransaction>(t);
 
-			Assert.That(document.Id, Is.EqualTo("I1"));			
-			Assert.That(document.TransactionId, Is.EqualTo(101));			
+			Assert.That(document.Id, Is.EqualTo("I1"));
+			Assert.That(document.TransactionId, Is.EqualTo("101"));
 		}
 
 		[Test]

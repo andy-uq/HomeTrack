@@ -181,7 +181,7 @@ namespace HomeTrack.RavenStore
 				select t;
 		}
 
-		public HomeTrack.Transaction GetTransaction(int id)
+		public HomeTrack.Transaction GetTransaction(string id)
 		{
 			return _repository.UseOnceTo(s => s.Load<Documents.Transaction>(id).Hydrate<HomeTrack.Transaction>(_mappingEngine));
 		}

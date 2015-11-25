@@ -95,7 +95,7 @@ namespace HomeTrack.Tests
 				foreach (var creditAmount in transaction.Credit)
 					creditAmount.Post();
 
-				transaction.Id = nextId++;
+				transaction.Id = TransactionId.From(transaction);
 				_transactions.Add(transaction);
 				return true;
 			}
@@ -125,7 +125,7 @@ namespace HomeTrack.Tests
 				);
 		}
 
-		public Transaction GetTransaction(int id)
+		public Transaction GetTransaction(string id)
 		{
 			return _transactions.SingleOrDefault(x => x.Id == id);
 		}

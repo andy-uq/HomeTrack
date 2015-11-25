@@ -94,7 +94,7 @@ namespace HomeTrack.SqlStore
 			yield break;
 		}
 
-		public Transaction GetTransaction(int id)
+		public Transaction GetTransaction(string id)
 		{
 			return null;
 		}

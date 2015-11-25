@@ -40,7 +40,7 @@ namespace HomeTrack
 			return debit == credit;
 		}
 
-		public Transaction GetTransaction(int id)
+		public Transaction GetTransaction(string id)
 		{
 			return _repository.GetTransaction(id);
 		}

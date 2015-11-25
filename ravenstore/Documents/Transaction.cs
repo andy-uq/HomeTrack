@@ -7,7 +7,7 @@ namespace HomeTrack.RavenStore.Documents
 		public Amount[] Debit { get; set; }
 		public Amount[] Credit { get; set; }
 
-		public int Id { get; set; }
+		public string Id { get; set; }
 
 		public DateTime Date { get; set; }
 		public string Description { get; set; }

@@ -16,7 +16,7 @@ namespace HomeTrack
 	public class ImportedTransaction
 	{
 		public string Id { get; set; }
-		public int TransactionId { get; set; }
+		public string TransactionId { get; set; }
 		public bool Unclassified { get; set; }
 		public decimal Amount { get; set; }
 	}

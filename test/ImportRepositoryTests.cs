@@ -21,7 +21,7 @@ namespace HomeTrack.Tests
 		public void SaveImportResult()
 		{
 			var result = new ImportResult {Date = DateTimeServer.Now, Name = "I", TransactionCount = 2, UnclassifiedTransactions = 0};
-			ImportRepository.Save(result, new[] { new Transaction { Id = 101, Reference = "I/1" }, new Transaction { Id = 102, Reference = "I/2" },  });
+			ImportRepository.Save(result, new[] { new Transaction { Id = "101", Reference = "I/1" }, new Transaction { Id = "102", Reference = "I/2" },  });
 
 			Assert.That(Repository.UseOnceTo(x => x.Query<RavenStore.Documents.ImportResult>().Customize(options => options.WaitForNonStaleResults())), Is.Not.Empty);
 		}
@@ -43,25 +43,27 @@ namespace HomeTrack.Tests
 			var transactions = ImportRepository.GetTransactions("i1").ToArray();
 			Assert.That(transactions.Length, Is.EqualTo(2));
 			Assert.That(transactions, Has.None.Null);
-			Assert.That(transactions.Select(x => x.Id), Is.EqualTo(new[] { 101, 102 }));
+			Assert.That(transactions.Select(x => x.Id), Is.EqualTo(new[] { "101", "102" }));
 		}
 
 		private void AddData()
 		{
-			var t1 = new Transaction { Id = 101, Reference = "I1/1" };
-			var t2 = new Transaction { Id = 102, Reference = "I1/2" };
+			var t1 = new Transaction { Id = "101", Reference = "I1/1" };
+			var t2 = new Transaction { Id = "102", Reference = "I1/2" };
 
-			Repository.DocumentStore.UseOnceTo(s => s.Store(MappingEngine.Map<RavenStore.Documents.Transaction>(t1)), saveChanges: true);
-			Repository.DocumentStore.UseOnceTo(s => s.Store(MappingEngine.Map<RavenStore.Documents.Transaction>(t2)), saveChanges: true);
+			var a = MappingEngine.Map<RavenStore.Documents.Transaction>(t1);
+			var b = MappingEngine.Map<RavenStore.Documents.Transaction>(t2);
 
-			var result = new ImportResult {Date = DateTimeServer.Now, Name = "I1", TransactionCount = 2, UnclassifiedTransactions = 0};
+            Repository.DocumentStore.UseOnceTo(s => s.Store(a), saveChanges: true);
+			Repository.DocumentStore.UseOnceTo(s => s.Store(b), saveChanges: true);
+
 			ImportRepository.Save(result, new[] {t1, t2});
 
 			result.Name = "I2";
-			ImportRepository.Save(result, new[] {new Transaction {Id = 101, Reference = "I2/1"}, new Transaction {Id = 102, Reference = "I2/2"},});
+			ImportRepository.Save(result, new[] {new Transaction {Id = "101", Reference = "I2/1"}, new Transaction {Id = "102", Reference = "I2/2"},});
 
 			result.Name = "I3";
-			ImportRepository.Save(result, new[] {new Transaction {Id = 101, Reference = "I3/1"}, new Transaction {Id = 102, Reference = "I3/2"},});
+			ImportRepository.Save(result, new[] {new Transaction {Id = "101", Reference = "I3/1"}, new Transaction {Id = "102", Reference = "I3/2"},});
 		}
 	}
 }
