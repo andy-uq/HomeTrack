@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Data;
 using FluentMigrator;
 
 namespace HomeTrack.SqlStore
 {
 	public class TableNames
 	{
+		public const string EntryType = nameof(EntryType);
+
 		public const string Account = nameof(Account);
 		public const string AccountType = nameof(AccountType);
 
 		public const string ImportResult = nameof(ImportResult);
 		public const string ImportedTransaction = nameof(ImportedTransaction);
+
+		public const string Transaction = nameof(Transaction);
+		public const string TransactionComponent = nameof(TransactionComponent);
 	}
 
 	[Migration(1)]
@@ -17,9 +23,21 @@ namespace HomeTrack.SqlStore
 	{
 		public override void Up()
 		{
+			Create.Table(TableNames.EntryType)
+				.WithColumn("Name").AsString(20).PrimaryKey();
+
+			foreach (EntryType value in Enum.GetValues(typeof(EntryType)))
+			{
+				if (value == EntryType.NotSpecified)
+					continue;
+
+				Insert.IntoTable(TableNames.EntryType)
+					.Row(new { name = value.ToString() });
+			}
+
 			Create.Table(TableNames.AccountType)
 				.WithColumn("Name").AsString(20).PrimaryKey()
-				.WithColumn("IsDebitOrCredit").AsString(20);
+				.WithColumn("EntryTypeName").AsString(20).ForeignKey(TableNames.EntryType, "Name");
 
 			foreach (AccountType value in Enum.GetValues(typeof (AccountType)))
 			{
@@ -27,7 +45,7 @@ namespace HomeTrack.SqlStore
 					continue;
 
 				Insert.IntoTable(TableNames.AccountType)
-					.Row(new {name = value.ToString(), isDebitOrCredit = value.IsDebitOrCredit().ToString() });
+					.Row(new {name = value.ToString(), entryTypeName = value.IsDebitOrCredit().ToString() });
 			}
 
 			Create.Table(TableNames.Account)
@@ -46,10 +64,32 @@ namespace HomeTrack.SqlStore
 
 			Create.Table(TableNames.ImportedTransaction)
 				.WithColumn("Id").AsAnsiString(32).PrimaryKey()
-				.WithColumn("ImportId").AsInt32().ForeignKey(TableNames.ImportResult, "Id").Indexed()
+				.WithColumn("ImportId").AsInt32().ForeignKey(TableNames.ImportResult, "Id").OnDelete(Rule.Cascade).Indexed()
 				.WithColumn("Unclassified").AsBoolean()
 				.WithColumn("Amount").AsDecimal(19, 4)
 				;
+
+			Create.Table(TableNames.Transaction)
+				.WithColumn("Id").AsAnsiString(32).PrimaryKey().ForeignKey(TableNames.ImportedTransaction, "Id").OnDelete(Rule.Cascade)
+				.WithColumn("Date").AsDateTime()
+				.WithColumn("Amount").AsDecimal(19, 4)
+				.WithColumn("Reference").AsAnsiString(32)
+				.WithColumn("Description").AsString()
+				;
+
+			Create.Table(TableNames.TransactionComponent)
+				.WithColumn("TransactionId").AsAnsiString(32).ForeignKey(TableNames.Transaction, "Id").OnDelete(Rule.Cascade)
+				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id")
+				.WithColumn("EntryTypeName").AsString(20).ForeignKey(TableNames.EntryType, "Name")
+				.WithColumn("Amount").AsDecimal(19, 4)
+				.WithColumn("Annotation").AsString()
+				;
+
+			Create.Index()
+				.OnTable(TableNames.TransactionComponent)
+				.OnColumn("TransactionId").Ascending()
+				.OnColumn("AccountId").Ascending()
+				.WithOptions().Unique();
 		}
 
 		public override void Down()

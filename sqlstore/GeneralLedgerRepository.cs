@@ -50,7 +50,7 @@ namespace HomeTrack.SqlStore
 				@"SELECT Account.* 
 					FROM Account 
 						INNER JOIN AccountType ON AccountType.Name = AccountTypeName 
-					WHERE AccountType.IsDebitOrCredit = @debitOrCredit",
+					WHERE AccountType.EntryTypeName = @debitOrCredit",
 				new {debitOrCredit = entryType.ToString()});
 		}
 

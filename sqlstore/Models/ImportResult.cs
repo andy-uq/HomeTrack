@@ -15,13 +15,12 @@ namespace HomeTrack.SqlStore.Models
 
 		public void Configure(IConfiguration config)
 		{
-			config.CreateMap<HomeTrack.ImportResult, Models.ImportResult>();
+			config.CreateMap<HomeTrack.ImportResult, ImportResult>();
 			config.CreateMap<ImportResult, HomeTrack.ImportResult>();
 
 			config.CreateMap<ImportedTransaction, HomeTrack.ImportedTransaction>();
 
-			config.CreateMap<HomeTrack.Transaction, Models.ImportedTransaction>()
-				.ForMember(x => x.Id, map => map.ResolveUsing(x => x.Id ?? TransactionId.From(x)));
+			config.CreateMap<Transaction, ImportedTransaction>();
 		}
 	}
 

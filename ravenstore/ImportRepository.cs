@@ -17,7 +17,7 @@ namespace HomeTrack.RavenStore
 			_mappingEngine = mappingEngine;
 		}
 
-		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{
@@ -30,6 +30,8 @@ namespace HomeTrack.RavenStore
 
 				session.Store(document);
 				session.SaveChanges();
+
+				return int.Parse(document.Id);
 			}
 		}
 

@@ -146,9 +146,12 @@ namespace HomeTrack.Tests
 		{			
 		}
 
-		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
 			_imports.Add(new Tuple<ImportResult, ImportedTransaction[]>(result, transactions.Select(_mappingEngine.Map<ImportedTransaction>).ToArray()));
+			result.Id = _imports.Count;
+
+			return result.Id;
 		}
 	}
 }

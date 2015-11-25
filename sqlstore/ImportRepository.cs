@@ -17,11 +17,12 @@ namespace HomeTrack.SqlStore
 			_database = database;
 		}
 
-		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
 			using (var transaction = new TransactionScope())
 			{
 				var model = result.Map<Models.ImportResult>();
+				var transactionRecords = transactions.MapAll<Models.Transaction>().ToList();
 
 				var importId = _database.ExecuteScalar<int>(
 					@"INSERT INTO ImportResult (Name, ImportTypeName, Date)
@@ -31,11 +32,17 @@ namespace HomeTrack.SqlStore
 				_database.Execute(
 					@"INSERT INTO ImportedTransaction (Id, ImportId, Unclassified, Amount)
 						VALUES (@id, @importId, @unclassified, @amount)",
-					transactions
+					transactionRecords
 						.MapAll<Models.ImportedTransaction>()
 						.Select(t => new {t.Id, importId, t.Unclassified, t.Amount}));
 
+				_database.Execute(
+					@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
+						VALUES (@id, @date, @amount, @reference, @description)",
+					transactionRecords);
+
 				transaction.Complete();
+				return importId;
 			}
 		}
 
@@ -57,7 +64,13 @@ namespace HomeTrack.SqlStore
 
 		public IEnumerable<Transaction> GetTransactions(int importId)
 		{
-			yield break;
+			var transactions = _database.Query<Models.Transaction>(
+				@"SELECT [Transaction].* 
+					FROM ImportedTransaction 
+						INNER JOIN [Transaction] ON [Transaction].Id = ImportedTransaction.Id
+					WHERE ImportId = @importId", new { importId });
+
+			return transactions.MapAll<Transaction>();
 		}
 	}
 }
