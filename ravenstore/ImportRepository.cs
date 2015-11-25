@@ -39,7 +39,7 @@ namespace HomeTrack.RavenStore
 			return results.Hydrate<HomeTrack.ImportResult>(_mappingEngine);
 		}
 
-		public IEnumerable<ImportedTransaction> GetTransactionIds(string importId)
+		public IEnumerable<ImportedTransaction> GetTransactionIds(int importId)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{
@@ -48,7 +48,7 @@ namespace HomeTrack.RavenStore
 			}
 		}
 
-		public IEnumerable<Transaction> GetTransactions(string importId)
+		public IEnumerable<Transaction> GetTransactions(int importId)
 		{
 			using (var session = _repository.DocumentStore.OpenSession())
 			{

@@ -40,7 +40,7 @@ namespace HomeTrack.Tests
 		{
 			AddData();
 
-			var transactions = ImportRepository.GetTransactions("i1").ToArray();
+			var transactions = ImportRepository.GetTransactions(1).ToArray();
 			Assert.That(transactions.Length, Is.EqualTo(2));
 			Assert.That(transactions, Has.None.Null);
 			Assert.That(transactions.Select(x => x.Id), Is.EqualTo(new[] { "101", "102" }));
@@ -57,6 +57,7 @@ namespace HomeTrack.Tests
             Repository.DocumentStore.UseOnceTo(s => s.Store(a), saveChanges: true);
 			Repository.DocumentStore.UseOnceTo(s => s.Store(b), saveChanges: true);
 
+			var result = new ImportResult { Id=1, Date = DateTimeServer.Now, Name = "I1", TransactionCount = 2, UnclassifiedTransactions = 0};
 			ImportRepository.Save(result, new[] {t1, t2});
 
 			result.Name = "I2";

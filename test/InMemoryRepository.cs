@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AutoMapper;
+using HomeTrack.Collections;
 
 namespace HomeTrack.Tests
 {
@@ -108,9 +109,9 @@ namespace HomeTrack.Tests
 			return _imports.Select(x => x.Item1);
 		}
 
-		public IEnumerable<ImportedTransaction> GetTransactionIds(string importId)
+		public IEnumerable<ImportedTransaction> GetTransactionIds(int importId)
 		{
-			return _imports.Single(x => x.Item1.Name == importId).Item2;
+			return _imports.Single(x => x.Item1.Id == importId).Item2;
 		}
 
 		public IEnumerable<Transaction> GetTransactions(string accountId)
@@ -121,6 +122,17 @@ namespace HomeTrack.Tests
 					where
 						t.Credit.Any(x => x.Account.Id == accountId)
 						|| t.Debit.Any(x => x.Account.Id == accountId)
+					select t
+				);
+		}
+
+		public IEnumerable<Transaction> GetTransactions(int importId)
+		{
+			var target = _imports.Where(i => i.Item1.Id == importId).Select(i => i.Item2).Single().Select(t => t.Id).AsSet();
+			return
+				(
+					from t in _transactions
+					where target.Contains(t.Id)
 					select t
 				);
 		}

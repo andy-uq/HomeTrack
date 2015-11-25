@@ -4,6 +4,8 @@ namespace HomeTrack
 {
 	public class ImportResult
 	{
+		public int Id { get; set; }
+
 		public string Name { get; set; }
 		public string ImportType { get; set; }
 
