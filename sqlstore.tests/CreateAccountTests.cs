@@ -14,14 +14,14 @@ namespace HomeTrack.SqlStore.Tests
 		public CreateAccountTests(GeneralLedgerRepository generalLedger)
 		{
 			_generalLedger = generalLedger;
-			_id = _generalLedger.Add(new Account("Bank", AccountType.Asset));
+			_id = _generalLedger.Add(new Account("New Account", AccountType.Asset));
 		}
 
 		public void CanGetAccount()
 		{
 			var account = _generalLedger.GetAccount(_id);
-			account.Id.Should().Be("bank");
-			account.Name.Should().Be("Bank");
+			account.Id.Should().Be("newaccount");
+			account.Name.Should().Be("New Account");
 			account.Description.Should().BeNull();
 			account.Type.Should().Be(AccountType.Asset);
 			account.Direction.Should().Be(EntryType.Debit);
