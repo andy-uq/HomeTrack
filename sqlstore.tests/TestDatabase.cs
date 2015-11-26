@@ -3,7 +3,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Threading.Tasks;
 using Dapper;
-using Rosella.Tests.Integration.Helpers;
 
 namespace HomeTrack.SqlStore.Tests
 {
