@@ -22,7 +22,16 @@ namespace HomeTrack.SqlStore
 			using (var transaction = new TransactionScope())
 			{
 				var model = result.Map<Models.ImportResult>();
-				var transactionRecords = transactions.MapAll<Models.Transaction>().ToList();
+				var transactionRecords = new List<Models.Transaction>();
+				var transactionComponents = new List<Models.TransactionComponent>();
+
+				foreach (var item in transactions)
+				{
+					var record = item.Map<Models.Transaction>();
+					transactionRecords.Add(record);
+					transactionComponents.AddRange(item.Credit.Select(amount => amount.Map(new Models.TransactionComponent {TransactionId = record.Id, EntryTypeName = EntryType.Credit.ToString() })));
+					transactionComponents.AddRange(item.Debit.Select(amount => amount.Map(new Models.TransactionComponent {TransactionId = record.Id, EntryTypeName = EntryType.Debit.ToString() })));
+				}
 
 				var importId = _database.ExecuteScalar<int>(
 					@"INSERT INTO ImportResult (Name, ImportTypeName, Date)
@@ -40,6 +49,11 @@ namespace HomeTrack.SqlStore
 					@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
 						VALUES (@id, @date, @amount, @reference, @description)",
 					transactionRecords);
+
+				_database.Execute(
+					@"INSERT INTO [TransactionComponent] (TransactionId, AccountId, EntryTypeName, Amount, Annotation, AppliedByRuleId)
+						VALUES (@transactionId, @accountId, @entryTypeName, @amount, ISNULL(@annotation, ''), @appliedByRuleId)",
+					transactionComponents);
 
 				transaction.Complete();
 				return importId;

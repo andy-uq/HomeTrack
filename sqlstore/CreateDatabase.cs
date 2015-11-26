@@ -83,6 +83,7 @@ namespace HomeTrack.SqlStore
 				.WithColumn("EntryTypeName").AsString(20).ForeignKey(TableNames.EntryType, "Name")
 				.WithColumn("Amount").AsDecimal(19, 4)
 				.WithColumn("Annotation").AsString()
+				.WithColumn("AppliedByRuleId").AsInt32().Nullable()
 				;
 
 			Create.Index()

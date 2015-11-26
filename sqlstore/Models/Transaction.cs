@@ -23,11 +23,18 @@ namespace HomeTrack.SqlStore.Models
 		}
 	}
 
-	public class Amount
+	public class TransactionComponent : ICustomMapping
 	{
+		public string TransactionId { get; set; }
 		public string AccountId { get; set; }
-		public string AccountName { get; set; }
-		public EntryType Direction { get; set; }
-		public decimal Value { get; set; }
+		public string EntryTypeName { get; set; }
+		public decimal Amount { get; set; }
+		public string Annotation { get; set; }
+		public int? AppliedByRuleId { get; set; }
+
+		public void Configure(IConfiguration config)
+		{
+			config.CreateMap<HomeTrack.Amount, TransactionComponent>();
+		}
 	}
 }

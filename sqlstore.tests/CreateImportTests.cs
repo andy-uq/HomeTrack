@@ -13,7 +13,11 @@ namespace HomeTrack.SqlStore.Tests
 		{
 			_repository = repository;
 			var import = new ImportResult { Date = DateTime.Now, ImportType = "", Name = "Import", };
-			var transactions = new[] { new Transaction { Date = new DateTime(2010, 1, 1), Amount = 100, Reference = "ABCD", Description = "Transaction" } };
+			var transaction = new Transaction { Date = new DateTime(2010, 1, 1), Amount = 100, Reference = "ABCD", Description = "Transaction" };
+			transaction.Credit.Add(new Amount(TestData.Bank, EntryType.Credit, 100));
+			transaction.Debit.Add(new Amount(TestData.Expenses, EntryType.Debit, 100));
+
+			var transactions = new[] { transaction };
 			_repository.Save(import, transactions);
 		}
 
