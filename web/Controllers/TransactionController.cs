@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
-using HomeTrack.RavenStore;
 using HomeTrack.Web.ViewModels;
 
 namespace HomeTrack.Web.Controllers

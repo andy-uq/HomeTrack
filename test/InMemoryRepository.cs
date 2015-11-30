@@ -88,20 +88,11 @@ namespace HomeTrack.Tests
 
 		public bool Post(Transaction transaction)
 		{
-			if (transaction.Check())
-			{
-				foreach (var debitAmount in transaction.Debit)
-					debitAmount.Post();
+			if (_transactions.Any(x => x.Id == transaction.Id))
+				return false;
 
-				foreach (var creditAmount in transaction.Credit)
-					creditAmount.Post();
-
-				transaction.Id = TransactionId.From(transaction);
-				_transactions.Add(transaction);
-				return true;
-			}
-
-			return false;
+			_transactions.Add(transaction);
+			return true;
 		}
 
 		public IEnumerable<ImportResult> GetAll()

@@ -10,6 +10,10 @@ namespace HomeTrack.SqlStore
 			builder.RegisterType<GeneralLedgerRepository>()
 				.As<IGeneralLedgerRepository>()
 				.AsSelf();
+
+			builder.RegisterType<ImportRepository>()
+				.As<IImportRepository>()
+				.AsSelf();
 		}
 	}
 }

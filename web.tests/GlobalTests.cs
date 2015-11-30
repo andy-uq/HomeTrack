@@ -8,7 +8,6 @@ using Autofac;
 using HomeTrack;
 using HomeTrack.Core;
 using HomeTrack.Ioc;
-using HomeTrack.RavenStore;
 using HomeTrack.Web;
 using Moq;
 using NUnit.Framework;
@@ -24,9 +23,9 @@ namespace web.tests
 			{
 			}
 
-			protected override IFeatureRegistration RegisterRavenDb()
+			protected override void RegisterDataProvider(ContainerBuilder builder)
 			{
-				return new ConfigureEmbeddedDocumentStore { RunInMemory = true, };
+				builder.Register(resolver => new System.Data.SqlClient.SqlConnection(""));
 			}
 		}
 

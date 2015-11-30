@@ -103,58 +103,18 @@ namespace HomeTrack.RavenStore
 
 		public bool Post(Transaction transaction)
 		{
-			if (transaction.Credit.Concat(transaction.Debit).Any(x => x.Account == null || x.Account.Id == null))
+			if (transaction.Credit.Concat(transaction.Debit).Any(x => x.Account?.Id == null))
 				throw new InvalidOperationException("Cannot add a transaction where one or more accounts have a null Id");
 
-			if (transaction.Check())
+			using (var session = _repository.DocumentStore.OpenSession())
 			{
-				using (var session = _repository.DocumentStore.OpenSession())
-				{
-					var accountIds = transaction.Credit
-						.Concat(transaction.Debit)
-						.Select(x => QualifiedId("accounts", x.Account.Id))
-						.Distinct()
-						.ToArray();
+				var ravenEntity = _mappingEngine.Map<Documents.Transaction>(transaction);
+				session.Store(ravenEntity);
+				session.SaveChanges();
 
-					var accounts = session.Load<Documents.Account>(accountIds).ToArray();
-					
-					for (var i = 0; i < accountIds.Length; i++)
-					{
-						if (accounts[i] != null)
-						{
-							continue;
-						}
-						
-						var allAccounts = session.Query<Documents.Account>().Select(x => x.Id);
-						throw new InvalidOperationException(string.Format("Cannot find account {0} from ({1})",
-						                                                  accountIds[i],
-						                                                  string.Join(", ", allAccounts)));
-					}
-
-					var accountLookup = accounts.ToDictionary(x => FromQualifiedId(x.Id));
-
-					foreach (var value in transaction.Debit)
-					{
-						value.Post();
-						accountLookup[value.Account.Id].Balance = value.Account.Balance;
-					}
-
-					foreach (var value in transaction.Credit)
-					{
-						value.Post();
-						accountLookup[value.Account.Id].Balance = value.Account.Balance;
-					}
-
-					var ravenEntity = _mappingEngine.Map<Documents.Transaction>(transaction);
-					session.Store(ravenEntity);
-					session.SaveChanges();
-
-					transaction.Id = ravenEntity.Id;
-					return true;
-				}
+				transaction.Id = ravenEntity.Id;
+				return true;
 			}
-
-			return false;
 		}
 
 		public IEnumerable<HomeTrack.Transaction> GetTransactions(string accountId)

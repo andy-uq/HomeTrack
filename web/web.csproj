@@ -78,13 +78,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MiniProfiler.2.1.0\lib\net40\MiniProfiler.dll</HintPath>
     </Reference>
-    <Reference Include="Raven.Abstractions, Version=2.0.3.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RavenDB.Client.2.0.2360\lib\net40\Raven.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Raven.Client.Lightweight, Version=2.0.3.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RavenDB.Client.2.0.2360\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=1.5.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.1.5.14\lib\net45\Serilog.dll</HintPath>
@@ -296,9 +292,9 @@
       <Project>{50504179-F2F9-4536-BE2F-F208C62D9DBB}</Project>
       <Name>core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RavenStore\RavenStore.csproj">
-      <Project>{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}</Project>
-      <Name>RavenStore</Name>
+    <ProjectReference Include="..\sqlstore\sqlstore.csproj">
+      <Project>{7048E589-FE7F-4D58-87EE-118D65B4C6DD}</Project>
+      <Name>sqlstore</Name>
     </ProjectReference>
     <ProjectReference Include="..\types\types.csproj">
       <Project>{5D207E3E-50E5-4D1F-8892-60879E2258EF}</Project>

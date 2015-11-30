@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using HomeTrack.Core;
-using HomeTrack.RavenStore;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
 using HomeTrack.Web.ViewModels;

@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "types", "types\types.csproj", "{5D207E3E-50E5-4D1F-8892-60879E2258EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RavenStore", "ravenstore\RavenStore.csproj", "{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web", "web\web.csproj", "{E512BF5A-B34A-4FD6-B223-CFCF5CC57D2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web.tests", "web.tests\web.tests.csproj", "{F6956E83-7F85-4019-945F-4883034960F2}"
@@ -44,10 +42,6 @@ Global
 		{5D207E3E-50E5-4D1F-8892-60879E2258EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D207E3E-50E5-4D1F-8892-60879E2258EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D207E3E-50E5-4D1F-8892-60879E2258EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E512BF5A-B34A-4FD6-B223-CFCF5CC57D2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E512BF5A-B34A-4FD6-B223-CFCF5CC57D2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E512BF5A-B34A-4FD6-B223-CFCF5CC57D2F}.Release|Any CPU.ActiveCfg = Release|Any CPU

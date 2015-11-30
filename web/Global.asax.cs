@@ -8,7 +8,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Ioc;
-using HomeTrack.RavenStore;
+using HomeTrack.SqlStore;
 using HomeTrack.Web.Controllers;
 
 namespace HomeTrack.Web
@@ -16,7 +16,6 @@ namespace HomeTrack.Web
 	public class MvcApplication : HttpApplication
 	{
 		private readonly Func<string, string> _mapPath;
-		private ConfigureEmbeddedDocumentStore _ravenDb;
 
 		public MvcApplication()
 		{
@@ -68,8 +67,6 @@ namespace HomeTrack.Web
 
 		private IContainer RegisterIoc(ContainerBuilder builder)
 		{
-			RegisterRavenDb().Register(builder);
-
 			builder.RegisterType<MappingProvider>();
 			builder.RegisterType<ViewModels.ViewModelTypeMapProvider>().As<ITypeMapProvider>();
 			builder.Register(c => c.Resolve<MappingProvider>().Build());
@@ -78,6 +75,8 @@ namespace HomeTrack.Web
 			builder.Register(c => new DirectoryExplorer(path));
 
 			builder.RegisterFeature<ApplicationFeature>();
+			builder.RegisterFeature<SqlStoreFeature>();
+			RegisterDataProvider(builder);
 
 			builder.RegisterControllers(typeof (MvcApplication).Assembly);
 
@@ -87,13 +86,13 @@ namespace HomeTrack.Web
 			return container;
 		}
 
-		protected virtual IFeatureRegistration RegisterRavenDb()
+		protected virtual void RegisterDataProvider(ContainerBuilder builder)
 		{
-			var raven = ConfigurationManager.ConnectionStrings["raven"];
+			var connection = ConfigurationManager.ConnectionStrings["HomeTrackDatabase"];
+			if (connection == null)
+				throw new InvalidOperationException("Cannot find connectionString \"HomeTrackDatabase\"");
 
-			return raven.ConnectionString == "embedded"
-			                    	? new ConfigureEmbeddedDocumentStore {DataDirectory = Server.MapPath("~/App_Data/RavenDb")}
-			                    	: new ConfigureDocumentStore();
+			builder.Register(resolver => new System.Data.SqlClient.SqlConnection(connection.ConnectionString));
 		}
 	}
 }

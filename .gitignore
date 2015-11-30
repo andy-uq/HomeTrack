@@ -106,6 +106,7 @@ _TeamCity*
 *.dotCover
 
 # NCrunch
+_NCrunch*
 *.ncrunch*
 .*crunch*.local.xml
 

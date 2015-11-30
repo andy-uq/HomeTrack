@@ -134,10 +134,6 @@
       <Project>{50504179-F2F9-4536-BE2F-F208C62D9DBB}</Project>
       <Name>core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ravenstore\RavenStore.csproj">
-      <Project>{70B19562-7C39-4EF5-B5E3-A4ECF27EF972}</Project>
-      <Name>RavenStore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\test\test.csproj">
       <Project>{197D96CB-9AC6-4B33-AB2F-447312807410}</Project>
       <Name>test</Name>
