@@ -22,7 +22,7 @@ namespace HomeTrack.SqlStore
 			get
 			{
 				var accounts = _database.Query<Models.Account>("SELECT Account.* FROM Account");
-				return accounts.MapAll<HomeTrack.Account>();
+				return accounts.MapAll<Account>();
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace HomeTrack.SqlStore
 			get
 			{
 				var accounts = GetAccounts(EntryType.Debit);
-				return accounts.MapAll<HomeTrack.Account>();
+				return accounts.MapAll<Account>();
 			}
 		}
 
@@ -40,7 +40,7 @@ namespace HomeTrack.SqlStore
 			get
 			{
 				var accounts = GetAccounts(EntryType.Credit);
-				return accounts.MapAll<HomeTrack.Account>();
+				return accounts.MapAll<Account>();
 			}
 		}
 
@@ -57,12 +57,13 @@ namespace HomeTrack.SqlStore
 		public Account GetAccount(string accountId)
 		{
 			var account = _database.Query<Models.Account>("SELECT Account.* FROM Account WHERE Id=@accountId", new {accountId}).Single();
-			return account.Map<HomeTrack.Account>();
+			return account.Map<Account>();
 		}
 
 		public bool DeleteAccount(string accountId)
 		{
-			return false;
+			int rowCount = _database.Execute("DELETE FROM Account WHERE Id=@accountId AND NOT EXISTS (SELECT * FROM TransactionComponent WHERE AccountId = @accountId)", new { accountId });
+			return rowCount == 1;
 		}
 
 		public IEnumerable<Budget> GetBudgetsForAccount(string accountId)
@@ -91,12 +92,22 @@ namespace HomeTrack.SqlStore
 
 		public IEnumerable<Transaction> GetTransactions(string accountId)
 		{
-			yield break;
+			var transactions = _database.Query<Models.Transaction>(
+				@"SELECT [Transaction].* 
+					FROM [Transaction] 
+					WHERE EXISTS (SELECT * FROM TransactionComponent WHERE AccountId=@accountId AND [Transaction].Id = TransactionId)", new { accountId });
+
+			return transactions.MapAll<Transaction>();
 		}
 
 		public Transaction GetTransaction(string id)
 		{
-			return null;
+			var transaction = _database.Query<Models.Transaction>(
+				@"SELECT [Transaction].* 
+					FROM [Transaction]
+					WHERE Id = @id", new { id });
+
+			return transaction.Map<Transaction>();
 		}
 
 		public void Dispose()

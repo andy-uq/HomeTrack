@@ -110,6 +110,7 @@
     <Compile Include="CreateImportTests.cs" />
     <Compile Include="CreateTestData.cs" />
     <Compile Include="DatabaseExtensions.cs" />
+    <Compile Include="DeleteAccountTests.cs" />
     <Compile Include="IntegrationSettings.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="MigrationManager.cs" />

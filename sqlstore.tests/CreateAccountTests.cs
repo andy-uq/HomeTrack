@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
 using FluentAssertions;
-using NUnit.Framework;
 
 namespace HomeTrack.SqlStore.Tests
 {
