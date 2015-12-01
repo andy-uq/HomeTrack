@@ -3,6 +3,8 @@ using Autofac;
 using FixieShim.Fixie;
 using HomeTrack.Core;
 using HomeTrack.Ioc;
+using HomeTrack.Logging;
+using Serilog;
 
 namespace HomeTrack.SqlStore.Tests
 {
@@ -15,6 +17,7 @@ namespace HomeTrack.SqlStore.Tests
 			builder.RegisterFeature<ApplicationFeature>();
 
 			builder.RegisterFeature<SqlStoreFeature>();
+			builder.RegisterFeature<TestLogging>();
 
 			builder.RegisterType<TestDatabase>()
 				.OnActivated(args => args.Instance.ApplyMigrations())
@@ -26,6 +29,20 @@ namespace HomeTrack.SqlStore.Tests
 				.As<IAccountLookup>();
 
 			return builder;
+		}
+
+		private class TestLogging : IFeatureRegistration
+		{
+			public void Register(ContainerBuilder builder)
+			{
+				builder.RegisterFeature<LoggingFeature>();
+				builder.Register(resolver => LogSink.Configure(ConfigureTestLogging));
+			}
+
+			private LoggerConfiguration ConfigureTestLogging(LoggerConfiguration config)
+			{
+				return config.MinimumLevel.Verbose();
+			}
 		}
 	}
 }

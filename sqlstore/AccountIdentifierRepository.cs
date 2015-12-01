@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using Dapper;
 using HomeTrack.Mapping;
 
@@ -17,10 +18,21 @@ namespace HomeTrack.SqlStore
 
 		public void AddOrUpdate(AccountIdentifier identifier)
 		{
-			var models = identifier.Map<Models.AccountIdentifier[]>();
-			foreach (var model in models)
+			var models = identifier.Map<Models.AccountIdentifier>();
+
+			int id = _database.Execute("INSERT INTO [AccountIdentifier] (AccountId) OUTPUT inserted.id VALUES (@accountId)", new { models.AccountId });
+
+			_database.Execute(
+					"INSERT INTO [AccountIdentifierPattern] (AccountIdentifierId, Name, PropertiesJson) VALUES (@id, @name, @propertiesJson)",
+						new { id, models.Primary.Name, models.Primary.PropertiesJson }
+				);
+
+			foreach (var model in models.Secondaries)
 			{
-				
+				_database.Execute(
+					"INSERT INTO [AccountIdentifierPattern] (AccountIdentifierId, Name, PropertiesJson) VALUES (@id, @name, @propertiesJson)",
+						new { id, model.Name, model.PropertiesJson }
+					);
 			}
 		}
 

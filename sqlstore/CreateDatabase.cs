@@ -18,6 +18,7 @@ namespace HomeTrack.SqlStore
 		public const string TransactionComponent = nameof(TransactionComponent);
 
 		public const string AccountIdentifier = nameof(AccountIdentifier);
+		public const string AccountIdentifierPattern = nameof(AccountIdentifierPattern);
 	}
 
 	[Migration(1)]
@@ -43,10 +44,13 @@ namespace HomeTrack.SqlStore
 
 			Create.Table(TableNames.AccountIdentifier)
 				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
-				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id")
+				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id").Indexed()
+				;
+
+			Create.Table(TableNames.AccountIdentifierPattern)
+				.WithColumn("AccountIdentifierId").AsInt32().ForeignKey(TableNames.AccountIdentifier, "Id").Indexed()
 				.WithColumn("Name").AsString(250)
 				.WithColumn("PropertiesJson").AsString()
-				.WithColumn("ParentId").AsInt32().Nullable().ForeignKey(TableNames.AccountIdentifier, "Id")
 				;
 		}
 

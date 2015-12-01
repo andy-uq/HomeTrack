@@ -111,7 +111,7 @@
     <Compile Include="AccountIdentifierFromModelTests.cs" />
     <Compile Include="AccountIdentifierToModelTests.cs" />
     <Compile Include="AccountMappingTests.cs" />
-    <Compile Include="AssemblyContext.cs" />
+    <Compile Include="CreateAccountIdentifierTests.cs" />
     <Compile Include="CreateAccountTests.cs" />
     <Compile Include="CreateImportTests.cs" />
     <Compile Include="CreateTestData.cs" />
