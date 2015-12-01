@@ -8,6 +8,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Ioc;
+using HomeTrack.Mapping;
 using HomeTrack.SqlStore;
 using HomeTrack.Web.Controllers;
 
@@ -88,7 +89,7 @@ namespace HomeTrack.Web
 
 		protected virtual void RegisterDataProvider(ContainerBuilder builder)
 		{
-			var connection = ConfigurationManager.ConnectionStrings["HomeTrackDatabase"];
+			var connection = ConfigurationManager.ConnectionStrings["sqldb"];
 			if (connection == null)
 				throw new InvalidOperationException("Cannot find connectionString \"HomeTrackDatabase\"");
 

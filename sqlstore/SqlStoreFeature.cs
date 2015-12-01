@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using HomeTrack.Ioc;
+using HomeTrack.Mapping;
 
 namespace HomeTrack.SqlStore
 {
@@ -7,6 +8,8 @@ namespace HomeTrack.SqlStore
 	{
 		public void Register(ContainerBuilder builder)
 		{
+			builder.RegisterMappings(typeof(SqlStoreFeature).Assembly);
+
 			builder.RegisterType<GeneralLedgerRepository>()
 				.As<IGeneralLedgerRepository>()
 				.AsSelf();

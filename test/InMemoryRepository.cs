@@ -14,7 +14,6 @@ namespace HomeTrack.Tests
 		private readonly ISet<Budget> _budgets;
 		private readonly List<Transaction> _transactions;
 		private readonly List<Tuple<ImportResult, ImportedTransaction[]>> _imports;
-		private int nextId = 1;
 
 		public IEnumerable<Account> Accounts
 		{

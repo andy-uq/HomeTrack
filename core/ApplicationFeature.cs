@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using HomeTrack.Ioc;
+using HomeTrack.Mapping;
 
 namespace HomeTrack.Core
 {
@@ -7,6 +8,8 @@ namespace HomeTrack.Core
 	{
 		public void Register(ContainerBuilder builder)
 		{
+			builder.RegisterFeature<MappingFeature>();
+
 			builder.RegisterFeature<PatternsFeature>();
 
 			builder.RegisterInstance(new WestpacCsvImportDetector()).As<IImportDetector>();
