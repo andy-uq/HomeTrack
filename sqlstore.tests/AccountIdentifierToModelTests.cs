@@ -3,23 +3,23 @@ using System.Linq;
 using AutoMapper;
 using FluentAssertions;
 using HomeTrack.Core;
-using HomeTrack.SqlStore.Models;
+using HomeTrack.SqlStore.Mappings;
 
 namespace HomeTrack.SqlStore.Tests
 {
-	public class AccountIdentifierModelBuilderTests
+	public class AccountIdentifierToModelTests
 	{
-		private readonly AccountIdentifierModelBuilder _builder;
+		private readonly ITypeConverter<AccountIdentifier, IEnumerable<Models.AccountIdentifier>> _toModel;
 
-		public AccountIdentifierModelBuilderTests(AccountIdentifierModelBuilder builder)
+		public AccountIdentifierToModelTests(AccountIdentifierMapping builder)
 		{
-			_builder = builder;
+			_toModel = builder;
 		}
 
 		public void FromAmountPattern()
 		{
 			var pattern = new AmountPattern { Amount = 100M, Direction = EntryType.Credit };
-			var result = _builder.Convert(ToAccountIdentifier(pattern)).ToList();
+			var result = _toModel.Convert(ToAccountIdentifier(pattern)).ToList();
 			
 			ValidateSimplePattern(result, nameof(AmountPattern), "{\"amount\":100.0,\"direction\":\"Credit\"}");
 		}
@@ -27,7 +27,7 @@ namespace HomeTrack.SqlStore.Tests
 		public void FromAmountRangePattern()
 		{
 			IPattern pattern = new AmountRangePattern { Max = 100, Min = 10 };
-			var result = _builder.Convert(ToAccountIdentifier(pattern)).ToList();
+			var result = _toModel.Convert(ToAccountIdentifier(pattern)).ToList();
 
 			ValidateSimplePattern(result, nameof(AmountRangePattern), "{\"min\":10.0,\"max\":100.0}");
 		}
@@ -35,7 +35,7 @@ namespace HomeTrack.SqlStore.Tests
 		public void FromDayOfMonthPattern()
 		{
 			IPattern pattern = new DayOfMonthPattern(1, 2, 3);
-			var result = _builder.Convert(ToAccountIdentifier(pattern)).ToList();
+			var result = _toModel.Convert(ToAccountIdentifier(pattern)).ToList();
 
 			ValidateSimplePattern(result, nameof(DayOfMonthPattern), "{\"daysOfMonth\":[1,2,3]}");
 		}
@@ -43,7 +43,7 @@ namespace HomeTrack.SqlStore.Tests
 		public void FromFieldPattern()
 		{
 			IPattern pattern = new FieldPattern { Name = "Description", Pattern = @"CNT(""[\d{4,9}]"")" };
-			var result = _builder.Convert(ToAccountIdentifier(pattern)).ToList();
+			var result = _toModel.Convert(ToAccountIdentifier(pattern)).ToList();
 
 			ValidateSimplePattern(result, nameof(FieldPattern), @"{""name"":""Description"",""pattern"":""CNT(\""[\\d{4,9}]\"")""}");
 		}
@@ -51,7 +51,7 @@ namespace HomeTrack.SqlStore.Tests
 		public void FromCompositePattern()
 		{
 			IPattern pattern = new CompositePattern { new AmountPattern { Amount = 100M, Direction = EntryType.Credit }, new AmountRangePattern { Max = 100, Min = 10 } };
-			var result = _builder.Convert(ToAccountIdentifier(pattern)).ToList();
+			var result = _toModel.Convert(ToAccountIdentifier(pattern)).ToList();
 
 			ValidateCompositePattern(result);
 		}

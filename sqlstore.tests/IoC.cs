@@ -22,6 +22,9 @@ namespace HomeTrack.SqlStore.Tests
 
 			builder.Register(resolver => resolver.Resolve<TestDatabase>().Database);
 
+			builder.RegisterType<TestData.AccountLookup>()
+				.As<IAccountLookup>();
+
 			return builder;
 		}
 	}

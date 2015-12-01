@@ -20,7 +20,9 @@ namespace HomeTrack.Core
 			builder.RegisterType<ImportDetector>();
 			builder.RegisterType<TransactionImportContext>();
 
-			builder.RegisterType<GeneralLedger>();
+			builder.RegisterType<GeneralLedger>()
+				.As<IAccountLookup>()
+				.AsSelf();
 		}
 	}
 }

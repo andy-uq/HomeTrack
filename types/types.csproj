@@ -82,6 +82,7 @@
     <Compile Include="EntryType.cs" />
     <Compile Include="GeneralLedger.cs" />
     <Compile Include="IAccountIdentifierRepository.cs" />
+    <Compile Include="IAccountLookup.cs" />
     <Compile Include="IGeneralLedgerRepository.cs" />
     <Compile Include="IImportRepository.cs" />
     <Compile Include="ImportResult.cs" />

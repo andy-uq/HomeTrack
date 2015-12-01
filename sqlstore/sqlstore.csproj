@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="AccountIdentifierRepository.cs" />
     <Compile Include="CreateDatabase.cs" />
+    <Compile Include="Mapping\AccountIdentifierMapping.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountIdentifier.cs" />
     <Compile Include="Models\Budget.cs" />

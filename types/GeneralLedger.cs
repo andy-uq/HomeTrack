@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace HomeTrack
 {
-	public class GeneralLedger : IEnumerable<Account>
+	public class GeneralLedger : IAccountLookup
 	{
 		private readonly IGeneralLedgerRepository _repository;
 

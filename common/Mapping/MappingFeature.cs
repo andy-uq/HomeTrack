@@ -84,6 +84,11 @@ namespace HomeTrack.Mapping
 			builder.RegisterAssemblyTypes(assemblies)
 				.AssignableTo<ICustomMapping>()
 				.AsImplementedInterfaces();
+
+			builder.RegisterAssemblyTypes(assembly)
+				.AsClosedTypesOf(typeof(ITypeConverter<,>))
+				.AsImplementedInterfaces()
+				.AsSelf();
 		}
 	}
 }

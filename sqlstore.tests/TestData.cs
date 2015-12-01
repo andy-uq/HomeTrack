@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace HomeTrack.SqlStore.Tests
 {
@@ -6,7 +10,20 @@ namespace HomeTrack.SqlStore.Tests
 	{
 		public static readonly Account Bank;
 		public static readonly Account Expenses;
-		
+
+		public static IEnumerable<Account> Accounts
+		{
+			get
+			{
+				return typeof(TestData)
+					.GetFields()
+					.Cast<FieldInfo>()
+					.Where(f => f.FieldType == typeof(Account))
+					.Select(f => f.GetValue(null))
+					.Cast<HomeTrack.Account>();
+			}
+		}
+
 		static TestData()
 		{
 			Bank = CreateAccount("Bank", AccountType.Asset);
@@ -19,6 +36,21 @@ namespace HomeTrack.SqlStore.Tests
 			account.Id = Regex.Replace(account.Name.ToLower(), "[^a-z0-9-/]", "");
 
 			return account;
+		}
+
+		public class AccountLookup : IAccountLookup
+		{
+			public IEnumerator<Account> GetEnumerator()
+			{
+				return Accounts.GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+
+			public Account this[string accountId] => Accounts.Single(a => a.Id == accountId);
 		}
 	}
 }
