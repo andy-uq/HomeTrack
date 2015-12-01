@@ -16,6 +16,8 @@ namespace HomeTrack.SqlStore
 
 		public const string Transaction = nameof(Transaction);
 		public const string TransactionComponent = nameof(TransactionComponent);
+
+		public const string AccountIdentifier = nameof(AccountIdentifier);
 	}
 
 	[Migration(1)]
@@ -23,16 +25,43 @@ namespace HomeTrack.SqlStore
 	{
 		public override void Up()
 		{
+			CreateLookupTables();
+
+			CreateAccountTables();
+			CreateImportTables();
+			CreateTransactionTables();
+		}
+
+		private void CreateAccountTables()
+		{
+			Create.Table(TableNames.Account)
+				.WithColumn("Id").AsString(50).PrimaryKey()
+				.WithColumn("Name").AsString(250)
+				.WithColumn("Description").AsString().Nullable()
+				.WithColumn("AccountTypeName").AsString(20).ForeignKey(TableNames.AccountType, "Name")
+				;
+
+			Create.Table(TableNames.AccountIdentifier)
+				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
+				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id")
+				.WithColumn("Name").AsString(250)
+				.WithColumn("PropertiesJson").AsString()
+				.WithColumn("ParentId").AsInt32().Nullable().ForeignKey(TableNames.AccountIdentifier, "Id")
+				;
+		}
+
+		private void CreateLookupTables()
+		{
 			Create.Table(TableNames.EntryType)
 				.WithColumn("Name").AsString(20).PrimaryKey();
 
-			foreach (EntryType value in Enum.GetValues(typeof(EntryType)))
+			foreach (EntryType value in Enum.GetValues(typeof (EntryType)))
 			{
 				if (value == EntryType.NotSpecified)
 					continue;
 
 				Insert.IntoTable(TableNames.EntryType)
-					.Row(new { name = value.ToString() });
+					.Row(new {name = value.ToString()});
 			}
 
 			Create.Table(TableNames.AccountType)
@@ -45,16 +74,12 @@ namespace HomeTrack.SqlStore
 					continue;
 
 				Insert.IntoTable(TableNames.AccountType)
-					.Row(new {name = value.ToString(), entryTypeName = value.IsDebitOrCredit().ToString() });
+					.Row(new {name = value.ToString(), entryTypeName = value.IsDebitOrCredit().ToString()});
 			}
+		}
 
-			Create.Table(TableNames.Account)
-				.WithColumn("Id").AsString(50).PrimaryKey()
-				.WithColumn("Name").AsString(250)
-				.WithColumn("Description").AsString().Nullable()
-				.WithColumn("AccountTypeName").AsString(20).ForeignKey(TableNames.AccountType, "Name")
-				;
-
+		private void CreateImportTables()
+		{
 			Create.Table(TableNames.ImportResult)
 				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
 				.WithColumn("Name").AsString(250)
@@ -68,7 +93,10 @@ namespace HomeTrack.SqlStore
 				.WithColumn("Unclassified").AsBoolean()
 				.WithColumn("Amount").AsDecimal(19, 4)
 				;
+		}
 
+		private void CreateTransactionTables()
+		{
 			Create.Table(TableNames.Transaction)
 				.WithColumn("Id").AsAnsiString(32).PrimaryKey().ForeignKey(TableNames.ImportedTransaction, "Id").OnDelete(Rule.Cascade)
 				.WithColumn("Date").AsDateTime()

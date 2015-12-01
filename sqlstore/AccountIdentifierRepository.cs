@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using Dapper;
+using HomeTrack.Mapping;
 
 namespace HomeTrack.SqlStore
 {
@@ -15,6 +17,11 @@ namespace HomeTrack.SqlStore
 
 		public void AddOrUpdate(AccountIdentifier identifier)
 		{
+			var models = identifier.Map<Models.AccountIdentifier[]>();
+			foreach (var model in models)
+			{
+				
+			}
 		}
 
 		public IEnumerable<AccountIdentifier> GetAll()
