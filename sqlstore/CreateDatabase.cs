@@ -36,19 +36,26 @@ namespace HomeTrack.SqlStore
 		private void CreateAccountTables()
 		{
 			Create.Table(TableNames.Account)
-				.WithColumn("Id").AsString(50).PrimaryKey()
+				.WithColumn("Id").AsString(50)
+					.PrimaryKey()
 				.WithColumn("Name").AsString(250)
 				.WithColumn("Description").AsString().Nullable()
-				.WithColumn("AccountTypeName").AsString(20).ForeignKey(TableNames.AccountType, "Name")
+				.WithColumn("AccountTypeName").AsString(20)
+					.ForeignKey(TableNames.AccountType, "Name")
 				;
 
 			Create.Table(TableNames.AccountIdentifier)
-				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
-				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id").Indexed()
+				.WithColumn("Id").AsInt32().Identity()
+					.PrimaryKey()
+				.WithColumn("AccountId").AsString(50)
+					.ForeignKey(TableNames.Account, "Id")
+					.Indexed()
 				;
 
 			Create.Table(TableNames.AccountIdentifierPattern)
-				.WithColumn("AccountIdentifierId").AsInt32().ForeignKey(TableNames.AccountIdentifier, "Id").Indexed()
+				.WithColumn("AccountIdentifierId").AsInt32()
+					.ForeignKey(TableNames.AccountIdentifier, "Id").OnDelete(Rule.Cascade)
+					.Indexed()
 				.WithColumn("Name").AsString(250)
 				.WithColumn("PropertiesJson").AsString()
 				;
@@ -69,8 +76,10 @@ namespace HomeTrack.SqlStore
 			}
 
 			Create.Table(TableNames.AccountType)
-				.WithColumn("Name").AsString(20).PrimaryKey()
-				.WithColumn("EntryTypeName").AsString(20).ForeignKey(TableNames.EntryType, "Name");
+				.WithColumn("Name").AsString(20)
+					.PrimaryKey()
+				.WithColumn("EntryTypeName").AsString(20)
+					.ForeignKey(TableNames.EntryType, "Name");
 
 			foreach (AccountType value in Enum.GetValues(typeof (AccountType)))
 			{
@@ -85,15 +94,19 @@ namespace HomeTrack.SqlStore
 		private void CreateImportTables()
 		{
 			Create.Table(TableNames.ImportResult)
-				.WithColumn("Id").AsInt32().Identity().PrimaryKey()
+				.WithColumn("Id").AsInt32().Identity()
+					.PrimaryKey()
 				.WithColumn("Name").AsString(250)
 				.WithColumn("ImportTypeName").AsString(50)
 				.WithColumn("Date").AsDateTime()
 				;
 
 			Create.Table(TableNames.ImportedTransaction)
-				.WithColumn("Id").AsAnsiString(32).PrimaryKey()
-				.WithColumn("ImportId").AsInt32().ForeignKey(TableNames.ImportResult, "Id").OnDelete(Rule.Cascade).Indexed()
+				.WithColumn("Id").AsAnsiString(32)
+					.PrimaryKey()
+				.WithColumn("ImportId").AsInt32()
+					.ForeignKey(TableNames.ImportResult, "Id").OnDelete(Rule.Cascade)
+					.Indexed()
 				.WithColumn("Unclassified").AsBoolean()
 				.WithColumn("Amount").AsDecimal(19, 4)
 				;
@@ -102,7 +115,9 @@ namespace HomeTrack.SqlStore
 		private void CreateTransactionTables()
 		{
 			Create.Table(TableNames.Transaction)
-				.WithColumn("Id").AsAnsiString(32).PrimaryKey().ForeignKey(TableNames.ImportedTransaction, "Id").OnDelete(Rule.Cascade)
+				.WithColumn("Id").AsAnsiString(32)
+					.PrimaryKey()
+					.ForeignKey(TableNames.ImportedTransaction, "Id").OnDelete(Rule.Cascade)
 				.WithColumn("Date").AsDateTime()
 				.WithColumn("Amount").AsDecimal(19, 4)
 				.WithColumn("Reference").AsAnsiString(32)
@@ -110,7 +125,8 @@ namespace HomeTrack.SqlStore
 				;
 
 			Create.Table(TableNames.TransactionComponent)
-				.WithColumn("TransactionId").AsAnsiString(32).ForeignKey(TableNames.Transaction, "Id").OnDelete(Rule.Cascade)
+				.WithColumn("TransactionId").AsAnsiString(32)
+					.ForeignKey(TableNames.Transaction, "Id").OnDelete(Rule.Cascade)
 				.WithColumn("AccountId").AsString(50).ForeignKey(TableNames.Account, "Id")
 				.WithColumn("EntryTypeName").AsString(20).ForeignKey(TableNames.EntryType, "Name")
 				.WithColumn("Amount").AsDecimal(19, 4)
@@ -120,8 +136,8 @@ namespace HomeTrack.SqlStore
 
 			Create.Index()
 				.OnTable(TableNames.TransactionComponent)
-				.OnColumn("TransactionId").Ascending()
-				.OnColumn("AccountId").Ascending()
+					.OnColumn("TransactionId").Ascending()
+					.OnColumn("AccountId").Ascending()
 				.WithOptions().Unique();
 		}
 
