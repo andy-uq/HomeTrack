@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using FluentAssertions;
 using HomeTrack.Core;
@@ -25,7 +26,7 @@ namespace HomeTrack.Web.Tests
 		private Mock<IImportDetector> _importDetector;
 
 		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
-		private Mock<IImportRepository> _repository;
+		private IImportAsyncRepository _repository;
 
 		private IEnumerable<AccountIdentifier> GetAccountIdentifers()
 		{
@@ -41,7 +42,7 @@ namespace HomeTrack.Web.Tests
 			_unclassifiedExpense = AccountFactory.Expense("unclassified");
 
 			_directoryExplorer = new DirectoryExplorer(_directory);
-			_repository = new Mock<IImportRepository>();
+			_repository = new InMemoryRepository();
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
 			_generalLedger = new GeneralLedger(new InMemoryRepository())
@@ -100,8 +101,7 @@ namespace HomeTrack.Web.Tests
 			model.AccountIdentifiers.Should().NotBeEmpty();
 		}
 
-		[Test]
-		public void Import()
+		public async Task Import()
 		{
 			var filename = "imports@asb@export20120825200829.csv";
 
@@ -119,7 +119,7 @@ namespace HomeTrack.Web.Tests
 			_importDetector.Setup(x => x.Import(It.IsAny<Stream>()))
 				.Returns<Stream>(_ => new[] { i1, i2 });
 
-			var result = _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id, new Dictionary<string, ImportRowOptions>());
+			var result = await _controller.Import(_bank.Id, filename, _unclassifiedExpense.Id, new Dictionary<string, ImportRowOptions>());
 			Assert.That(result, Is.InstanceOf<PartialViewResult>());
 
 			var model = ((PartialViewResult)result).Model;
@@ -131,12 +131,9 @@ namespace HomeTrack.Web.Tests
 			transactions.Last().Amount.Should().Be(20);
 		}
 
-		[Test]
-		public void History()
+		public async Task History()
 		{
-			_repository.Setup(x => x.GetAll()).Returns(new[] {new ImportResult()});
-
-			var result = _controller.History();
+			var result = await _controller.History();
 			Assert.That(result.Model, Is.InstanceOf<IEnumerable<ImportResult>>());
 
 			var model = (IEnumerable<ImportResult>)result.Model;

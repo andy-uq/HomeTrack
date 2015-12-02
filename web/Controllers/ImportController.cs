@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
 using HomeTrack.Core;
@@ -71,7 +72,7 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ActionResult Import(string destinationAccountId, string filename, string unclassifiedAccountId, Dictionary<string, ImportRowOptions> importRowMapping)
+		public async Task<ActionResult> Import(string destinationAccountId, string filename, string unclassifiedAccountId, Dictionary<string, ImportRowOptions> importRowMapping)
 		{
 			filename = filename.Replace("@", "/");
 
@@ -90,7 +91,7 @@ namespace HomeTrack.Web.Controllers
 					return new HttpNotFoundResult("A directory named " + directory + " could not be found");
 			}
 
-			using ( var transaction = new TransactionScope() )
+			using ( var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var import = new Import(_importDetector);
 				import.Open(_directoryExplorer.GetFilename(name));
@@ -102,7 +103,8 @@ namespace HomeTrack.Web.Controllers
 
 				var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination: unclassifiedAccount);
 				var transactions = transactionImport.Process(import, importRowMapping).ToList();
-				_transactionImportContext.Repository.Save(transactionImport.Result, transactions);
+
+				await _transactionImportContext.Repository.SaveAsync(transactionImport.Result, transactions);
 
 				transaction.Complete();
 			
@@ -110,9 +112,9 @@ namespace HomeTrack.Web.Controllers
 			}
 		}
 
-		public ViewResult History()
+		public async Task<ViewResult> History()
 		{
-			var model = _transactionImportContext.Repository.GetAll();
+			var model = await _transactionImportContext.Repository.GetAllAsync();
 			return View(model);
 		}
 	}

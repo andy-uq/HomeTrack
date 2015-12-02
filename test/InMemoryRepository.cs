@@ -2,18 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using AutoMapper;
+using System.Threading.Tasks;
 using HomeTrack.Collections;
+using HomeTrack.Mapping;
 
 namespace HomeTrack.Tests
 {
-	public class InMemoryRepository : IGeneralLedgerRepository, IImportRepository
+	public class InMemoryRepository : IGeneralLedgerRepository, IImportRepository, IImportAsyncRepository
 	{
-		private readonly IMappingEngine _mappingEngine;
 		private readonly ISet<Account> _accounts;
 		private readonly ISet<Budget> _budgets;
-		private readonly List<Transaction> _transactions;
 		private readonly List<Tuple<ImportResult, ImportedTransaction[]>> _imports;
+		private readonly List<Transaction> _transactions;
+
+		public InMemoryRepository()
+		{
+			_accounts = new HashSet<Account>();
+			_transactions = new List<Transaction>();
+			_budgets = new HashSet<Budget>();
+			_imports = new List<Tuple<ImportResult, ImportedTransaction[]>>();
+		}
 
 		public IEnumerable<Account> Accounts
 		{
@@ -30,15 +38,6 @@ namespace HomeTrack.Tests
 			get { return _accounts.Where(x => x.Direction == EntryType.Credit); }
 		}
 
-		public InMemoryRepository(IMappingEngine mappingEngine = null)
-		{
-			_mappingEngine = mappingEngine;
-			_accounts = new HashSet<Account>();
-			_transactions = new List<Transaction>();
-			_budgets = new HashSet<Budget>();
-			_imports = new List<Tuple<ImportResult, ImportedTransaction[]>>();
-		}
-
 		public Account GetAccount(string accountId)
 		{
 			return _accounts.SingleOrDefault(x => x.Id.Equals(accountId, StringComparison.OrdinalIgnoreCase));
@@ -46,20 +45,15 @@ namespace HomeTrack.Tests
 
 		public bool DeleteAccount(string accountId)
 		{
-			if ( GetTransactions(accountId).Any() )
+			if (GetTransactions(accountId).Any())
 				throw new InvalidOperationException("Cannot delete an account that has transactions");
 
 			var account = GetAccount(accountId);
-			if ( account == null )
+			if (account == null)
 				return false;
 
 			_accounts.Remove(account);
 			return true;
-		}
-
-		public IEnumerable<Account> GetBudgetAccounts(string accountId)
-		{
-			return GetBudgetsForAccount(accountId).Select(budget => budget.BudgetAccount);
 		}
 
 		public IEnumerable<Budget> GetBudgetsForAccount(string accountId)
@@ -69,7 +63,7 @@ namespace HomeTrack.Tests
 					from budget in _budgets
 					where budget.RealAccount.Id == accountId
 					select budget
-				);
+					);
 		}
 
 		public string Add(Account account)
@@ -94,6 +88,27 @@ namespace HomeTrack.Tests
 			return true;
 		}
 
+		public IEnumerable<Transaction> GetTransactions(string accountId)
+		{
+			return
+				(
+					from t in _transactions
+					where
+						t.Credit.Any(x => x.Account.Id == accountId)
+						|| t.Debit.Any(x => x.Account.Id == accountId)
+					select t
+					);
+		}
+
+		public Transaction GetTransaction(string id)
+		{
+			return _transactions.SingleOrDefault(x => x.Id == id);
+		}
+
+		public void Dispose()
+		{
+		}
+
 		public IEnumerable<ImportResult> GetAll()
 		{
 			return _imports.Select(x => x.Item1);
@@ -104,18 +119,6 @@ namespace HomeTrack.Tests
 			return _imports.Single(x => x.Item1.Id == importId).Item2;
 		}
 
-		public IEnumerable<Transaction> GetTransactions(string accountId)
-		{
-			return
-				(
-					from t in _transactions
-					where
-						t.Credit.Any(x => x.Account.Id == accountId)
-						|| t.Debit.Any(x => x.Account.Id == accountId)
-					select t
-				);
-		}
-
 		public IEnumerable<Transaction> GetTransactions(int importId)
 		{
 			var target = _imports.Where(i => i.Item1.Id == importId).Select(i => i.Item2).Single().Select(t => t.Id).AsSet();
@@ -124,24 +127,42 @@ namespace HomeTrack.Tests
 					from t in _transactions
 					where target.Contains(t.Id)
 					select t
-				);
-		}
-
-		public Transaction GetTransaction(string id)
-		{
-			return _transactions.SingleOrDefault(x => x.Id == id);
-		}
-
-		public void Dispose()
-		{			
+					);
 		}
 
 		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
-			_imports.Add(new Tuple<ImportResult, ImportedTransaction[]>(result, transactions.Select(_mappingEngine.Map<ImportedTransaction>).ToArray()));
+			var import = Tuple.Create(result, transactions.Select(t => t.Map<ImportedTransaction>()).ToArray());
+
+			_imports.Add(import);
 			result.Id = _imports.Count;
 
 			return result.Id;
+		}
+
+		public Task<int> SaveAsync(ImportResult result, IEnumerable<Transaction> transactions)
+		{
+			return Task.FromResult(Save(result, transactions));
+		}
+
+		public Task<IEnumerable<ImportResult>> GetAllAsync()
+		{
+			return Task.FromResult(GetAll());
+		}
+
+		public Task<IEnumerable<ImportedTransaction>> GetTransactionIdsAsync(int importId)
+		{
+			return Task.FromResult(GetTransactionIds(importId));
+		}
+
+		public Task<IEnumerable<Transaction>> GetTransactionsAsync(int importId)
+		{
+			return Task.FromResult(GetTransactions(importId));
+		}
+
+		public IEnumerable<Account> GetBudgetAccounts(string accountId)
+		{
+			return GetBudgetsForAccount(accountId).Select(budget => budget.BudgetAccount);
 		}
 	}
 }

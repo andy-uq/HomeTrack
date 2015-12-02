@@ -14,7 +14,7 @@ namespace HomeTrack.Tests
 		private readonly Account _groceries;
 		private readonly Mock<IImport> _import;
 		private readonly TransactionImportContext _importContext;
-		private readonly Mock<IImportRepositoryAsync> _repository;
+		private readonly Mock<IImportAsyncRepository> _repository;
 		private readonly Account _visa;
 
 		public TransactionImportTests()
@@ -26,7 +26,7 @@ namespace HomeTrack.Tests
 			_groceries = AccountFactory.Expense("groceries");
 
 			_general = new GeneralLedger(new InMemoryRepository()) {_visa, _electricity, _groceries};
-			_repository = new Mock<IImportRepositoryAsync>(MockBehavior.Strict);
+			_repository = new Mock<IImportAsyncRepository>(MockBehavior.Strict);
 
 			var patterns = GetPatterns();
 

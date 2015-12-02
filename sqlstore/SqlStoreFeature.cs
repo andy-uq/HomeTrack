@@ -21,6 +21,7 @@ namespace HomeTrack.SqlStore
 
 			builder.RegisterType<ImportRepository>()
 				.As<IImportRepository>()
+				.As<IImportAsyncRepository>()
 				.AsSelf();
 
 			builder.RegisterType<AccountIdentifierRepository>()

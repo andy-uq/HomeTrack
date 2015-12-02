@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Transactions;
 using Dapper;
 using HomeTrack.Mapping;
 
 namespace HomeTrack.SqlStore
 {
-	public class ImportRepository : IImportRepository
+	public class ImportRepository : IImportRepository, IImportAsyncRepository
 	{
 		private readonly SqlConnection _database;
 
@@ -85,6 +86,76 @@ namespace HomeTrack.SqlStore
 					WHERE ImportId = @importId", new { importId });
 
 			return transactions.MapAll<Transaction>();
+		}
+
+		public async Task<int> SaveAsync(ImportResult result, IEnumerable<Transaction> transactions)
+		{
+			using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+			{
+				var model = result.Map<Models.ImportResult>();
+				var transactionRecords = new List<Models.Transaction>();
+				var transactionComponents = new List<Models.TransactionComponent>();
+
+				foreach (var item in transactions)
+				{
+					var record = item.Map<Models.Transaction>();
+					transactionRecords.Add(record);
+					transactionComponents.AddRange(item.Credit.Select(amount => amount.Map(new Models.TransactionComponent { TransactionId = record.Id, EntryTypeName = EntryType.Credit.ToString() })));
+					transactionComponents.AddRange(item.Debit.Select(amount => amount.Map(new Models.TransactionComponent { TransactionId = record.Id, EntryTypeName = EntryType.Debit.ToString() })));
+				}
+
+				await _database.ExecuteAsync(
+					@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
+						VALUES (@id, @date, @amount, @reference, @description)",
+					transactionRecords);
+
+				await _database.ExecuteAsync(
+					@"INSERT INTO [TransactionComponent] (TransactionId, AccountId, EntryTypeName, Amount, Annotation, AppliedByRuleId)
+						VALUES (@transactionId, @accountId, @entryTypeName, @amount, ISNULL(@annotation, ''), @appliedByRuleId)",
+					transactionComponents);
+
+				var importId = await _database.ExecuteScalarAsync<int>(
+					@"INSERT INTO ImportResult (Name, ImportTypeName, Date)
+						OUTPUT inserted.id
+						VALUES (@name, @importType, @date)", model);
+
+				await _database.ExecuteAsync(
+					@"INSERT INTO ImportedTransaction (Id, ImportId, Unclassified, Amount)
+						VALUES (@id, @importId, @unclassified, @amount)",
+					transactionRecords
+						.MapAll<Models.ImportedTransaction>()
+						.Select(t => new { t.Id, importId, t.Unclassified, t.Amount }));
+
+				transaction.Complete();
+				return importId;
+			}
+		}
+
+		public async Task<IEnumerable<ImportResult>> GetAllAsync()
+		{
+			var imports = await _database.QueryAsync<Models.ImportResult>("SELECT ImportResult.* FROM ImportResult");
+			return imports.MapAll<ImportResult>().ToList();
+		}
+
+		public async Task<IEnumerable<ImportedTransaction>> GetTransactionIdsAsync(int importId)
+		{
+			var transactions = await _database.QueryAsync<Models.ImportedTransaction>(
+				@"SELECT ImportedTransaction.* 
+					FROM ImportedTransaction 
+					WHERE ImportId = @importId", new { importId });
+
+			return transactions.MapAll<ImportedTransaction>();
+		}
+
+		public async Task<IEnumerable<Transaction>> GetTransactionsAsync(int importId)
+		{
+			var transactions = await _database.QueryAsync<Models.Transaction>(
+				@"SELECT [Transaction].* 
+					FROM ImportedTransaction 
+						INNER JOIN [Transaction] ON [Transaction].Id = ImportedTransaction.Id
+					WHERE ImportId = @importId", new { importId });
+
+			return transactions.MapAll<Transaction>().ToList();
 		}
 	}
 }

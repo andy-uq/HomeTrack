@@ -6,32 +6,17 @@ namespace HomeTrack.Core
 {
 	public class TransactionImportContext
 	{
-		private readonly GeneralLedger _general;
 		private readonly AccountIdentifier[] _patterns;
-		private readonly IImportRepository _repository;
 
-		public GeneralLedger General
-		{
-			get { return _general; }
-		}
+		public GeneralLedger General { get; }
+		public IImportAsyncRepository Repository { get; }
+		public IEnumerable<AccountIdentifier> Patterns => _patterns;
 
-		public IImportRepository Repository
+		public TransactionImportContext(GeneralLedger general, IEnumerable<AccountIdentifier> patterns, IImportAsyncRepository repository)
 		{
-			get { return _repository; }
-		}
-
-		public IEnumerable<AccountIdentifier> Patterns
-		{
-			get { return _patterns; }
-		}
-
-		public TransactionImportContext(GeneralLedger general, IEnumerable<AccountIdentifier> patterns, IImportRepository repository)
-		{
-			_general = general;
-			_repository = repository;
+			General = general;
+			Repository = repository;
 			_patterns = patterns.ToArray();
-
-			Array.ForEach(_patterns, p => p.Account = general[p.Account.Id]);
 		}
 
 		public TransactionImport CreateImport(Account source, Account unclassifiedDestination = null)
