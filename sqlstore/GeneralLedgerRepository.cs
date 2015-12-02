@@ -87,7 +87,23 @@ namespace HomeTrack.SqlStore
 
 		public bool Post(Transaction transaction)
 		{
-			return false;
+			var transactionComponents = new List<Models.TransactionComponent>();
+
+			var model = transaction.Map<Models.Transaction>();
+			transactionComponents.AddRange(transaction.Credit.Select(amount => amount.Map(new Models.TransactionComponent { TransactionId = model.Id, EntryTypeName = EntryType.Credit.ToString() })));
+			transactionComponents.AddRange(transaction.Debit.Select(amount => amount.Map(new Models.TransactionComponent { TransactionId = model.Id, EntryTypeName = EntryType.Debit.ToString() })));
+
+			_database.Execute(
+				@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
+						VALUES (@id, @date, @amount, @reference, @description)",
+				model);
+
+			_database.Execute(
+				@"INSERT INTO [TransactionComponent] (TransactionId, AccountId, EntryTypeName, Amount, Annotation, AppliedByRuleId)
+						VALUES (@transactionId, @accountId, @entryTypeName, @amount, ISNULL(@annotation, ''), @appliedByRuleId)",
+				transactionComponents);
+
+			return true;
 		}
 
 		public IEnumerable<Transaction> GetTransactions(string accountId)
@@ -95,7 +111,8 @@ namespace HomeTrack.SqlStore
 			var transactions = _database.Query<Models.Transaction>(
 				@"SELECT [Transaction].* 
 					FROM [Transaction] 
-					WHERE EXISTS (SELECT * FROM TransactionComponent WHERE AccountId=@accountId AND [Transaction].Id = TransactionId)", new { accountId });
+					WHERE EXISTS (SELECT * FROM TransactionComponent WHERE AccountId=@accountId AND [Transaction].Id = TransactionId) 
+					ORDER BY [Date]", new { accountId });
 
 			return transactions.MapAll<Transaction>();
 		}

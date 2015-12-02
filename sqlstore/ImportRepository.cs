@@ -33,6 +33,16 @@ namespace HomeTrack.SqlStore
 					transactionComponents.AddRange(item.Debit.Select(amount => amount.Map(new Models.TransactionComponent {TransactionId = record.Id, EntryTypeName = EntryType.Debit.ToString() })));
 				}
 
+				_database.Execute(
+					@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
+						VALUES (@id, @date, @amount, @reference, @description)",
+					transactionRecords);
+
+				_database.Execute(
+					@"INSERT INTO [TransactionComponent] (TransactionId, AccountId, EntryTypeName, Amount, Annotation, AppliedByRuleId)
+						VALUES (@transactionId, @accountId, @entryTypeName, @amount, ISNULL(@annotation, ''), @appliedByRuleId)",
+					transactionComponents);
+
 				var importId = _database.ExecuteScalar<int>(
 					@"INSERT INTO ImportResult (Name, ImportTypeName, Date)
 						OUTPUT inserted.id
@@ -44,16 +54,6 @@ namespace HomeTrack.SqlStore
 					transactionRecords
 						.MapAll<Models.ImportedTransaction>()
 						.Select(t => new {t.Id, importId, t.Unclassified, t.Amount}));
-
-				_database.Execute(
-					@"INSERT INTO [Transaction] (Id, Date, Amount, Reference, Description)
-						VALUES (@id, @date, @amount, @reference, @description)",
-					transactionRecords);
-
-				_database.Execute(
-					@"INSERT INTO [TransactionComponent] (TransactionId, AccountId, EntryTypeName, Amount, Annotation, AppliedByRuleId)
-						VALUES (@transactionId, @accountId, @entryTypeName, @amount, ISNULL(@annotation, ''), @appliedByRuleId)",
-					transactionComponents);
 
 				transaction.Complete();
 				return importId;

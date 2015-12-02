@@ -29,8 +29,8 @@ namespace HomeTrack.SqlStore
 			CreateLookupTables();
 
 			CreateAccountTables();
-			CreateImportTables();
 			CreateTransactionTables();
+			CreateImportTables();
 		}
 
 		private void CreateAccountTables()
@@ -104,6 +104,7 @@ namespace HomeTrack.SqlStore
 			Create.Table(TableNames.ImportedTransaction)
 				.WithColumn("Id").AsAnsiString(32)
 					.PrimaryKey()
+					.ForeignKey(TableNames.Transaction, "Id")
 				.WithColumn("ImportId").AsInt32()
 					.ForeignKey(TableNames.ImportResult, "Id").OnDelete(Rule.Cascade)
 					.Indexed()
@@ -117,7 +118,6 @@ namespace HomeTrack.SqlStore
 			Create.Table(TableNames.Transaction)
 				.WithColumn("Id").AsAnsiString(32)
 					.PrimaryKey()
-					.ForeignKey(TableNames.ImportedTransaction, "Id").OnDelete(Rule.Cascade)
 				.WithColumn("Date").AsDateTime()
 				.WithColumn("Amount").AsDecimal(19, 4)
 				.WithColumn("Reference").AsAnsiString(32)
@@ -138,6 +138,7 @@ namespace HomeTrack.SqlStore
 				.OnTable(TableNames.TransactionComponent)
 					.OnColumn("TransactionId").Ascending()
 					.OnColumn("AccountId").Ascending()
+					.OnColumn("EntryTypeName").Ascending()
 				.WithOptions().Unique();
 		}
 
