@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using HomeTrack.Core;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.AccountIdentifiers
 {
 	public class GetAccountIdentifierTests
 	{

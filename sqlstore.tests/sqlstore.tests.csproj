@@ -108,17 +108,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountIdentifierFromModelTests.cs" />
-    <Compile Include="AccountIdentifierToModelTests.cs" />
+    <Compile Include="AccountIdentifiers\Mapping\AccountIdentifierFromModelTests.cs" />
+    <Compile Include="AccountIdentifiers\Mapping\AccountIdentifierToModelTests.cs" />
+    <Compile Include="AccountIdentifiers\CreateAccountIdentifierAsyncTests.cs" />
+    <Compile Include="AccountIdentifiers\DeleteAccountIdentifierAsyncTests.cs" />
+    <Compile Include="AccountIdentifiers\GetAccountIdentifierAsyncTests.cs" />
     <Compile Include="AccountMappingTests.cs" />
-    <Compile Include="CreateAccountIdentifierTests.cs" />
+    <Compile Include="AccountIdentifiers\CreateAccountIdentifierTests.cs" />
     <Compile Include="CreateAccountTests.cs" />
     <Compile Include="CreateImportTests.cs" />
     <Compile Include="CreateTestData.cs" />
     <Compile Include="DatabaseExtensions.cs" />
     <Compile Include="DeleteAccountTests.cs" />
-    <Compile Include="DeleteAccountIdentifierTests.cs" />
-    <Compile Include="GetAccountIdentifierTests.cs" />
+    <Compile Include="AccountIdentifiers\DeleteAccountIdentifierTests.cs" />
+    <Compile Include="AccountIdentifiers\GetAccountIdentifierTests.cs" />
     <Compile Include="IntegrationSettings.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="MigrationManager.cs" />

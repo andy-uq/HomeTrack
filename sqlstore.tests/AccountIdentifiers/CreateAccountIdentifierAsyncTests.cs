@@ -1,17 +1,18 @@
-﻿using HomeTrack.Core;
+using System.Threading.Tasks;
+using HomeTrack.Core;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.AccountIdentifiers
 {
-	public class CreateAccountIdentifierTests
+	public class CreateAccountIdentifierAsyncTests
 	{
 		private readonly AccountIdentifierRepository _repository;
 
-		public CreateAccountIdentifierTests(AccountIdentifierRepository repository)
+		public CreateAccountIdentifierAsyncTests(AccountIdentifierRepository repository)
 		{
 			_repository = repository;
 		}
 
-		public void CreateSimpleIdentifier()
+		public async Task CreateSimpleIdentifierAsync()
 		{
 			var identifier = new AccountIdentifier
 			{
@@ -19,10 +20,10 @@ namespace HomeTrack.SqlStore.Tests
 				Pattern = new AmountPattern() {  Amount = 100, Direction = EntryType.Credit }
 			};
 
-			_repository.AddOrUpdate(identifier);
+			await _repository.AddOrUpdateAsync(identifier);
 		}
 
-		public void CreateCompositeIdentifier()
+		public async Task CreateCompositeIdentifierAsync()
 		{
 			var identifier = new AccountIdentifier
 			{
@@ -34,7 +35,7 @@ namespace HomeTrack.SqlStore.Tests
 				}
 			};
 
-			_repository.AddOrUpdate(identifier);
+			await _repository.AddOrUpdateAsync(identifier);
 		}
 	}
 }

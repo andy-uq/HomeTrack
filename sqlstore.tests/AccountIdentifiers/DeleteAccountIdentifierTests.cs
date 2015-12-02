@@ -3,12 +3,12 @@ using System.Linq;
 using FluentAssertions;
 using HomeTrack.Core;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.AccountIdentifiers
 {
 	public class DeleteAccountIdentifierTests
 	{
 		private readonly AccountIdentifierRepository _repository;
-		private IEnumerable<AccountIdentifier> _identifiers;
+		private readonly IEnumerable<AccountIdentifier> _identifiers;
 
 		public DeleteAccountIdentifierTests(AccountIdentifierRepository repository)
 		{

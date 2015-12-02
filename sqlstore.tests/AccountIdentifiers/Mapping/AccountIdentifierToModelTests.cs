@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Linq;
 using AutoMapper;
 using FluentAssertions;
 using HomeTrack.Core;
 using HomeTrack.SqlStore.Models.Mapping;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.AccountIdentifiers.Mapping
 {
 	public class AccountIdentifierToModelTests
 	{

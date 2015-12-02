@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using FluentAssertions;
-using HomeTrack.Collections;
 using HomeTrack.Core;
 using HomeTrack.SqlStore.Models;
 using HomeTrack.SqlStore.Models.Mapping;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.AccountIdentifiers.Mapping
 {
 	public class AccountIdentifierFromModelTests
 	{
