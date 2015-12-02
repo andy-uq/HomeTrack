@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Linq;
-using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class AutomaticPaymentTests
 	{
-		private Account _income;
-		private Account _pocketMoney;
-		private GeneralLedger _generalLedger;
-		private AutomaticPayment _automaticPayment;
+		private readonly AutomaticPayment _automaticPayment;
+		private readonly GeneralLedger _generalLedger;
+		private readonly Account _income;
+		private readonly Account _pocketMoney;
 
-		[SetUp]
-		public void SetUp()
+		public AutomaticPaymentTests()
 		{
 			DateTimeServer.SetLocal(new TestDateTimeServer(DateTime.Parse("2012-1-1")));
 
-			_income = AccountFactory.Income("Income", initialBalance:100M);
+			_income = AccountFactory.Income("Income", initialBalance: 100M);
 			_pocketMoney = AccountFactory.Income("Pocket Money", initialBalance: 100M);
-			_automaticPayment = new AutomaticPayment() { Debit = _income, Credit = _pocketMoney, Amount = 10M, Description = "Weekly pocket money" };
+			_automaticPayment = new AutomaticPayment
+			{
+				Debit = _income,
+				Credit = _pocketMoney,
+				Amount = 10M,
+				Description = "Weekly pocket money"
+			};
 
 			_generalLedger = new GeneralLedger(new InMemoryRepository())
 			{
@@ -28,28 +32,26 @@ namespace HomeTrack.Tests
 			};
 		}
 
-		[Test]	 
 		public void BuildAutomaticPaymentTransaction()
 		{
 			var payment = _automaticPayment;
 			var transaction = payment.BuildTransaction();
-			Assert.That(transaction, Is.Not.Null);
-			Assert.That(transaction.Debit.Single().Account, Is.EqualTo(_income));
-			Assert.That(transaction.Credit.Single().Account, Is.EqualTo(_pocketMoney));
-			Assert.That(transaction.Amount, Is.EqualTo(10M));
-			Assert.That(transaction.Description, Is.EqualTo("Weekly pocket money"));
-			Assert.That(transaction.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
+			transaction.Should().NotBeNull();
+			transaction.Debit.Single().Account.Should().Be(_income);
+			transaction.Credit.Single().Account.Should().Be(_pocketMoney);
+			transaction.Amount.Should().Be(10M);
+			transaction.Description.Should().Be("Weekly pocket money");
+			transaction.Date.Should().Be(DateTime.Parse("2012-1-1"));
 		}
 
-		[Test]	 
 		public void ApplyAutomaticPaymentTransaction()
 		{
 			var payment = _automaticPayment;
 			var transaction = payment.BuildTransaction();
 			_generalLedger.Post(transaction);
 
-			Assert.That(_income.Balance, Is.EqualTo(90M));
-			Assert.That(_pocketMoney.Balance, Is.EqualTo(110M));
+			_income.Balance.Should().Be(90M);
+			_pocketMoney.Balance.Should().Be(110M);
 		}
 	}
 }

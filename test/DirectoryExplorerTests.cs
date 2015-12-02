@@ -1,55 +1,49 @@
 ﻿using System.IO;
 using System.Linq;
-using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class DirectoryExplorerTests
 	{
 		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
 
-		[Test]
 		public void GetDirectory()
 		{
 			var directories = Directory.GetDirectories(_directory);
 
 			var explorer = new DirectoryExplorer(_directory);
-			Assert.That(explorer.GetDirectories().Select(x => x.FullName), Is.EqualTo(directories));
-			Assert.That(explorer.Name, Is.EqualTo("/"));
+			explorer.GetDirectories().Select(x => x.FullName).Should().Equal(directories);
+			explorer.Name.Should().Be("/");
 		}
 
-		[Test]
 		public void NavigateTo()
 		{
 			var explorer = new DirectoryExplorer(_directory);
-			Assert.That(explorer.NavigateTo("imports/westpac"), Is.True);
-			Assert.That(explorer.Name, Is.EqualTo("/Imports/Westpac"));
+			explorer.NavigateTo("imports/westpac").Should().BeTrue();
+			explorer.Name.Should().Be("/Imports/Westpac");
 		}
 
-		[Test]
 		public void NavigateToRoot()
 		{
 			var explorer = new DirectoryExplorer(_directory);
-			Assert.That(explorer.NavigateToRoot(), Is.True);
-			Assert.That(explorer.Name, Is.EqualTo("/"));
+			explorer.NavigateToRoot().Should().BeTrue();
+			explorer.Name.Should().Be("/");
 		}
 
-		[Test]
 		public void GetFiles()
 		{
 			var files = Directory.GetFiles(_directory);
 
 			var explorer = new DirectoryExplorer(_directory);
-			Assert.That(explorer.GetFiles().Select(x => x.FullName), Is.EqualTo(files));
+			explorer.GetFiles().Select(x => x.FullName).Should().Equal(files);
 		}
 
-		[Test]
 		public void GetFilename()
 		{
 			var explorer = new DirectoryExplorer(_directory);
-			Assert.That(explorer.NavigateTo("imports/westpac"), Is.True);
-			Assert.That(explorer.GetFilename("abcd.csv"), Is.EqualTo(Path.Combine(_directory, "Imports\\Westpac", "abcd.csv")));
+			explorer.NavigateTo("imports/westpac").Should().BeTrue();
+			explorer.GetFilename("abcd.csv").Should().Be(Path.Combine(_directory, "Imports\\Westpac", "abcd.csv"));
 		}
 	}
 }

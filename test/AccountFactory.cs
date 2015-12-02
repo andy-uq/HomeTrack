@@ -25,12 +25,13 @@ namespace HomeTrack.Tests
 			return NewAccount(name, AccountType.Expense, initialBalance, initialise);
 		}
 
-		private static Account NewAccount(string name, AccountType accountType, decimal initialBalance, Action<Account> initialise)
+		private static Account NewAccount(string name, AccountType accountType, decimal initialBalance,
+			Action<Account> initialise)
 		{
 			var account = new Account(name, accountType)
 			{
 				Id = Regex.Replace(name, @"\W+", string.Empty).ToLowerInvariant(),
-				Balance = initialBalance,
+				Balance = initialBalance
 			};
 
 			if (initialise != null)

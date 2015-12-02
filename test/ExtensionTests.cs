@@ -1,15 +1,13 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class ExtensionTests
 	{
-		[Test]
 		public void InvertEntryType()
 		{
-			Assert.That(EntryType.Debit.Invert(), Is.EqualTo(EntryType.Credit));
-			Assert.That(EntryType.Credit.Invert(), Is.EqualTo(EntryType.Debit));
+			EntryType.Debit.Invert().Should().Be(EntryType.Credit);
+			EntryType.Credit.Invert().Should().Be(EntryType.Debit);
 		}
 	}
 }

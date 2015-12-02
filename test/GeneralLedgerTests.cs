@@ -1,138 +1,125 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using AutoMapper;
-using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	public abstract class GeneralLedgerTests
+	public abstract class GeneralLedgerTests : IDisposable
 	{
-		private GeneralLedger _ledger;
-		private Account _bank;
-		private Account _mortgage;
+		private readonly Account _bank;
+		private readonly GeneralLedger _ledger;
+		private readonly Account _mortgage;
 
-		[SetUp]
-		public void SetUp()
+		public GeneralLedgerTests()
 		{
-			_bank = AccountFactory.Asset("Bank", initialBalance:100);
-			_mortgage = AccountFactory.Liability("Mortgage", initialBalance:100);
+			_bank = AccountFactory.Asset("Bank", initialBalance: 100);
+			_mortgage = AccountFactory.Liability("Mortgage", initialBalance: 100);
 
 			_ledger = new GeneralLedger(LedgerRepository)
 			{
 				_bank,
-				_mortgage,
+				_mortgage
 			};
-		}
-
-		[TearDown]
-		public void CleanUp()
-		{
-			_ledger.Dispose();
 		}
 
 		protected abstract IGeneralLedgerRepository LedgerRepository { get; }
 
-		[Test]
-		public void CreateGeneralLedger()
+		public void Dispose()
 		{
-			Assert.That(_ledger, Is.Not.Empty);
+			_ledger.Dispose();
 		}
 
-		[Test]
+		public void CreateGeneralLedger()
+		{
+			_ledger.Should().NotBeEmpty();
+		}
+
 		public void AccessAccountByName()
 		{
 			var account = _ledger["Bank"];
-			Assert.That(account, Is.EqualTo(_bank).Using(new AccountComparer()));
+			account.Should().Be(_bank);
 		}
 
-		[Test,ExpectedException(typeof(ArgumentNullException))]
 		public void NullNameThrowsException()
 		{
-			var account = _ledger[null];
+			Account account;
+			_ledger.Invoking(_ => account = _[null])
+				.ShouldThrow<ArgumentNullException>()
+				.WithMessage("Value cannot be null.\r\nParameter name: accountId");
 		}
 
-		[Test]
 		public void CreditAccountsAreCredit()
 		{
-			Assert.That(_ledger.CreditAccounts, Is.Not.Empty);
-			Assert.That(_ledger.CreditAccounts, Has.All.Matches<Account>(x => x.Direction == EntryType.Credit));
+			_ledger.CreditAccounts.Should().NotBeEmpty();
+			_ledger.CreditAccounts.Should().OnlyContain(x => x.Direction == EntryType.Credit);
 		}
 
-		[Test]
 		public void DebitAccountsAreDebit()
 		{
-			Assert.That(_ledger.DebitAccounts, Is.Not.Empty);
-			Assert.That(_ledger.DebitAccounts, Has.All.Matches<Account>(x => x.Direction == EntryType.Debit));
+			_ledger.DebitAccounts.Should().NotBeEmpty();
+			_ledger.DebitAccounts.Should().OnlyContain(x => x.Direction == EntryType.Debit);
 		}
 
-		[Test]
 		public void TrialBalanceWithZeroBalance()
 		{
-			Assert.That(_ledger.TrialBalance(), Is.True);
+			_ledger.TrialBalance().Should().BeTrue();
 		}
 
-		[Test]
 		public void ChangeBalanceSucceeds()
 		{
-			Assert.That(_bank.Balance, Is.EqualTo(100M));
+			_bank.Balance.Should().Be(100M);
 			_bank.Credit(10M);
-			Assert.That(_bank.Balance, Is.EqualTo(90M));
+			_bank.Balance.Should().Be(90M);
 			_ledger.Add(_bank);
-			Assert.That(_ledger[_bank.Id].Balance, Is.EqualTo(90M));
+			_ledger[_bank.Id].Balance.Should().Be(90M);
 		}
 
-		[Test]
 		public void TrialBalanceFails()
 		{
-			Assert.That(_bank.Balance, Is.EqualTo(100M));
+			_bank.Balance.Should().Be(100M);
 			_bank.Credit(10M);
-			Assert.That(_bank.Balance, Is.EqualTo(90M));
-	
+			_bank.Balance.Should().Be(90M);
+
 			_ledger.Add(_bank);
 
-			Assert.That(_ledger[_bank.Id].Balance, Is.EqualTo(90M));
+			_ledger[_bank.Id].Balance.Should().Be(90M);
 
-			Assert.That(_ledger.TrialBalance(), Is.False);
+			_ledger.TrialBalance().Should().BeFalse();
 		}
 
-		[Test]
 		public void TrialBalanceSucceeds()
 		{
 			_bank.Credit(10M);
 			_mortgage.Debit(10M);
 
-			Assert.That(_ledger.TrialBalance(), Is.True);
+			_ledger.TrialBalance().Should().BeTrue();
 		}
 
-		[Test]
 		public void PostCredit()
 		{
 			var t = new Transaction(_mortgage, _bank, 10M);
 			_ledger.Post(t);
 
-			Assert.That(_ledger[_mortgage.Id].Balance, Is.EqualTo(90M));
-			Assert.That(_ledger[_bank.Id].Balance, Is.EqualTo(90M));
+			_ledger[_mortgage.Id].Balance.Should().Be(90M);
+			_ledger[_bank.Id].Balance.Should().Be(90M);
 		}
 
-		[Test]
 		public void GetTransaction()
 		{
 			var t1 = new Transaction(_mortgage, _bank, 10M);
 			_ledger.Post(t1);
 
 			var t2 = _ledger.GetTransaction(t1.Id);
-			Assert.That(t2, Is.EqualTo(t1).Using(new TransactionComparer()));
+			t2.Should().Be(t1);
 		}
 
-		[Test]
 		public void PostDebit()
 		{
 			var t = new Transaction(_bank, _mortgage, 10M);
 			_ledger.Post(t);
 
-			Assert.That(_mortgage.Balance, Is.EqualTo(110M));
-			Assert.That(_bank.Balance, Is.EqualTo(110M));
+			_mortgage.Balance.Should().Be(110M);
+			_bank.Balance.Should().Be(110M);
 		}
 	}
 
@@ -151,7 +138,6 @@ namespace HomeTrack.Tests
 		}
 	}
 
-	[TestFixture]
 	public class InMemoryLedgerTests : GeneralLedgerTests
 	{
 		protected override IGeneralLedgerRepository LedgerRepository

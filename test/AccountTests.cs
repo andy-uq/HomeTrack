@@ -1,140 +1,128 @@
 ﻿using System;
-using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class AccountTests
 	{
-		private Account _debitAccount;
-		private Account _creditAccount;
+		private readonly Account _creditAccount;
+		private readonly Account _debitAccount;
 
-		[SetUp]
-		public void SetUp()
+		public AccountTests()
 		{
 			_debitAccount = AccountFactory.Asset("Bank");
 			_creditAccount = AccountFactory.Liability("Mortgage");
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException), ExpectedMessage = "The string can't be null or empty.\r\nParameter name: name")]
 		public void CreateAccountWithNoName()
 		{
-			new Account(null, AccountType.Asset);
+			this.Invoking(_ => new Account(null, AccountType.Asset))
+				.ShouldThrow<ArgumentException>()
+				.WithMessage("The string can't be null or empty.\r\nParameter name: name");
 		}
 
-		[Test]
 		public void AccountTypeDr()
 		{
 			const AccountType type = AccountType.Asset;
-			Assert.That(type.ToCrDrString(), Is.EqualTo("Dr"));
-			Assert.That(type.ToDr(10), Is.EqualTo(10));
-			Assert.That(type.ToCr(10), Is.EqualTo(null));
+			type.ToCrDrString().Should().Be("Dr");
+			type.ToDr(10).Should().Be(10);
+			type.ToCr(10).Should().Be(null);
 		}
 
-		[Test, ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "The account \"XXX\" does not have an account type set.")]
 		public void UnknownAccountTypeThrowsException()
 		{
-			var account = new Account() { Name = "XXX" };
-			var entryType = account.Direction;
-			Assert.Fail(entryType.ToString());
+			var account = new Account {Name = "XXX"};
+
+			EntryType entryType;
+			account.Invoking(_ => entryType = _.Direction)
+				.ShouldThrow<InvalidOperationException>()
+				.WithMessage("The account \"XXX\" does not have an account type set.");
 		}
 
-		[Test]
 		public void AccountToString()
 		{
-			Assert.That(_creditAccount.ToString(), Is.EqualTo("Mortgage"));
+			_creditAccount.ToString().Should().Be("Mortgage");
 		}
 
-		[Test]
 		public void AccountTypeCr()
 		{
 			const AccountType type = AccountType.Liability;
-			Assert.That(type.ToCrDrString(), Is.EqualTo("Cr"));
-			Assert.That(type.ToDr(10), Is.EqualTo(null));
-			Assert.That(type.ToCr(10), Is.EqualTo(10));
+			type.ToCrDrString().Should().Be("Cr");
+			type.ToDr(10).Should().Be(null);
+			type.ToCr(10).Should().Be(10);
 		}
 
-		[Test]
 		public void CreateDebitAccount()
 		{
 			var account = _debitAccount;
-			Assert.That(account.Name, Is.EqualTo("Bank"));
-			Assert.That(account.Type, Is.EqualTo(AccountType.Asset));
-			Assert.That(account.Direction, Is.EqualTo(EntryType.Debit));
+			account.Name.Should().Be("Bank");
+			account.Type.Should().Be(AccountType.Asset);
+			account.Direction.Should().Be(EntryType.Debit);
 		}
 
-		[Test]
 		public void CreateCreditAccount()
 		{
 			var account = _creditAccount;
-			Assert.That(account.Name, Is.EqualTo("Mortgage"));
-			Assert.That(account.Type, Is.EqualTo(AccountType.Liability));
-			Assert.That(account.Direction, Is.EqualTo(EntryType.Credit));
+			account.Name.Should().Be("Mortgage");
+			account.Type.Should().Be(AccountType.Liability);
+			account.Direction.Should().Be(EntryType.Credit);
 		}
 
-		[Test]
 		public void AccountHasBalance()
 		{
 			var account = _creditAccount;
-			Assert.That(account.Balance, Is.EqualTo(0M));
+			account.Balance.Should().Be(0M);
 		}
 
-		[Test]
 		public void PostAmountDirect()
 		{
 			var account = _debitAccount;
 			account.Post(10M, EntryType.Debit);
-			Assert.That(account.Balance, Is.EqualTo(10M));
+			account.Balance.Should().Be(10M);
 
 			account.Post(10M, EntryType.Credit);
-			Assert.That(account.Balance, Is.EqualTo(0M));
+			account.Balance.Should().Be(0M);
 		}
 
-		[Test]
 		public void PostAmount()
 		{
 			var account = _debitAccount;
 			var amount = new Amount(account, EntryType.Debit, 10M);
 			amount.Post();
 
-			Assert.That(account.Balance, Is.EqualTo(10M));
+			account.Balance.Should().Be(10M);
 
 			amount = new Amount(account, EntryType.Credit, 10M);
 			amount.Post();
-			Assert.That(account.Balance, Is.EqualTo(0M));
+			account.Balance.Should().Be(0M);
 		}
 
-		[Test]
 		public void PostDebitAmountToDebitAccount()
 		{
 			var account = _debitAccount;
 			account.Debit(10M);
-			Assert.That(account.Balance, Is.EqualTo(10M));
+			account.Balance.Should().Be(10M);
 		}
 
-		[Test]
 		public void PostDebitAmountToCreditAccount()
 		{
 			var account = _creditAccount;
 			account.Debit(10M);
-			Assert.That(account.Balance, Is.EqualTo(-10M));
+			account.Balance.Should().Be(-10M);
 		}
 
-		[Test]
 		public void PostCreditAmountToCreditAccount()
 		{
 			var account = _creditAccount;
 			account.Credit(10M);
-			Assert.That(account.Balance, Is.EqualTo(10M));
+			account.Balance.Should().Be(10M);
 		}
 
-		[Test]
 		public void PostCreditAmountToDebitAccount()
 		{
 			var account = _debitAccount;
 			account.Credit(10M);
-			Assert.That(account.Balance, Is.EqualTo(-10M));
+			account.Balance.Should().Be(-10M);
 		}
-
 	}
 }

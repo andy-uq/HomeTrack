@@ -1,98 +1,89 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using HomeTrack.Core;
-using NUnit.Framework;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class PatternBuilderTests
 	{
-		[Test]
 		public void BuildAmountPattern()
 		{
 			var builder = PatternBuilder.GetPatterns().Single(x => x.Name == "Amount");
-			var pattern = builder.Build(Dictionary(new[] {"Amount", "10"}, new[] { "Direction", "Credit" }));
-			Assert.That(pattern, Is.InstanceOf<AmountPattern>());
+			var pattern = builder.Build(Dictionary(new[] {"Amount", "10"}, new[] {"Direction", "Credit"}));
+			pattern.Should().BeOfType<AmountPattern>();
 
 			var amount = (AmountPattern) pattern;
-			Assert.That(amount.Amount, Is.EqualTo(10M));
+			amount.Amount.Should().Be(10M);
 		}
 
-		[Test]
 		public void BuildAmountRangePattern()
 		{
 			var builder = PatternBuilder.GetPatterns().Single(x => x.Name == "Amount Range");
-			var pattern = builder.Build(Dictionary(new[] {"Min", "10"}, new[] { "Max", "100" }));
-			Assert.That(pattern, Is.InstanceOf<AmountRangePattern>());
+			var pattern = builder.Build(Dictionary(new[] {"Min", "10"}, new[] {"Max", "100"}));
+			pattern.Should().BeOfType<AmountRangePattern>();
 
 			var amountRangePattern = (AmountRangePattern) pattern;
-			Assert.That(amountRangePattern.Min, Is.EqualTo(10M));
-			Assert.That(amountRangePattern.Max, Is.EqualTo(100M));
+			amountRangePattern.Min.Should().Be(10M);
+			amountRangePattern.Max.Should().Be(100M);
 		}
 
-		[Test]
 		public void BuildFieldPattern()
 		{
 			var builder = PatternBuilder.GetPatterns().Single(x => x.Name == "Field");
-			var pattern = builder.Build(Dictionary(new[] {"Name", "n"}, new[] { "Pattern", "p" }));
-			Assert.That(pattern, Is.InstanceOf<FieldPattern>());
+			var pattern = builder.Build(Dictionary(new[] {"Name", "n"}, new[] {"Pattern", "p"}));
+			pattern.Should().BeOfType<FieldPattern>();
 
-			var amountRangePattern = (FieldPattern)pattern;
-			Assert.That(amountRangePattern.Name, Is.EqualTo("n"));
-			Assert.That(amountRangePattern.Pattern, Is.EqualTo("p"));
+			var amountRangePattern = (FieldPattern) pattern;
+			amountRangePattern.Name.Should().Be("n");
+			amountRangePattern.Pattern.Should().Be("p");
 		}
 
-		[Test]
 		public void BuildDayOfMonthPattern()
 		{
 			var builder = PatternBuilder.GetPatterns().Single(x => x.Name == "Day Of Month");
 			var pattern = builder.Build(Dictionary(new[] {"Days of Month", "1, 15"}));
-			Assert.That(pattern, Is.InstanceOf<DayOfMonthPattern>());
+			pattern.Should().BeOfType<DayOfMonthPattern>();
 
-			var amountRangePattern = (DayOfMonthPattern)pattern;
-			Assert.That(amountRangePattern.DaysOfMonth, Is.EqualTo(new[] { 1, 15 }));
+			var amountRangePattern = (DayOfMonthPattern) pattern;
+			amountRangePattern.DaysOfMonth.Should().Equal(1, 15);
 		}
 
-		[Test]
 		public void BuildAmountPatternFromIPattern()
 		{
-			var builder = PatternBuilder.Parse(new AmountPattern { Amount = 10M, Direction = EntryType.Credit }).Single();
-			Assert.That(builder.Name, Is.EqualTo("Amount"));
-			Assert.That(builder.Properties.Keys, Has.Member("Amount"));
-			Assert.That(builder.Properties.Keys, Has.Member("Direction"));
-			Assert.That(builder.Properties["Amount"], Is.EqualTo("10.00"));
+			var builder = PatternBuilder.Parse(new AmountPattern {Amount = 10M, Direction = EntryType.Credit}).Single();
+			builder.Name.Should().Be("Amount");
+			builder.Properties.Keys.Should().Contain("Amount");
+			builder.Properties.Keys.Should().Contain("Direction");
+			builder.Properties["Amount"].Should().Be("10.00");
 		}
 
-		[Test]
 		public void BuildFieldPatternFromIPattern()
 		{
-			var builder = PatternBuilder.Parse(new FieldPattern { Name = "n", Pattern = "p" }).Single();
-			Assert.That(builder.Name, Is.EqualTo("Field"));
-			Assert.That(builder.Properties.Keys, Has.Member("Name"));
-			Assert.That(builder.Properties.Keys, Has.Member("Pattern"));
-			Assert.That(builder.Properties["Name"], Is.EqualTo("n"));
-			Assert.That(builder.Properties["Pattern"], Is.EqualTo("p"));
+			var builder = PatternBuilder.Parse(new FieldPattern {Name = "n", Pattern = "p"}).Single();
+			builder.Name.Should().Be("Field");
+			builder.Properties.Keys.Should().Contain("Name");
+			builder.Properties.Keys.Should().Contain("Pattern");
+			builder.Properties["Name"].Should().Be("n");
+			builder.Properties["Pattern"].Should().Be("p");
 		}
 
-		[Test]
 		public void BuildAmountRangePatternFromIPattern()
 		{
-			var builder = PatternBuilder.Parse(new AmountRangePattern { Min = 10, Max = 100 }).Single();
-			Assert.That(builder.Name, Is.EqualTo("Amount Range"));
-			Assert.That(builder.Properties.Keys, Has.Member("Min"));
-			Assert.That(builder.Properties.Keys, Has.Member("Max"));
-			Assert.That(builder.Properties["Min"], Is.EqualTo("10.00"));
-			Assert.That(builder.Properties["Max"], Is.EqualTo("100.00"));
+			var builder = PatternBuilder.Parse(new AmountRangePattern {Min = 10, Max = 100}).Single();
+			builder.Name.Should().Be("Amount Range");
+			builder.Properties.Keys.Should().Contain("Min");
+			builder.Properties.Keys.Should().Contain("Max");
+			builder.Properties["Min"].Should().Be("10.00");
+			builder.Properties["Max"].Should().Be("100.00");
 		}
 
-		[Test]
 		public void BuildDayOfMonthPatternFromIPattern()
 		{
 			var builder = PatternBuilder.Parse(new DayOfMonthPattern(1, 15)).Single();
-			Assert.That(builder.Name, Is.EqualTo("Day Of Month"));
-			Assert.That(builder.Properties.Keys, Has.Member("Days of Month"));
-			Assert.That(builder.Properties["Days of Month"], Is.EqualTo("1, 15"));
+			builder.Name.Should().Be("Day Of Month");
+			builder.Properties.Keys.Should().Contain("Days of Month");
+			builder.Properties["Days of Month"].Should().Be("1, 15");
 		}
 
 		private Dictionary<string, string> Dictionary(params string[][] values)

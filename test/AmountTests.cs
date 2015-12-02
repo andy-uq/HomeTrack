@@ -1,44 +1,32 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class AmountTests
 	{
-		private Account _account;
-
-		public AmountTests()
-		{
-			_account = AccountFactory.Asset("Bank");
-		}
-
-		[Test]
 		public void DebitAmountToString()
 		{
-			var amount = new Amount(_account, EntryType.Debit, 10M);
-			Assert.That(amount.ToString(), Is.EqualTo("Bank: 10.00 Dr"));
+			var amount = new Amount(TestData.Bank, EntryType.Debit, 10M);
+			amount.ToString().Should().Be("Bank: 10.00 Dr");
 		}
 
-		[Test]
 		public void DebitAmountAsDr()
 		{
-			var amount = new Amount(_account, EntryType.Debit, 10M);
-			Assert.That(amount.AsDr(), Is.EqualTo(10M));
+			var amount = new Amount(TestData.Bank, EntryType.Debit, 10M);
+			amount.AsDr().Should().Be(10M);
 		}
-		
-		[Test]
+
 		public void DebitAmountAsCr()
 		{
-			var amount = new Amount(_account, EntryType.Debit, 10M);
-			Assert.That(amount.AsCr(), Is.Null);
+			var amount = new Amount(TestData.Bank, EntryType.Debit, 10M);
+			amount.AsCr().Should().NotHaveValue();
 		}
 
-		[Test]
 		public void CreditAmountToString()
 		{
-			var amount = new Amount(_account, EntryType.Credit, 10M);
+			var amount = new Amount(TestData.Bank, EntryType.Credit, 10M);
 
-			Assert.That(amount.ToString(), Is.EqualTo("Bank: 10.00 Cr"));
+			amount.ToString().Should().Be("Bank: 10.00 Cr");
 		}
 	}
 }

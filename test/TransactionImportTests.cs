@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using HomeTrack.Core;
 using Moq;
-using NUnit.Framework;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class TransactionImportTests
 	{
-		private GeneralLedger _general;
-		private Account _visa;
+		private readonly Account _electricity;
+		private readonly GeneralLedger _general;
+		private readonly Account _groceries;
+		private readonly Mock<IImport> _import;
+		private readonly TransactionImportContext _importContext;
+		private readonly Mock<IImportRepositoryAsync> _repository;
+		private readonly Account _visa;
 
-		private TransactionImportContext _importContext;
-
-		private Mock<IImport> _import;
-		private Account _electricity;
-		private Account _groceries;
-		private Mock<IImportRepository> _repository;
-
-		[SetUp]
-		public void SetUpForImport()
+		public TransactionImportTests()
 		{
 			DateTimeServer.SetLocal(new TestDateTimeServer(DateTime.Parse("2012-1-1")));
 
@@ -29,13 +25,13 @@ namespace HomeTrack.Tests
 			_electricity = AccountFactory.Expense("electricity");
 			_groceries = AccountFactory.Expense("groceries");
 
-			_general = new GeneralLedger(new InMemoryRepository()) {_visa, _electricity, _groceries };
-			_repository = new Mock<IImportRepository>(MockBehavior.Strict);
+			_general = new GeneralLedger(new InMemoryRepository()) {_visa, _electricity, _groceries};
+			_repository = new Mock<IImportRepositoryAsync>(MockBehavior.Strict);
 
 			var patterns = GetPatterns();
 
 			_importContext = new TransactionImportContext(_general, patterns, _repository.Object);
-			_import = new Moq.Mock<IImport>(MockBehavior.Strict);
+			_import = new Mock<IImport>(MockBehavior.Strict);
 			_import.SetupGet(x => x.Name).Returns("Mock Import");
 			_import.SetupGet(x => x.ImportType).Returns("Mock");
 		}
@@ -44,106 +40,124 @@ namespace HomeTrack.Tests
 		{
 			yield return new AccountIdentifier
 			{
-				Account = _electricity, 
-				Pattern = new FieldPattern { Name = "Other Party", Pattern = "Mercury" }
+				Account = _electricity,
+				Pattern = new FieldPattern {Name = "Other Party", Pattern = "Mercury"}
 			};
 		}
 
-		[Test]
 		public void CreateVisaImport()
 		{
 			var import = _importContext.CreateImport(_visa);
-			Assert.That(import.Credit, Is.EqualTo(_visa));
+			import.Credit.Should().Be(_visa);
 
 			var data = new[]
 			{
 				new WestpacVisaCsvImportRow
 				{
-					Id = "I/1", Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+					Id = "I/1",
+					Amount = 0M,
+					OtherParty = "TXT Alert",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Id = "I/2", Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+					Id = "I/2",
+					Amount = -10M,
+					OtherParty = "Mercury Energy",
+					ProcessDate = DateTimeServer.Now
 				}
 			};
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
 			var transactions = import.Process(_import.Object).ToList();
-			Assert.That(transactions.Count, Is.EqualTo(1));
+			transactions.Count.Should().Be(1);
 
 			var t1 = transactions.First();
-			Assert.That(t1.Amount, Is.EqualTo(10M));
-			Assert.That(t1.RelatedAccounts(), Contains.Item(_electricity));
-			Assert.That(t1.RelatedAccounts(), Contains.Item(_visa));
-			Assert.That(t1.IsCreditAccount(_visa), Is.True);
-			Assert.That(t1.IsDebitAccount(_electricity), Is.True);
-			Assert.That(t1.Date, Is.EqualTo(DateTimeServer.Now));
-			Assert.That(t1.Reference, Is.EqualTo("I/2"));
+			t1.Amount.Should().Be(10M);
+			t1.RelatedAccounts().Should().Contain(_electricity);
+			t1.RelatedAccounts().Should().Contain(_visa);
+			t1.IsCreditAccount(_visa).Should().BeTrue();
+			t1.IsDebitAccount(_electricity).Should().BeTrue();
+			t1.Date.Should().Be(DateTimeServer.Now);
+			t1.Reference.Should().Be("I/2");
 
-			Assert.That(_visa.Balance, Is.EqualTo(10M));
-			Assert.That(_electricity.Balance, Is.EqualTo(10M));
+			_visa.Balance.Should().Be(10M);
+			_electricity.Balance.Should().Be(10M);
 
 			var result = import.Result;
-			Assert.That(result.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
-			Assert.That(result.Name, Is.EqualTo("Mock Import"));
-			Assert.That(result.ImportType, Is.EqualTo("Mock"));
-			Assert.That(result.TransactionCount, Is.EqualTo(1));
-			Assert.That(result.UnclassifiedTransactions, Is.EqualTo(0));
+			result.Date.Should().Be(DateTime.Parse("2012-1-1"));
+			result.Name.Should().Be("Mock Import");
+			result.ImportType.Should().Be("Mock");
+			result.TransactionCount.Should().Be(1);
+			result.UnclassifiedTransactions.Should().Be(0);
 		}
 
-		[Test]
 		public void CreateVisaImportWithUnclassifiedTransaction()
 		{
-			Account unclassified = AccountFactory.Expense("Unclassified expenses");
+			var unclassified = AccountFactory.Expense("Unclassified expenses");
 			var import = _importContext.CreateImport(_visa, unclassifiedDestination: unclassified);
-			Assert.That(import.Credit, Is.EqualTo(_visa));
+			import.Credit.Should().Be(_visa);
 
 			var data = new[]
 			{
 				new WestpacVisaCsvImportRow
 				{
-					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+					Amount = 0M,
+					OtherParty = "TXT Alert",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+					Amount = -10M,
+					OtherParty = "Mercury Energy",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
+					Amount = -20M,
+					OtherParty = "Countdown",
+					ProcessDate = DateTimeServer.Now
 				}
 			};
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
 			var transactions = import.Process(_import.Object).ToList();
-			
+
 			AssertResult(import, transactions, unclassified);
 
 			var result = import.Result;
-			Assert.That(result.UnclassifiedTransactions, Is.EqualTo(1));
+			result.UnclassifiedTransactions.Should().Be(1);
 		}
 
-		[Test]
 		public void CreateVisaImportWithManualAccounts()
 		{
 			var import = _importContext.CreateImport(_visa);
-			Assert.That(import.Credit, Is.EqualTo(_visa));
+			import.Credit.Should().Be(_visa);
 
 			var data = new[]
 			{
 				new WestpacVisaCsvImportRow
 				{
-					Id = "i/1", Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+					Id = "i/1",
+					Amount = 0M,
+					OtherParty = "TXT Alert",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Id = "i/2", Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+					Id = "i/2",
+					Amount = -10M,
+					OtherParty = "Mercury Energy",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Id = "i/3", Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
+					Id = "i/3",
+					Amount = -20M,
+					OtherParty = "Countdown",
+					ProcessDate = DateTimeServer.Now
 				}
 			};
 
@@ -151,75 +165,81 @@ namespace HomeTrack.Tests
 
 			var mappings = new Dictionary<string, ImportRowOptions>
 			{
-				{data[1].Id, new ImportRowOptions { Account = _electricity.Id } },
-				{data[2].Id, new ImportRowOptions { Account = _groceries.Id, Description = "Special event" }},
+				{data[1].Id, new ImportRowOptions {Account = _electricity.Id}},
+				{data[2].Id, new ImportRowOptions {Account = _groceries.Id, Description = "Special event"}}
 			};
 
 			var transactions = import.Process(_import.Object, mappings).ToList();
 			AssertResult(import, transactions, _groceries);
 
-			Assert.That(transactions[1].Description, Is.EqualTo("Special event"));
+			transactions[1].Description.Should().Be("Special event");
 		}
 
-		private void AssertResult(TransactionImport import, ICollection<Transaction> transactions, Account expectedSecondAccount)
+		private void AssertResult(TransactionImport import, ICollection<Transaction> transactions,
+			Account expectedSecondAccount)
 		{
-			Assert.That(transactions.Count, Is.EqualTo(2));
+			transactions.Count.Should().Be(2);
 
 			var t1 = transactions.First();
-			Assert.That(t1.Amount, Is.EqualTo(10M));
-			Assert.That(t1.RelatedAccounts(), Contains.Item(_electricity));
-			Assert.That(t1.RelatedAccounts(), Contains.Item(_visa));
-			Assert.That(t1.IsCreditAccount(_visa), Is.True);
-			Assert.That(t1.IsDebitAccount(_electricity), Is.True);
-			Assert.That(t1.Date, Is.EqualTo(DateTimeServer.Now));
+			t1.Amount.Should().Be(10M);
+			t1.RelatedAccounts().Should().Contain(_electricity);
+			t1.RelatedAccounts().Should().Contain(_visa);
+			t1.IsCreditAccount(_visa).Should().BeTrue();
+			t1.IsDebitAccount(_electricity).Should().BeTrue();
+			t1.Date.Should().Be(DateTimeServer.Now);
 
 			var t2 = transactions.Last();
-			Assert.That(t2.Amount, Is.EqualTo(20M));
-			Assert.That(t2.RelatedAccounts(), Contains.Item(expectedSecondAccount));
-			Assert.That(t2.RelatedAccounts(), Contains.Item(_visa));
-			Assert.That(t2.IsCreditAccount(_visa), Is.True);
-			Assert.That(t2.IsDebitAccount(expectedSecondAccount), Is.True);
-			Assert.That(t2.Date, Is.EqualTo(DateTimeServer.Now));
+			t2.Amount.Should().Be(20M);
+			t2.RelatedAccounts().Should().Contain(expectedSecondAccount);
+			t2.RelatedAccounts().Should().Contain(_visa);
+			t2.IsCreditAccount(_visa).Should().BeTrue();
+			t2.IsDebitAccount(expectedSecondAccount).Should().BeTrue();
+			t2.Date.Should().Be(DateTimeServer.Now);
 
-			Assert.That(_visa.Balance, Is.EqualTo(30M));
-			Assert.That(_electricity.Balance, Is.EqualTo(10M));
-			Assert.That(expectedSecondAccount.Balance, Is.EqualTo(20M));
+			_visa.Balance.Should().Be(30M);
+			_electricity.Balance.Should().Be(10M);
+			expectedSecondAccount.Balance.Should().Be(20M);
 
 			var result = import.Result;
-			Assert.That(result.Date, Is.EqualTo(DateTime.Parse("2012-1-1")));
-			Assert.That(result.Name, Is.EqualTo("Mock Import"));
-			Assert.That(result.TransactionCount, Is.EqualTo(2));
+			result.Date.Should().Be(DateTime.Parse("2012-1-1"));
+			result.Name.Should().Be("Mock Import");
+			result.TransactionCount.Should().Be(2);
 		}
 
-		[Test]
 		public void PersistImportResult()
 		{
-			Account unclassified = AccountFactory.Expense("Unclassified expenses");
+			var unclassified = AccountFactory.Expense("Unclassified expenses");
 			var import = _importContext.CreateImport(_visa, unclassifiedDestination: unclassified);
-			Assert.That(import.Credit, Is.EqualTo(_visa));
+			import.Credit.Should().Be(_visa);
 
 			var data = new[]
 			{
 				new WestpacVisaCsvImportRow
 				{
-					Amount = 0M, OtherParty = "TXT Alert", ProcessDate = DateTimeServer.Now
+					Amount = 0M,
+					OtherParty = "TXT Alert",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Amount = -10M, OtherParty = "Mercury Energy", ProcessDate = DateTimeServer.Now
+					Amount = -10M,
+					OtherParty = "Mercury Energy",
+					ProcessDate = DateTimeServer.Now
 				},
 				new WestpacVisaCsvImportRow
 				{
-					Amount = -20M, OtherParty = "Countdown", ProcessDate = DateTimeServer.Now
+					Amount = -20M,
+					OtherParty = "Countdown",
+					ProcessDate = DateTimeServer.Now
 				}
 			};
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
 			var transactions = import.Process(_import.Object).ToList();
-			Assert.That(transactions.Count, Is.EqualTo(2));
+			transactions.Count.Should().Be(2);
 
-			Assert.That(_visa.Balance, Is.EqualTo(30M));
+			_visa.Balance.Should().Be(30M);
 		}
 	}
 }

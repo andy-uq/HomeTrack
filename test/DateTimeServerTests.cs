@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Threading;
-using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeTrack.Tests
 {
-	[TestFixture]
 	public class DateTimeServerTests
 	{
-		[Test]
 		public void DateTimeServerReturnsArbritaryTime()
 		{
 			var t1 = new TestDateTimeServer(now: DateTime.Now);
 			DateTimeServer.SetLocal(null);
 			DateTimeServer.SetGlobal(t1);
 
-			Assert.That(DateTimeServer.Now, Is.EqualTo(t1.Now));
+			DateTimeServer.Now.Should().Be(t1.Now);
 		}
 
-		[Test]
 		public void ThreadGlobalTimeServerIsShared()
 		{
 			var ts1 = new TestDateTimeServer(now: new DateTime(2011, 1, 1));
@@ -44,16 +41,15 @@ namespace HomeTrack.Tests
 			t1.Start();
 			t2.Start();
 
-			Assert.That(g2.WaitOne(20), Is.True);
+			g2.WaitOne(20).Should().BeTrue();
 			g2.Reset();
 			g1.Set();
-			Assert.That(g2.WaitOne(20), Is.True);
+			g2.WaitOne(20).Should().BeTrue();
 
-			Assert.That(t1Date, Is.Not.Null);
-			Assert.That(t1Date, Is.EqualTo(ts2.Now));
+			t1Date.Should().HaveValue();
+			t1Date.Should().Be(ts2.Now);
 		}
 
-		[Test]
 		public void TheadLocalTimeServerIsNotShared()
 		{
 			var ts1 = new TestDateTimeServer(now: new DateTime(2011, 1, 1));
@@ -71,8 +67,7 @@ namespace HomeTrack.Tests
 				g2.Set();
 			});
 
-			var t2 = new Thread(() =>
-			{
+			var t2 = new Thread(() => {
 				DateTimeServer.SetLocal(ts2);
 				g2.Set();
 				g1.WaitOne();
@@ -81,20 +76,20 @@ namespace HomeTrack.Tests
 			t1.Start();
 			t2.Start();
 
-			Assert.That(g2.WaitOne(20), Is.True);
+			g2.WaitOne(20).Should().BeTrue();
 			g2.Reset();
 			g1.Set();
-			Assert.That(g2.WaitOne(20), Is.True);
+			g2.WaitOne(20).Should().BeTrue();
 
-			Assert.That(t1Date, Is.Not.Null);
-			Assert.That(t1Date, Is.EqualTo(ts1.Now));
+			t1Date.Should().HaveValue();
+			t1Date.Should().Be(ts1.Now);
 		}
 	}
 
 	public class TestDateTimeServer : IDateTimeServer
 	{
-		private DateTime? _now;
 		private readonly Func<DateTime> _nowFunc;
+		private DateTime? _now;
 
 		public TestDateTimeServer(DateTime? now = null, Func<DateTime> nowFunc = null)
 		{
