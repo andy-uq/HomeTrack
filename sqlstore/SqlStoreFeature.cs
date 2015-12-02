@@ -26,6 +26,7 @@ namespace HomeTrack.SqlStore
 
 			builder.RegisterType<AccountIdentifierRepository>()
 				.As<IAccountIdentifierRepository>()
+				.As<IAccountIdentifierAsyncRepository>()
 				.AsSelf();
 		}
 	}

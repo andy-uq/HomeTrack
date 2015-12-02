@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using HomeTrack.Core;
 using HomeTrack.Web.ViewModels;
@@ -8,20 +9,20 @@ namespace HomeTrack.Web.Controllers
 {
 	public class AccountIdentifierController : Controller
 	{
-		private readonly IAccountIdentifierRepository _repository;
+		private readonly IAccountIdentifierAsyncRepository _repository;
 		private readonly GeneralLedger _generalLedger;
 		private readonly IEnumerable<PatternBuilder> _patterns;
 
-		public AccountIdentifierController(IAccountIdentifierRepository repository, GeneralLedger generalLedger, IEnumerable<PatternBuilder> patterns)
+		public AccountIdentifierController(IAccountIdentifierAsyncRepository repository, GeneralLedger generalLedger, IEnumerable<PatternBuilder> patterns)
 		{
 			_repository = repository;
 			_generalLedger = generalLedger;
 			_patterns = patterns;
 		}
 
-		public ViewResult Index()
+		public async Task<ViewResult> Index()
 		{
-			var model = _repository.GetAll();
+			var model = await _repository.GetAllAsync();
 			return View(model);
 		}
 
@@ -32,7 +33,7 @@ namespace HomeTrack.Web.Controllers
 		}
 
 		[AcceptVerbs(HttpVerbs.Post)]
-		public JsonResult Create(AccountIdentifierArgs args)
+		public async Task<JsonResult> Create(AccountIdentifierArgs args)
 		{
 			if ( !ModelState.IsValid )
 				return ModelState.ToJson();
@@ -44,7 +45,7 @@ namespace HomeTrack.Web.Controllers
 					select patternBuilder.Build(p.Properties)
 				).ToList();
 
-			_repository.AddOrUpdate(new AccountIdentifier
+			await  _repository.AddOrUpdateAsync(new AccountIdentifier
 			{
 				Account = _generalLedger[args.AccountId],
 				Pattern = patterns.Count == 1
@@ -55,15 +56,15 @@ namespace HomeTrack.Web.Controllers
 			return RedirectToAction("create", new { accountId = args.AccountId }).ToJson(ControllerContext);
 		}
 
-		public RedirectToRouteResult Remove(int id)
+		public async Task<RedirectToRouteResult> Remove(int id)
 		{
-			_repository.Remove(id);
+			await _repository.RemoveAsync(id);
 			return RedirectToAction("index");
 		}
 
-		public ViewResult Edit(int id)
+		public async Task<ViewResult> Edit(int id)
 		{
-			var identifier = _repository.GetById(id);
+			var identifier = await _repository.GetByIdAsync(id);
 			var model = new AccountIdentifierViewModel
 			{
 				Accounts = _generalLedger,
@@ -77,7 +78,7 @@ namespace HomeTrack.Web.Controllers
 		}
 
 		[AcceptVerbs(HttpVerbs.Post)]
-		public JsonResult Edit(int id, AccountIdentifierArgs args)
+		public async Task<JsonResult> Edit(int id, AccountIdentifierArgs args)
 		{
 			if ( !ModelState.IsValid )
 				return ModelState.ToJson();
@@ -89,7 +90,7 @@ namespace HomeTrack.Web.Controllers
 					select patternBuilder.Build(p.Properties)
 				).ToList();
 
-			_repository.AddOrUpdate(new AccountIdentifier
+			await _repository.AddOrUpdateAsync(new AccountIdentifier
 			{
 				Id = id,
 				Account = _generalLedger[args.AccountId],

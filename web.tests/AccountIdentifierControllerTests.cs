@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using FluentAssertions;
 using HomeTrack.Core;
@@ -14,7 +15,7 @@ namespace HomeTrack.Web.Tests
 	[TestFixture]
 	public class AccountIdentifierControllerTests
 	{
-		private Mock<IAccountIdentifierRepository> _repository;
+		private Mock<IAccountIdentifierAsyncRepository> _repository;
 		private AccountIdentifierController _controller;
 		private Mock<IGeneralLedgerRepository> _generalLedgerRepository;
 
@@ -27,16 +28,17 @@ namespace HomeTrack.Web.Tests
 			_generalLedgerRepository.SetupGet(x => x.Accounts).Returns(new[] { expense });
 			_generalLedgerRepository.Setup(x => x.GetAccount(expense.Id)).Returns(expense);
 
-			_repository = new Mock<IAccountIdentifierRepository>(MockBehavior.Strict);
+			_repository = new Mock<IAccountIdentifierAsyncRepository>(MockBehavior.Strict);
 			_controller = new AccountIdentifierController(_repository.Object, new GeneralLedger(_generalLedgerRepository.Object), PatternBuilder.GetPatterns());
 		}
 
 		[Test]
-		public void Index()
+		public async Task Index()
 		{
-			_repository.Setup(x => x.GetAll()).Returns(new[] {new AccountIdentifier()});
+			_repository.Setup(x => x.GetAllAsync())
+				.Returns(Task.FromResult<IEnumerable<AccountIdentifier>>(new[] {new AccountIdentifier()}));
 
-			var result = _controller.Index();
+			var result = await _controller.Index();
 			Assert.That(result.Model, Is.InstanceOf<IEnumerable<AccountIdentifier>>());
 
 			var model = (IEnumerable<AccountIdentifier>)result.Model;
@@ -44,25 +46,27 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
-		public void Remove()
+		public async Task Remove()
 		{
-			_repository.Setup(x => x.Remove(It.IsAny<int>()));
+			_repository.Setup(x => x.RemoveAsync(It.IsAny<int>()))
+				.Returns(Task.CompletedTask);
 
-			var result = _controller.Remove(1);
-			Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
+			var result = await _controller.Remove(1);
+			result.Should().BeOfType<RedirectToRouteResult>();
 			result.RouteValues["action"].Should().Be("index");
 		}
 
 		[Test]
-		public void Edit()
+		public async Task Edit()
 		{
 			const int id = 1;
 			var account = AccountFactory.Expense("groceries");
 			IPattern p1 = new AmountPattern {Amount = 10M};
 			IPattern p2 = new DayOfMonthPattern(1,15);
-			_repository.Setup(x => x.GetById(It.IsAny<int>())).Returns(new AccountIdentifier() { Id = 1, Account = account, Pattern = new CompositePattern(new[] { p1, p2 })});
+			_repository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+				.Returns(Task.FromResult(new AccountIdentifier() { Id = 1, Account = account, Pattern = new CompositePattern(new[] { p1, p2 })}));
 
-			var result = _controller.Edit(id);
+			var result = await _controller.Edit(id);
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
@@ -73,7 +77,7 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
-		public void EditPost()
+		public async Task EditPost()
 		{
 			const int id = 1;
 
@@ -86,16 +90,17 @@ namespace HomeTrack.Web.Tests
 				}
 			};
 
-			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
+			_repository.Setup(x => x.AddOrUpdateAsync(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a =>
 				{
 					a.Id.Should().Be(id);
 					a.Account.Id.Should().Be("groceries");
 					Assert.That(a.Pattern, Is.InstanceOf<AmountPattern>());
 				})
+				.Returns(Task.CompletedTask)
 				;
 
-			var result = _controller.Edit(id, args);
+			var result = await _controller.Edit(id, args);
 			Assert.That(result.Data, Has.Property("redirectUrl"));
 		}
 
@@ -123,19 +128,19 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
-		public void PostCreateWithNoArgsFails()
+		public async Task PostCreateWithNoArgsFails()
 		{
 			_controller.ModelState.Add("AccoundId", new ModelState());
 			_controller.ModelState.AddModelError("AccountId", "AccountId is a required field");
 
-			var result = _controller.Create(new AccountIdentifierArgs());
+			var result = await _controller.Create(new AccountIdentifierArgs());
 			Assert.That(result.Data, Has.Property("State").Not.Empty);
 			Assert.That(result.Data, Has.Property("State").With.Some.Property("Name").EqualTo("AccountId"));
 			Assert.That(result.Data, Has.Property("State").With.Some.Property("Errors").With.Some.EqualTo("AccountId is a required field"));
 		}
 
 		[Test]
-		public void PostCreate()
+		public async Task PostCreate()
 		{
 			var args = new AccountIdentifierArgs
 			{
@@ -147,7 +152,7 @@ namespace HomeTrack.Web.Tests
 				}
 			};
 
-			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
+			_repository.Setup(x => x.AddOrUpdateAsync(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a => {
 					a.Account.Id.Should().Be("groceries");
 					Assert.That(a.Pattern, Is.InstanceOf<CompositePattern>());
@@ -156,9 +161,10 @@ namespace HomeTrack.Web.Tests
 					Assert.That(p.ElementAt(0), Is.InstanceOf<AmountPattern>());
 					Assert.That(p.ElementAt(1), Is.InstanceOf<AmountRangePattern>());
 				})
+				.Returns(Task.CompletedTask)
 				;
 
-			var result = _controller.Create(args);
+			var result = await _controller.Create(args);
 			Assert.That(result.Data, Has.Property("redirectUrl"));
 		}
 	}
