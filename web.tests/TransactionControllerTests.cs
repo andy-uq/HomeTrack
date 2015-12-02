@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
+using FluentAssertions;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
 using HomeTrack.Web.ViewModels;
@@ -57,7 +58,7 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<TransactionIndexViewModel>());
 
 			var model = (TransactionIndexViewModel) result.Model;
-			Assert.That(model.Account, Is.EqualTo(_bank));
+			model.Account.Should().Be(_bank);
 			
 			Assert.That(model.Transactions, Is.EquivalentTo(new[] { t1, t2 }));
 		}
@@ -75,7 +76,7 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<ViewModels.TransactionDetails>());
 
 			var model = (ViewModels.TransactionDetails) result.Model;
-			Assert.That(model.AccountId, Is.EqualTo(_income.Id));
+			model.AccountId.Should().Be(_income.Id);
 		}
 
 		[Test]
@@ -89,7 +90,7 @@ namespace HomeTrack.Web.Tests
 
 			Assert.That(result.Model, Is.InstanceOf<ViewModels.NewTransaction>());
 			var model = (ViewModels.NewTransaction)result.Model;
-			Assert.That(model.Account, Is.EqualTo(_bank));
+			model.Account.Should().Be(_bank);
 			Assert.That(model.Accounts, Is.EquivalentTo(new[] { _bank, _income }));
 		}
 
@@ -112,7 +113,7 @@ namespace HomeTrack.Web.Tests
 			_repository.Setup(x => x.Post(It.IsAny<Transaction>()))
 				.Returns(true)
 				.Callback<Transaction>(t => {
-					Assert.That(t.Amount, Is.EqualTo(10M));
+					t.Amount.Should().Be(10M);
 					Assert.That(t.Debit, Is.EquivalentTo(new[] {new Amount(_bank, EntryType.Debit, 10M)}));
 					Assert.That(t.Credit, Is.EquivalentTo(new[] {new Amount(_income, EntryType.Credit, 10M)}));
 				});

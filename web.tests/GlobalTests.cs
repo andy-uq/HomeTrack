@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using AutoMapper;
 using Autofac;
+using FluentAssertions;
 using HomeTrack;
 using HomeTrack.Core;
 using HomeTrack.Ioc;
@@ -73,10 +74,10 @@ namespace web.tests
 
 		private void AssertRouteData(RouteData routeData, string controller, string action, string id = null)
 		{
-			Assert.That(routeData, Is.Not.Null);
-			Assert.That(routeData.Values["controller"], Is.EqualTo(controller).Using((IEqualityComparer)StringComparer.OrdinalIgnoreCase));
-			Assert.That(routeData.Values["action"], Is.EqualTo(action).Using((IEqualityComparer) StringComparer.OrdinalIgnoreCase));
-			Assert.That(routeData.Values["id"], Is.EqualTo((object) id ?? UrlParameter.Optional));
+			routeData.Should().NotBeNull();
+			routeData.Values["controller"].Should().Match(_ => StringComparer.OrdinalIgnoreCase.Equals(_, controller));
+			routeData.Values["action"].Should().Match(_ => StringComparer.OrdinalIgnoreCase.Equals(_, action));
+			routeData.Values["id"].Should().Be((object) id ?? UrlParameter.Optional);
 		}
 	}
 }

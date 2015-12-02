@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoMapper;
+using FluentAssertions;
 using HomeTrack.Tests;
 using HomeTrack.Web.ViewModels;
 using NUnit.Framework;
@@ -30,9 +31,9 @@ namespace HomeTrack.Web.Tests
 			var t1 = new Transaction(_mortgage, _bank, 100M) { Description = "Description" };
 			var model = _mappingEngine.Map<ViewModels.TransactionDetails>(t1);
 
-			Assert.That(model.Amount, Is.EqualTo(100M));
-			Assert.That(model.Date, Is.EqualTo(DateTimeServer.Now));
-			Assert.That(model.Description, Is.EqualTo("Description"));
+			model.Amount.Should().Be(100M);
+			model.Date.Should().Be(DateTimeServer.Now);
+			model.Description.Should().Be("Description");
 		}
 	}
 }

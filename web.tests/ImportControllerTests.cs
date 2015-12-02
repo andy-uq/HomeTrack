@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using FluentAssertions;
 using HomeTrack.Core;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
@@ -12,7 +13,6 @@ using NUnit.Framework;
 
 namespace HomeTrack.Web.Tests
 {
-	[TestFixture]
 	public class ImportControllerTests
 	{
 		private ImportController _controller;
@@ -33,8 +33,7 @@ namespace HomeTrack.Web.Tests
 			yield return new AccountIdentifier { Pattern = new FieldPattern { Name = "Other Party", Pattern = "Blizzard" }, Account = _wow };
 		}
 
-		[SetUp]
-		public void ImportController()
+		public ImportControllerTests()
 		{
 			_bank = AccountFactory.Asset("bank", initialBalance: 100);
 			_groceries = AccountFactory.Asset("groceries");
@@ -53,42 +52,39 @@ namespace HomeTrack.Web.Tests
 				_unclassifiedExpense
 			};
 
-			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), _repository.Object);
+			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), _repository);
 			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
-		[Test]
 		public void Directory()
 		{
 			var result = (ViewResult )_controller.Directory(null);
 			Assert.That(result.Model, Is.InstanceOf<DirectoryExplorer>());
 
 			var model = (DirectoryExplorer)result.Model;
-			Assert.That(model.Name, Is.EqualTo("/"));
+			model.Name.Should().Be("/");
 			Assert.That(model.GetDirectories(), Is.Not.Null.Or.Empty);
 			Assert.That(model.GetDirectories().Select( x=>x.Name), Has.Member("Imports"));
 		}
 
-		[Test]
 		public void ChangeDirectory()
 		{
 			var result = (ViewResult )_controller.Directory("imports@asb");
 			Assert.That(result.Model, Is.InstanceOf<DirectoryExplorer>());
 
 			var model = (DirectoryExplorer)result.Model;
-			Assert.That(model.Name, Is.EqualTo("/Imports/Asb"));
+			model.Name.Should().Be("/Imports/Asb");
 			Assert.That(model.GetDirectories(), Is.Empty);
 			Assert.That(model.GetFiles().Select( x=>x.Name), Has.Member("Export20120825200829.csv"));
 		}
 
-		[Test]
 		public void Preview()
 		{
 			var filename = "imports@asb@export20120825200829.csv";
 
 			var t = filename.Replace("@", "/");
-			Assert.That(System.IO.Path.GetDirectoryName(t), Is.EqualTo("imports\\asb"));
-			Assert.That(System.IO.Path.GetFileName(t), Is.EqualTo("export20120825200829.csv"));
+			System.IO.Path.GetDirectoryName(t).Should().Be("imports\\asb");
+			System.IO.Path.GetFileName(t).Should().Be("export20120825200829.csv");
 
 			_importDetector.SetupGet(x => x.Name).Returns("Mock");
 			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
@@ -98,10 +94,10 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<ImportPreview>());
 
 			var model = (ImportPreview)result.Model;
-			Assert.That(model.Import, Is.Not.Null);
-			Assert.That(model.Accounts, Is.Not.Null);
-			Assert.That(model.Import.ImportType, Is.EqualTo("Mock"));
-			Assert.That(model.AccountIdentifiers, Is.Not.Empty);
+			model.Import.Should().NotBeNull();
+			model.Accounts.Should().NotBeNull();
+			model.Import.ImportType.Should().Be("Mock");
+			model.AccountIdentifiers.Should().NotBeEmpty();
 		}
 
 		[Test]
@@ -110,8 +106,8 @@ namespace HomeTrack.Web.Tests
 			var filename = "imports@asb@export20120825200829.csv";
 
 			var t = filename.Replace("@", "/");
-			Assert.That(System.IO.Path.GetDirectoryName(t), Is.EqualTo("imports\\asb"));
-			Assert.That(System.IO.Path.GetFileName(t), Is.EqualTo("export20120825200829.csv"));
+			System.IO.Path.GetDirectoryName(t).Should().Be("imports\\asb");
+			System.IO.Path.GetFileName(t).Should().Be("export20120825200829.csv");
 
 			_importDetector.SetupGet(x => x.Name).Returns("Mock");
 			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
@@ -130,9 +126,9 @@ namespace HomeTrack.Web.Tests
 			Assert.That(model, Is.InstanceOf<IEnumerable<Transaction>>());
 
 			var transactions = (IEnumerable<Transaction>) model;
-			Assert.That(transactions.Count(), Is.EqualTo(2));
-			Assert.That(transactions.First().Amount, Is.EqualTo(10));
-			Assert.That(transactions.Last().Amount, Is.EqualTo(20));
+			transactions.Count().Should().Be(2);
+			transactions.First().Amount.Should().Be(10);
+			transactions.Last().Amount.Should().Be(20);
 		}
 
 		[Test]
@@ -144,7 +140,7 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<IEnumerable<ImportResult>>());
 
 			var model = (IEnumerable<ImportResult>)result.Model;
-			Assert.That(model, Is.Not.Empty);
+			model.Should().NotBeEmpty();
 		}
 	}
 }

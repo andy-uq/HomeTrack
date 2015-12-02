@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using FluentAssertions;
 using HomeTrack.Core;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
@@ -39,7 +40,7 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<IEnumerable<AccountIdentifier>>());
 
 			var model = (IEnumerable<AccountIdentifier>)result.Model;
-			Assert.That(model, Is.Not.Empty);			
+			model.Should().NotBeEmpty();			
 		}
 
 		[Test]
@@ -49,7 +50,7 @@ namespace HomeTrack.Web.Tests
 
 			var result = _controller.Remove(1);
 			Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
-			Assert.That(result.RouteValues["action"], Is.EqualTo("index"));
+			result.RouteValues["action"].Should().Be("index");
 		}
 
 		[Test]
@@ -65,10 +66,10 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
-			Assert.That(model.Accounts, Is.Not.Empty);
-			Assert.That(model.AvailablePatterns, Is.Not.Empty);
-			Assert.That(model.AccountId, Is.EqualTo(account.Id));
-			Assert.That(model.Patterns, Is.Not.Empty);
+			model.Accounts.Should().NotBeEmpty();
+			model.AvailablePatterns.Should().NotBeEmpty();
+			model.AccountId.Should().Be(account.Id);
+			model.Patterns.Should().NotBeEmpty();
 		}
 
 		[Test]
@@ -88,8 +89,8 @@ namespace HomeTrack.Web.Tests
 			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a =>
 				{
-					Assert.That(a.Id, Is.EqualTo(id));
-					Assert.That(a.Account.Id, Is.EqualTo("groceries"));
+					a.Id.Should().Be(id);
+					a.Account.Id.Should().Be("groceries");
 					Assert.That(a.Pattern, Is.InstanceOf<AmountPattern>());
 				})
 				;
@@ -105,8 +106,8 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
-			Assert.That(model.Accounts, Is.Not.Empty);			
-			Assert.That(model.AvailablePatterns, Is.Not.Empty);			
+			model.Accounts.Should().NotBeEmpty();			
+			model.AvailablePatterns.Should().NotBeEmpty();			
 		}
 
 		[Test]
@@ -116,9 +117,9 @@ namespace HomeTrack.Web.Tests
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
-			Assert.That(model.AccountId, Is.EqualTo("bank"));			
-			Assert.That(model.Accounts, Is.Not.Empty);			
-			Assert.That(model.AvailablePatterns, Is.Not.Empty);			
+			model.AccountId.Should().Be("bank");			
+			model.Accounts.Should().NotBeEmpty();			
+			model.AvailablePatterns.Should().NotBeEmpty();			
 		}
 
 		[Test]
@@ -148,7 +149,7 @@ namespace HomeTrack.Web.Tests
 
 			_repository.Setup(x => x.AddOrUpdate(It.IsAny<AccountIdentifier>()))
 				.Callback<AccountIdentifier>(a => {
-					Assert.That(a.Account.Id, Is.EqualTo("groceries"));
+					a.Account.Id.Should().Be("groceries");
 					Assert.That(a.Pattern, Is.InstanceOf<CompositePattern>());
 
 					var p = (CompositePattern) a.Pattern;

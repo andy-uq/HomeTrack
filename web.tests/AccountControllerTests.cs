@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using FluentAssertions;
 using HomeTrack;
 using HomeTrack.Tests;
 using HomeTrack.Web.Controllers;
@@ -32,23 +33,23 @@ namespace web.tests
 		public void Index()
 		{
 			var result = (ViewResult )_controller.Index();
-			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
-			Assert.That(result.Model, Is.EqualTo(_generalLedger));
+			result.ViewName.Should().Be(string.Empty);
+			result.Model.Should().Be(_generalLedger);
 		}
 
 		[Test]
 		public void Delete()
 		{
 			var result = (ViewResult )_controller.Delete();
-			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
-			Assert.That(result.Model, Is.EqualTo(_generalLedger));
+			result.ViewName.Should().Be(string.Empty);
+			result.Model.Should().Be(_generalLedger);
 		}
 
 		[Test]
 		public void DeletePostEmpty()
 		{
 			var result = _controller.Delete(new string[0]);
-			Assert.That(result.Data, Is.Null);
+			result.Data.Should().BeNull();
 		}
 
 		[Test]
@@ -71,16 +72,16 @@ namespace web.tests
 				.Returns(account);
 
 			var result = (ViewResult )_controller.Details("bank");
-			Assert.That(result.Model, Is.EqualTo(account));
-			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
+			result.Model.Should().Be(account);
+			result.ViewName.Should().Be(string.Empty);
 		}
 
 		[Test]
 		public void Create()
 		{
 			var result = (ViewResult )_controller.Create();
-			Assert.That(result.Model, Is.EqualTo(null));
-			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
+			result.Model.Should().Be(null);
+			result.ViewName.Should().Be(string.Empty);
 		}
 
 		[Test]
@@ -108,7 +109,7 @@ namespace web.tests
 				.Returns("name");
 
 			var result = (JsonResult)_controller.Create(args);
-			Assert.That(result.Data, Is.EqualTo(args));
+			result.Data.Should().Be(args);
 		}
 
 		[Test]
@@ -120,8 +121,8 @@ namespace web.tests
 				.Returns(account);
 
 			var result = (ViewResult)_controller.Edit("bank");
-			Assert.That(result.Model, Is.EqualTo(account));
-			Assert.That(result.ViewName, Is.EqualTo(string.Empty));
+			result.Model.Should().Be(account);
+			result.ViewName.Should().Be(string.Empty);
 		}
 
 		[Test]
@@ -136,14 +137,14 @@ namespace web.tests
 			var result = (RedirectToRouteResult)_controller.Edit("bank", "Name", "Description");
 			AssertRouteData(result.RouteValues, null, action: "Index");
 
-			Assert.That(updatedAccount.Name, Is.EqualTo("Name"));
-			Assert.That(updatedAccount.Description, Is.EqualTo("Description"));
-			Assert.That(updatedAccount.Balance, Is.EqualTo(100M));
+			updatedAccount.Name.Should().Be("Name");
+			updatedAccount.Description.Should().Be("Description");
+			updatedAccount.Balance.Should().Be(100M);
 		}
 		
 		private void AssertRouteData(RouteValueDictionary routeData, string controller = null, string action = null, string id = null)
 		{
-			Assert.That(routeData, Is.Not.Null);
+			routeData.Should().NotBeNull();
 			Assert.That(routeData["controller"], Is.EqualTo(controller), "Bad controller");
 			Assert.That(routeData["action"], Is.EqualTo(action), "Bad action");
 			Assert.That(routeData["id"], Is.Null.Or.EqualTo((object)id ?? UrlParameter.Optional), "Bad ID parameter");
