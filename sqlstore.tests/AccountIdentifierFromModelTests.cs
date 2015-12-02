@@ -4,8 +4,8 @@ using AutoMapper;
 using FluentAssertions;
 using HomeTrack.Collections;
 using HomeTrack.Core;
-using HomeTrack.SqlStore.Mappings;
 using HomeTrack.SqlStore.Models;
+using HomeTrack.SqlStore.Models.Mapping;
 
 namespace HomeTrack.SqlStore.Tests
 {
@@ -24,10 +24,13 @@ namespace HomeTrack.SqlStore.Tests
 			{
 				Id = 1,
 				AccountId = TestData.Bank.Id,
-				Primary = new AccountIdentifierRow()
+				Patterns = new[]
 				{
-					Name = "Amount",
-					PropertiesJson = "{\"Amount\":\"100.00\",\"Direction\": \"Credit\"}"
+					new AccountIdentifierPattern()
+					{
+						Name = "Amount",
+						PropertiesJson = "{\"Amount\":\"100.00\",\"Direction\": \"Credit\"}"
+					}
 				}
 			};
 
@@ -47,19 +50,14 @@ namespace HomeTrack.SqlStore.Tests
 			{
 				Id = 1,
 				AccountId = TestData.Bank.Id,
-				Primary =
+				Patterns = new[]
 				{
-					Name = nameof(CompositePattern),
-					PropertiesJson = ""
-				},
-				Secondaries = new[]
-				{
-					new AccountIdentifierRow
+					new AccountIdentifierPattern
 					{
 						Name = "Amount",
 						PropertiesJson = "{\"Amount\":\"100.00\",\"Direction\": \"Credit\"}"
 					},
-					new AccountIdentifierRow
+					new AccountIdentifierPattern
 					{
 						Name = "Amount Range",
 						PropertiesJson = "{\"Min\":\"10.00\",\"Max\":\"100.00\"}"

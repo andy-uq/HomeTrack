@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using AutoMapper;
 using FluentAssertions;
 using HomeTrack.Core;
-using HomeTrack.SqlStore.Mappings;
+using HomeTrack.SqlStore.Models.Mapping;
 
 namespace HomeTrack.SqlStore.Tests
 {
@@ -59,21 +59,20 @@ namespace HomeTrack.SqlStore.Tests
 
 		private static void ValidateCompositePattern(Models.AccountIdentifier result)
 		{
-			result.Secondaries.Should().HaveCount(2);
+			result.Patterns.Should().HaveCount(2);
 
 			result.AccountId.Should().Be(TestData.Bank.Id);
 
-			result.Primary.Should().NotBeNull();
-			result.Secondaries.Select(x => x.Name).Should().Equal("Amount", "Amount Range");
+			result.Patterns.Select(x => x.Name).Should().Equal("Amount", "Amount Range");
 		}
 
 		private static void ValidateSimplePattern(Models.AccountIdentifier result, string expectedName, string expectedProperties)
 		{
-			result.Secondaries.Should().BeEmpty();
+			result.Patterns.Length.Should().Be(1);
 
 			result.AccountId.Should().Be(TestData.Bank.Id);
-			result.Primary.Name.Should().Be(expectedName);
-			result.Primary.PropertiesJson.Should().Be(expectedProperties);
+			result.Patterns[0].Name.Should().Be(expectedName);
+			result.Patterns[0].PropertiesJson.Should().Be(expectedProperties);
 		}
 
 		private ResolutionContext ToAccountIdentifier(IPattern pattern)

@@ -2,7 +2,6 @@
 using System.Linq;
 using AutoMapper;
 using HomeTrack.Mapping;
-using HomeTrack.SqlStore.Mappings;
 
 namespace HomeTrack.SqlStore.Models
 {
@@ -10,19 +9,18 @@ namespace HomeTrack.SqlStore.Models
 	{
 		public AccountIdentifier()
 		{
-			Primary = new AccountIdentifierRow();
-			Secondaries = Enumerable.Empty<AccountIdentifierRow>();
+			Patterns = new AccountIdentifierPattern[0];
 		}
 
 		public int Id { get; set; }
 		public string AccountId { get; set; }
 
-		public AccountIdentifierRow Primary { get; set; }
-		public IEnumerable<AccountIdentifierRow> Secondaries { get; set; }
+		public AccountIdentifierPattern[] Patterns { get; set; }
 	}
 
-	public class AccountIdentifierRow
+	public class AccountIdentifierPattern
 	{
+		public int AccountIdentifierId { get; set; }
 		public string Name { get; set; }
 		public string PropertiesJson { get; set; }
 	}

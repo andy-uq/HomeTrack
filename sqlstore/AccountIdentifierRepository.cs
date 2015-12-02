@@ -21,13 +21,7 @@ namespace HomeTrack.SqlStore
 			var models = identifier.Map<Models.AccountIdentifier>();
 
 			int id = _database.Execute("INSERT INTO [AccountIdentifier] (AccountId) OUTPUT inserted.id VALUES (@accountId)", new { models.AccountId });
-
-			_database.Execute(
-					"INSERT INTO [AccountIdentifierPattern] (AccountIdentifierId, Name, PropertiesJson) VALUES (@id, @name, @propertiesJson)",
-						new { id, models.Primary.Name, models.Primary.PropertiesJson }
-				);
-
-			foreach (var model in models.Secondaries)
+			foreach (var model in models.Patterns)
 			{
 				_database.Execute(
 					"INSERT INTO [AccountIdentifierPattern] (AccountIdentifierId, Name, PropertiesJson) VALUES (@id, @name, @propertiesJson)",
@@ -38,16 +32,25 @@ namespace HomeTrack.SqlStore
 
 		public IEnumerable<AccountIdentifier> GetAll()
 		{
-			yield break;
+			var patterns = _database.Query<Models.AccountIdentifierPattern>("SELECT * FROM [AccountIdentifierPattern]").ToLookup(x => x.AccountIdentifierId);
+			foreach (var model in _database.Query<Models.AccountIdentifier>("SELECT * FROM [AccountIdentifier]"))
+			{
+				model.Patterns = patterns[model.Id].ToArray();
+				yield return model.Map<AccountIdentifier>();
+			}
 		}
 
 		public void Remove(int id)
 		{
+			_database.Execute("DELETE FROM [AccountIdentifier] WHERE Id=@id", new { id });
 		}
 
 		public AccountIdentifier GetById(int id)
 		{
-			return null;
+			var model = _database.Query<Models.AccountIdentifier>("SELECT * FROM [AccountIdentifier] WHERE Id=@id", new {id}).Single();
+			model.Patterns = _database.Query<Models.AccountIdentifierPattern>("SELECT * FROM [AccountIdentifierPattern] WHERE AccountIdentifierId=@id", new { id }).ToArray();
+
+			return model.Map<AccountIdentifier>();
 		}
 	}
 }

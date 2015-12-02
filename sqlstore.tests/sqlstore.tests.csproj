@@ -117,6 +117,8 @@
     <Compile Include="CreateTestData.cs" />
     <Compile Include="DatabaseExtensions.cs" />
     <Compile Include="DeleteAccountTests.cs" />
+    <Compile Include="DeleteAccountIdentifierTests.cs" />
+    <Compile Include="GetAccountIdentifierTests.cs" />
     <Compile Include="IntegrationSettings.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="MigrationManager.cs" />
