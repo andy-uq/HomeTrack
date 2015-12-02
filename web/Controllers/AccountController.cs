@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Transactions;
 using System.Web.Mvc;
-using HomeTrack.RavenStore;
 
 namespace HomeTrack.Web.Controllers
 {

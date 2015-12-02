@@ -17,6 +17,6 @@ namespace HomeTrack
 
 		bool Post(Transaction transaction);
 		IEnumerable<Transaction> GetTransactions(string accountId);
-		Transaction GetTransaction(int id);
+		Transaction GetTransaction(string id);
 	}
 }

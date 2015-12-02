@@ -19,6 +19,12 @@ namespace HomeTrack.Core
 			_patterns.AddRange(contents);
 		}
 
+		public CompositePattern(params IPattern[] contents)
+			: this()
+		{
+			_patterns.AddRange(contents);
+		}
+
 		public void Add(IPattern pattern)
 		{
 			_patterns.Add(pattern);

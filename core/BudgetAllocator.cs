@@ -9,12 +9,13 @@ namespace HomeTrack.Core
 			return new Transaction(budgetInfo.BudgetAccount, budgetAccount, budgetInfo.Amount);
 		}
 
-		public static Tuple<Transaction, Transaction> Pay(this Budget budgetInfo, Account budgetAccount, Account payableFrom, decimal value)
+		public static Transaction Pay(this Budget budgetInfo, Account budgetAccount, Account payableFrom, decimal value)
 		{
 			var realTransaction = new Transaction(budgetInfo.RealAccount, payableFrom, value);
-			var budgetAdjustment = new Transaction(budgetAccount, budgetInfo.BudgetAccount, value);
+			realTransaction.Debit.Add(new Amount(budgetAccount, EntryType.Debit, value));
+			realTransaction.Credit.Add(new Amount(budgetInfo.BudgetAccount, EntryType.Credit, value));
 
-			return new Tuple<Transaction, Transaction>(realTransaction, budgetAdjustment);
+			return realTransaction;
 		}
 	}
 }

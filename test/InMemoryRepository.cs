@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AutoMapper;
+using HomeTrack.Collections;
 
 namespace HomeTrack.Tests
 {
@@ -13,7 +14,6 @@ namespace HomeTrack.Tests
 		private readonly ISet<Budget> _budgets;
 		private readonly List<Transaction> _transactions;
 		private readonly List<Tuple<ImportResult, ImportedTransaction[]>> _imports;
-		private int nextId = 1;
 
 		public IEnumerable<Account> Accounts
 		{
@@ -87,20 +87,11 @@ namespace HomeTrack.Tests
 
 		public bool Post(Transaction transaction)
 		{
-			if (transaction.Check())
-			{
-				foreach (var debitAmount in transaction.Debit)
-					debitAmount.Post();
+			if (_transactions.Any(x => x.Id == transaction.Id))
+				return false;
 
-				foreach (var creditAmount in transaction.Credit)
-					creditAmount.Post();
-
-				transaction.Id = nextId++;
-				_transactions.Add(transaction);
-				return true;
-			}
-
-			return false;
+			_transactions.Add(transaction);
+			return true;
 		}
 
 		public IEnumerable<ImportResult> GetAll()
@@ -108,9 +99,9 @@ namespace HomeTrack.Tests
 			return _imports.Select(x => x.Item1);
 		}
 
-		public IEnumerable<ImportedTransaction> GetTransactionIds(string importId)
+		public IEnumerable<ImportedTransaction> GetTransactionIds(int importId)
 		{
-			return _imports.Single(x => x.Item1.Name == importId).Item2;
+			return _imports.Single(x => x.Item1.Id == importId).Item2;
 		}
 
 		public IEnumerable<Transaction> GetTransactions(string accountId)
@@ -125,7 +116,18 @@ namespace HomeTrack.Tests
 				);
 		}
 
-		public Transaction GetTransaction(int id)
+		public IEnumerable<Transaction> GetTransactions(int importId)
+		{
+			var target = _imports.Where(i => i.Item1.Id == importId).Select(i => i.Item2).Single().Select(t => t.Id).AsSet();
+			return
+				(
+					from t in _transactions
+					where target.Contains(t.Id)
+					select t
+				);
+		}
+
+		public Transaction GetTransaction(string id)
 		{
 			return _transactions.SingleOrDefault(x => x.Id == id);
 		}
@@ -134,9 +136,12 @@ namespace HomeTrack.Tests
 		{			
 		}
 
-		public void Save(ImportResult result, IEnumerable<Transaction> transactions)
+		public int Save(ImportResult result, IEnumerable<Transaction> transactions)
 		{
 			_imports.Add(new Tuple<ImportResult, ImportedTransaction[]>(result, transactions.Select(_mappingEngine.Map<ImportedTransaction>).ToArray()));
+			result.Id = _imports.Count;
+
+			return result.Id;
 		}
 	}
 }

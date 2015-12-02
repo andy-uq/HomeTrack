@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using AutoMapper;
-using HomeTrack.RavenStore;
 using NUnit.Framework;
 
 namespace HomeTrack.Tests
@@ -158,21 +157,6 @@ namespace HomeTrack.Tests
 		protected override IGeneralLedgerRepository LedgerRepository
 		{
 			get { return new InMemoryRepository(); }
-		}
-	}
-
-	[TestFixture]
-	class RavenLedgerTests : GeneralLedgerTests
-	{
-		protected override IGeneralLedgerRepository LedgerRepository
-		{
-			get
-			{
-				var repository = Raven.CreateRepository();
-				var mappingEngine = (new MappingProvider(new RavenEntityTypeMapProvider())).Build();
-
-				return new GeneralLedgerRepository(repository, mappingEngine);
-			}
 		}
 	}
 }
