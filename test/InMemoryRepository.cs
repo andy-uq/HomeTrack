@@ -8,7 +8,7 @@ using HomeTrack.Mapping;
 
 namespace HomeTrack.Tests
 {
-	public class InMemoryRepository : IGeneralLedgerRepository, IImportRepository, IImportAsyncRepository
+	public class InMemoryRepository : IGeneralLedgerRepository, IGeneralLedgerAsyncRepository, IImportRepository, IImportAsyncRepository
 	{
 		private readonly ISet<Account> _accounts;
 		private readonly ISet<Budget> _budgets;
@@ -163,6 +163,62 @@ namespace HomeTrack.Tests
 		public IEnumerable<Account> GetBudgetAccounts(string accountId)
 		{
 			return GetBudgetsForAccount(accountId).Select(budget => budget.BudgetAccount);
+		}
+
+		public Task<Account> GetAccountAsync(string accountId)
+		{
+			return Task.FromResult(GetAccount(accountId));
+		}
+
+		public Task<IEnumerable<Account>> GetAccountsAsync()
+		{
+			return Task.FromResult(Accounts);
+		}
+
+		public Task<IEnumerable<Account>> GetDebitAccountsAsync()
+		{
+			return Task.FromResult(DebitAccounts);
+		}
+
+		public Task<IEnumerable<Account>> GetCreditAccountsAsync()
+		{
+			return Task.FromResult(CreditAccounts);
+		}
+
+		public Task<bool> DeleteAccountAsync(string accountId)
+		{
+			return Task.FromResult(DeleteAccount(accountId));
+		}
+
+		public Task<IEnumerable<Budget>> GetBudgetsForAccountAsync(string accountId)
+		{
+			return Task.FromResult(GetBudgetsForAccount(accountId));
+		}
+
+		public Task<string> AddAsync(Account account)
+		{
+			return Task.FromResult(Add(account));
+		}
+
+		public Task AddBudgetAsync(Budget budget)
+		{
+			AddBudget(budget);
+			return Task.CompletedTask;
+		}
+
+		public Task<bool> PostAsync(Transaction transaction)
+		{
+			return Task.FromResult(Post(transaction));
+		}
+
+		public Task<IEnumerable<Transaction>> GetTransactionsAsync(string accountId)
+		{
+			return Task.FromResult(GetTransactions(accountId));
+		}
+
+		public Task<Transaction> GetTransactionAsync(string id)
+		{
+			return Task.FromResult(GetTransaction(id));
 		}
 	}
 }

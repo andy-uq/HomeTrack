@@ -89,7 +89,11 @@
     <Compile Include="AccountIndentificationTests.cs" />
     <Compile Include="AmountTests.cs" />
     <Compile Include="AutomaticPaymentTests.cs" />
-    <Compile Include="BudgetAccountGroupTests.cs" />
+    <Compile Include="Budgets\CreateBudgetTests.cs" />
+    <Compile Include="Budgets\EndToEndBudgetTests.cs" />
+    <Compile Include="Budgets\GoOverBudgetTests.cs" />
+    <Compile Include="Budgets\PostTransactionToAccountWithBudgetTests.cs" />
+    <Compile Include="Budgets\UnderBudgetTests.cs" />
     <Compile Include="CsvImportTests.cs" />
     <Compile Include="DateTimeServerTests.cs" />
     <Compile Include="DirectoryExplorerTests.cs" />
