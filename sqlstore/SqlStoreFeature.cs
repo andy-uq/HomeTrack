@@ -17,6 +17,7 @@ namespace HomeTrack.SqlStore
 
 			builder.RegisterType<GeneralLedgerRepository>()
 				.As<IGeneralLedgerRepository>()
+				.As<IGeneralLedgerAsyncRepository>()
 				.AsSelf();
 
 			builder.RegisterType<ImportRepository>()

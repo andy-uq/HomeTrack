@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using Autofac;
 using Fixie;
 using FixieShim.AutoFixture;
@@ -21,16 +22,13 @@ namespace FixieShim.Fixie
 
 			Classes
 				.NameEndsWith("Tests")
-				.Where(t =>
-					t.GetConstructors().Count() == 1
-					&& t.GetConstructors().Count(ci => ci.GetParameters().Length > 0) == 1
-				);
+				.Where(t => !t.IsAbstract && t.GetConstructors().Any());
 
 			Methods
 				.Where(mi =>
 					mi.IsPublic
-					&& (mi.IsVoid()
-					    || mi.IsAsync() && mi.Name.EndsWith("Async"))
+					&& (mi.IsVoid() || mi.IsAsync())
+					&& mi.Name != "InitialiseAsync"
 				);
 
 			ClassExecution
@@ -45,7 +43,17 @@ namespace FixieShim.Fixie
 
 			try
 			{
-				return new SpecimenContext(fixture).Resolve(type);
+				var instance = new SpecimenContext(fixture).Resolve(type);
+
+				var asyncTest = instance as IAsyncTest;
+				if (asyncTest != null)
+				{
+					var task = asyncTest.InitialiseAsync();
+					var awaiter = task.GetAwaiter();
+					awaiter.GetResult();
+				}
+
+				return instance;
 			}
 			catch (TargetInvocationException t)
 			{

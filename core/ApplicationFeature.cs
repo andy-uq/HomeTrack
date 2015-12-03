@@ -23,6 +23,8 @@ namespace HomeTrack.Core
 			builder.RegisterType<GeneralLedger>()
 				.As<IAccountLookup>()
 				.AsSelf();
+
+			builder.RegisterType<AsyncGeneralLedger>();
 		}
 	}
 }

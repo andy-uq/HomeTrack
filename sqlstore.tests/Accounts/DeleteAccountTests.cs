@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore.Tests.Accounts
 {
 	public class DeleteAccountTests
 	{

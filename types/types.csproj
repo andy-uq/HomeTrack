@@ -75,6 +75,7 @@
     <Compile Include="Amount.cs" />
     <Compile Include="AsbOrbitFastTrackCsvImportRow.cs" />
     <Compile Include="AsbVisaCsvImportRow.cs" />
+    <Compile Include="AsyncGeneralLedger.cs" />
     <Compile Include="AutomaticPayment.cs" />
     <Compile Include="Budget.cs" />
     <Compile Include="DateTimeServer.cs" />

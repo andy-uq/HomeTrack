@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
-using NUnit.Framework;
 
 namespace HomeTrack.SqlStore.Tests
 {
@@ -13,14 +12,12 @@ namespace HomeTrack.SqlStore.Tests
 			_repository = repository;
 		}
 
-		[Test]
 		public void AddTransaction()
 		{
 			var t1 = new Transaction(TestData.Expenses, TestData.Bank, 10M) { Reference = "A", Description = "Misc. expenses" };
 			_repository.Post(t1);
 		}
 
-		[Test]
 		public void SearchAccountTransactions()
 		{
 			var ledger = new GeneralLedger(_repository);

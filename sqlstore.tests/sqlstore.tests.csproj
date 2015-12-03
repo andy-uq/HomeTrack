@@ -113,13 +113,15 @@
     <Compile Include="AccountIdentifiers\CreateAccountIdentifierAsyncTests.cs" />
     <Compile Include="AccountIdentifiers\DeleteAccountIdentifierAsyncTests.cs" />
     <Compile Include="AccountIdentifiers\GetAccountIdentifierAsyncTests.cs" />
-    <Compile Include="AccountMappingTests.cs" />
+    <Compile Include="Accounts\Mapping\AccountMappingTests.cs" />
     <Compile Include="AccountIdentifiers\CreateAccountIdentifierTests.cs" />
-    <Compile Include="CreateAccountTests.cs" />
+    <Compile Include="Accounts\CreateAccountAsyncTests.cs" />
+    <Compile Include="Accounts\CreateAccountTests.cs" />
     <Compile Include="CreateImportTests.cs" />
     <Compile Include="CreateTestData.cs" />
     <Compile Include="DatabaseExtensions.cs" />
-    <Compile Include="DeleteAccountTests.cs" />
+    <Compile Include="Accounts\DeleteAccountAsyncTests.cs" />
+    <Compile Include="Accounts\DeleteAccountTests.cs" />
     <Compile Include="AccountIdentifiers\DeleteAccountIdentifierTests.cs" />
     <Compile Include="AccountIdentifiers\GetAccountIdentifierTests.cs" />
     <Compile Include="IntegrationSettings.cs" />
@@ -128,6 +130,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData.cs" />
     <Compile Include="TestDatabase.cs" />
+    <Compile Include="TransactionAsyncTests.cs" />
     <Compile Include="TransactionTests.cs" />
   </ItemGroup>
   <ItemGroup>
