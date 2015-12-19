@@ -19,13 +19,13 @@ namespace FixieShim.AutoFixture
 
 			if (type == null || type.IsPrimitive)
 			{
-				return new NoSpecimen(request);
+				return new NoSpecimen();
 			}
 
 			object instance;
 			_container.TryResolve(type, out instance);
 
-			return instance ?? new NoSpecimen(request);
+			return instance ?? new NoSpecimen();
 		}
 	}
 }

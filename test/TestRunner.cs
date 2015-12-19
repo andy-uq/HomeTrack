@@ -18,7 +18,7 @@ namespace HomeTrack.SqlStore.Tests
 			TestAssemblyFixture.SetAssembly(typeof (TestRunner).Assembly);
 		}
 
-		private IEnumerable<TestCaseData> GetTests()
+		private IEnumerable<string> GetTests()
 		{
 			return FixieTestFinder.GetTests();
 		}
