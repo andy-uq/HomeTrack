@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using HomeTrack.Web.ViewModels;
@@ -8,10 +9,10 @@ namespace HomeTrack.Web.Controllers
 {
 	public class TransactionController : Controller
 	{
-		private readonly GeneralLedger _generalLedger;
+		private readonly AsyncGeneralLedger _generalLedger;
 		private readonly IMappingEngine _mappingEngine;
 
-		public TransactionController(GeneralLedger generalLedger, IMappingEngine mappingEngine)
+		public TransactionController(AsyncGeneralLedger generalLedger, IMappingEngine mappingEngine)
 		{
 			_generalLedger = generalLedger;
 			_mappingEngine = mappingEngine;
@@ -20,15 +21,15 @@ namespace HomeTrack.Web.Controllers
 		//
 		// GET: /Transaction/2
 
-		public ActionResult Index(string id)
+		public async Task<ActionResult> Index(string id)
 		{
-			var account = _generalLedger[id];
+			var account = await _generalLedger.GetAccountAsync(id);
 
 			var model = new TransactionIndexViewModel
 			{
 				Account = account,
 				Transactions =
-					from x in _generalLedger.GetTransactions(id)
+					from x in await _generalLedger.GetTransactionsAsync(id)
 					orderby x.Date , x.Id
 					select x
 			};
@@ -39,10 +40,10 @@ namespace HomeTrack.Web.Controllers
 		//
 		// GET: /Transaction/Create
 
-		public ActionResult Create(string id)
+		public async Task<ActionResult> Create(string id)
 		{
-			var accounts = _generalLedger.ToArray();
-			var account = _generalLedger[id];
+			var accounts = (await _generalLedger.GetAccountsAsync()).ToArray();
+			var account = await _generalLedger.GetAccountAsync(id);
 			var model = new ViewModels.NewTransaction()
 			{
 				Account = account,
@@ -52,19 +53,18 @@ namespace HomeTrack.Web.Controllers
 				Related = new[] {new EditRelatedAccount() {Accounts = accounts}}
 			};
 
-			return
-				View(model);
+			return View(model);
 		}
 
 		//
 		// POST: /Transaction/Create
 
 		[HttpPost]
-		public ActionResult Create(NewTransactionArgs newTransaction)
+		public async Task<ActionResult> Create(NewTransactionArgs newTransaction)
 		{
 			if ( ModelState.IsValid )
 			{
-				var account = _generalLedger[newTransaction.AccountId];
+				var account = await _generalLedger.GetAccountAsync(newTransaction.AccountId);
 				if (account == null)
 					throw new InvalidOperationException("Cannot find an account named " + newTransaction.AccountId);
 
@@ -82,11 +82,11 @@ namespace HomeTrack.Web.Controllers
 				left.Add(new Amount(account, newTransaction.Direction, newTransaction.Amount));
 				foreach (var r in newTransaction.Related)
 				{
-					account = _generalLedger[r.AccountId];
+					account = await _generalLedger.GetAccountAsync(r.AccountId);
 					right.Add(new Amount(account, newTransaction.Direction.Invert(), r.Amount));
 				}
 
-				if ( _generalLedger.Post(transaction) )
+				if ( await _generalLedger.PostAsync(transaction) )
 				{
 					return this.JsonRedirect(redirectUrl: Url.Action("Index", new { account.Id }));
 				}
@@ -97,10 +97,10 @@ namespace HomeTrack.Web.Controllers
 			return ModelState.ToJson();
 		}
 
-		public ViewResult Details(string id, string accountId)
+		public async Task<ActionResult> Details(string id, string accountId)
 		{
-			var transaction = _generalLedger.GetTransaction(id);
-			var model = _mappingEngine.Map<ViewModels.TransactionDetails>(transaction);
+			var transaction = await _generalLedger.GetTransactionAsync(id);
+			var model = _mappingEngine.Map<TransactionDetails>(transaction);
 			model.AccountId = accountId;
 
 			return View(model);
