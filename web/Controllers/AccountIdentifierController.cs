@@ -10,10 +10,10 @@ namespace HomeTrack.Web.Controllers
 	public class AccountIdentifierController : Controller
 	{
 		private readonly IAccountIdentifierAsyncRepository _repository;
-		private readonly GeneralLedger _generalLedger;
+		private readonly AsyncGeneralLedger _generalLedger;
 		private readonly IEnumerable<PatternBuilder> _patterns;
 
-		public AccountIdentifierController(IAccountIdentifierAsyncRepository repository, GeneralLedger generalLedger, IEnumerable<PatternBuilder> patterns)
+		public AccountIdentifierController(IAccountIdentifierAsyncRepository repository, AsyncGeneralLedger generalLedger, IEnumerable<PatternBuilder> patterns)
 		{
 			_repository = repository;
 			_generalLedger = generalLedger;
@@ -26,9 +26,10 @@ namespace HomeTrack.Web.Controllers
 			return View(model);
 		}
 
-		public ViewResult Create(string accountId)
+		public async Task<ActionResult> Create(string accountId)
 		{
-			var model = new AccountIdentifierViewModel { Accounts = _generalLedger, AvailablePatterns = _patterns, AccountId = accountId };
+			var accounts = await _generalLedger.GetAccountsAsync();
+			var model = new AccountIdentifierViewModel { Accounts = accounts, AvailablePatterns = _patterns, AccountId = accountId };
 			return View(model);
 		}
 
@@ -47,7 +48,7 @@ namespace HomeTrack.Web.Controllers
 
 			await  _repository.AddOrUpdateAsync(new AccountIdentifier
 			{
-				Account = _generalLedger[args.AccountId],
+				Account = await _generalLedger.GetAccountAsync(args.AccountId),
 				Pattern = patterns.Count == 1
 				          	? patterns.First()
 				          	: new CompositePattern(patterns)
@@ -65,9 +66,11 @@ namespace HomeTrack.Web.Controllers
 		public async Task<ViewResult> Edit(int id)
 		{
 			var identifier = await _repository.GetByIdAsync(id);
+			var accounts = await _generalLedger.GetAccountsAsync();
+
 			var model = new AccountIdentifierViewModel
 			{
-				Accounts = _generalLedger,
+				Accounts = accounts,
 				AvailablePatterns = _patterns,
 				
 				AccountId = identifier.Account.Id,
@@ -93,7 +96,7 @@ namespace HomeTrack.Web.Controllers
 			await _repository.AddOrUpdateAsync(new AccountIdentifier
 			{
 				Id = id,
-				Account = _generalLedger[args.AccountId],
+				Account = await _generalLedger.GetAccountAsync(args.AccountId),
 				Pattern = patterns.Count == 1
 							? patterns.First()
 							: new CompositePattern(patterns)

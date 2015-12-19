@@ -17,19 +17,22 @@ namespace HomeTrack.Web.Tests
 	{
 		private Mock<IAccountIdentifierAsyncRepository> _repository;
 		private AccountIdentifierController _controller;
-		private Mock<IGeneralLedgerRepository> _generalLedgerRepository;
+		private Mock<IGeneralLedgerAsyncRepository> _generalLedgerRepository;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_generalLedgerRepository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
+			_generalLedgerRepository = new Moq.Mock<IGeneralLedgerAsyncRepository>(MockBehavior.Strict);
 			
 			var expense = AccountFactory.Expense("Groceries");
-			_generalLedgerRepository.SetupGet(x => x.Accounts).Returns(new[] { expense });
-			_generalLedgerRepository.Setup(x => x.GetAccount(expense.Id)).Returns(expense);
+			_generalLedgerRepository.Setup(x => x.GetAccountsAsync())
+				.ReturnsAsync(new[] { expense });
+
+			_generalLedgerRepository.Setup(x => x.GetAccountAsync(expense.Id))
+				.ReturnsAsync(expense);
 
 			_repository = new Mock<IAccountIdentifierAsyncRepository>(MockBehavior.Strict);
-			_controller = new AccountIdentifierController(_repository.Object, new GeneralLedger(_generalLedgerRepository.Object), PatternBuilder.GetPatterns());
+			_controller = new AccountIdentifierController(_repository.Object, new AsyncGeneralLedger(_generalLedgerRepository.Object), PatternBuilder.GetPatterns());
 		}
 
 		[Test]
@@ -105,9 +108,9 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
-		public void Create()
+		public async Task Create()
 		{
-			var result = _controller.Create((string) null);
+			var result = (ViewResult )await _controller.Create((string) null);
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
@@ -116,9 +119,9 @@ namespace HomeTrack.Web.Tests
 		}
 
 		[Test]
-		public void CreateWithAccountId()
+		public async Task CreateWithAccountId()
 		{
-			var result = _controller.Create("bank");
+			var result = (ViewResult) await _controller.Create("bank");
 			Assert.That(result.Model, Is.InstanceOf<AccountIdentifierViewModel>());
 
 			var model = (AccountIdentifierViewModel)result.Model;
