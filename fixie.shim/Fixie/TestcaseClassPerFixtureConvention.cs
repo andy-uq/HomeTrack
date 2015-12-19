@@ -22,7 +22,7 @@ namespace FixieShim.Fixie
 
 			Classes
 				.NameEndsWith("Tests")
-				.Where(t => !t.IsAbstract && t.GetConstructors().Any());
+				.Where(t => !t.IsAbstract && t.GetConstructors().All(c => c.GetParameters().Length > 1));
 
 			Methods
 				.Where(mi =>

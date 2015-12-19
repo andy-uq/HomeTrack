@@ -4,12 +4,12 @@ using HomeTrack.Core;
 
 namespace HomeTrack.Tests.Budgets
 {
-	public class CreateBudgetTests : BudgetAccountGroup
+	public class CreateBudgetTests
 	{
-		protected readonly Budget _b;
-		protected readonly Account _expenseAccount;
-		protected readonly Account _expenseBudgetAccount;
-		protected readonly GeneralLedger _general;
+		private readonly Budget _b;
+		private readonly Account _expenseAccount;
+		private readonly Account _expenseBudgetAccount;
+		private readonly GeneralLedger _general;
 
 		public CreateBudgetTests()
 		{
