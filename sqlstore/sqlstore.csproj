@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="AccountIdentifierRepository.cs" />
     <Compile Include="CreateDatabase.cs" />
+    <Compile Include="MigrationManager.cs" />
     <Compile Include="Models\Mapping\AccountIdentifierMapping.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AccountIdentifier.cs" />

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using HomeTrack.Core;
 using Moq;
+using NUnit.Framework;
 
 namespace HomeTrack.Tests
 {
 	public class TransactionImportTests
 	{
 		private readonly Account _electricity;
-		private readonly GeneralLedger _general;
+		private readonly AsyncGeneralLedger _general;
 		private readonly Account _groceries;
 		private readonly Mock<IImport> _import;
 		private readonly TransactionImportContext _importContext;
@@ -25,7 +27,7 @@ namespace HomeTrack.Tests
 			_electricity = AccountFactory.Expense("electricity");
 			_groceries = AccountFactory.Expense("groceries");
 
-			_general = new GeneralLedger(new InMemoryRepository()) {_visa, _electricity, _groceries};
+			_general = new AsyncGeneralLedger(new InMemoryRepository() {_visa, _electricity, _groceries});
 			_repository = new Mock<IImportAsyncRepository>(MockBehavior.Strict);
 
 			var patterns = GetPatterns();
@@ -45,7 +47,7 @@ namespace HomeTrack.Tests
 			};
 		}
 
-		public void CreateVisaImport()
+		public async Task CreateVisaImport()
 		{
 			var import = _importContext.CreateImport(_visa);
 			import.Credit.Should().Be(_visa);
@@ -70,7 +72,7 @@ namespace HomeTrack.Tests
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
-			var transactions = import.Process(_import.Object).ToList();
+			var transactions = (await import.Process(_import.Object)).ToList();
 			transactions.Count.Should().Be(1);
 
 			var t1 = transactions.First();
@@ -93,7 +95,7 @@ namespace HomeTrack.Tests
 			result.UnclassifiedTransactions.Should().Be(0);
 		}
 
-		public void CreateVisaImportWithUnclassifiedTransaction()
+		public async Task CreateVisaImportWithUnclassifiedTransaction()
 		{
 			var unclassified = AccountFactory.Expense("Unclassified expenses");
 			var import = _importContext.CreateImport(_visa, unclassifiedDestination: unclassified);
@@ -123,7 +125,7 @@ namespace HomeTrack.Tests
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
-			var transactions = import.Process(_import.Object).ToList();
+			var transactions = (await import.Process(_import.Object)).ToList();
 
 			AssertResult(import, transactions, unclassified);
 
@@ -131,7 +133,7 @@ namespace HomeTrack.Tests
 			result.UnclassifiedTransactions.Should().Be(1);
 		}
 
-		public void CreateVisaImportWithManualAccounts()
+		public async Task CreateVisaImportWithManualAccounts()
 		{
 			var import = _importContext.CreateImport(_visa);
 			import.Credit.Should().Be(_visa);
@@ -169,7 +171,7 @@ namespace HomeTrack.Tests
 				{data[2].Id, new ImportRowOptions {Account = _groceries.Id, Description = "Special event"}}
 			};
 
-			var transactions = import.Process(_import.Object, mappings).ToList();
+			var transactions = (await import.Process(_import.Object, mappings)).ToList();
 			AssertResult(import, transactions, _groceries);
 
 			transactions[1].Description.Should().Be("Special event");
@@ -206,7 +208,7 @@ namespace HomeTrack.Tests
 			result.TransactionCount.Should().Be(2);
 		}
 
-		public void PersistImportResult()
+		public async Task PersistImportResult()
 		{
 			var unclassified = AccountFactory.Expense("Unclassified expenses");
 			var import = _importContext.CreateImport(_visa, unclassifiedDestination: unclassified);
@@ -236,7 +238,7 @@ namespace HomeTrack.Tests
 
 			_import.Setup(x => x.GetData()).Returns(data);
 
-			var transactions = import.Process(_import.Object).ToList();
+			var transactions = (await import.Process(_import.Object)).ToList();
 			transactions.Count.Should().Be(2);
 
 			_visa.Balance.Should().Be(30M);

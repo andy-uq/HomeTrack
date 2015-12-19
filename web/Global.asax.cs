@@ -93,6 +93,8 @@ namespace HomeTrack.Web
 			if (connection == null)
 				throw new InvalidOperationException("Cannot find connectionString \"HomeTrackDatabase\"");
 
+			MigrationManager.CreateDatabase(connection.ConnectionString, typeof(CreateDatabase).Assembly, showSql: true);
+
 			builder.Register(resolver => new System.Data.SqlClient.SqlConnection(connection.ConnectionString));
 		}
 	}

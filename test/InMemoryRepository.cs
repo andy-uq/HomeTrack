@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +9,7 @@ using HomeTrack.Mapping;
 
 namespace HomeTrack.Tests
 {
-	public class InMemoryRepository : IGeneralLedgerRepository, IGeneralLedgerAsyncRepository, IImportRepository, IImportAsyncRepository
+	public class InMemoryRepository : IGeneralLedgerRepository, IGeneralLedgerAsyncRepository, IImportRepository, IImportAsyncRepository, IEnumerable<Account>
 	{
 		private readonly ISet<Account> _accounts;
 		private readonly ISet<Budget> _budgets;
@@ -219,6 +220,16 @@ namespace HomeTrack.Tests
 		public Task<Transaction> GetTransactionAsync(string id)
 		{
 			return Task.FromResult(GetTransaction(id));
+		}
+
+		public IEnumerator<Account> GetEnumerator()
+		{
+			return Accounts.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

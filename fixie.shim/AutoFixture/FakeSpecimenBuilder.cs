@@ -20,7 +20,7 @@ namespace FixieShim.AutoFixture
 			var paramInfo = request as ParameterInfo;
 
 			if (paramInfo == null)
-				return new NoSpecimen(request);
+				return new NoSpecimen();
 
 			var fake = paramInfo.GetCustomAttribute<SlackFakeAttribute>();
 			if (fake != null)
@@ -34,7 +34,7 @@ namespace FixieShim.AutoFixture
 				return CreateStrict(paramInfo);
 			}
 
-			return new NoSpecimen(request);
+			return new NoSpecimen();
 		}
 
 		private object CreateStrict(ParameterInfo paramInfo)

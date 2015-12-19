@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HomeTrack.Core
 {
@@ -21,7 +22,7 @@ namespace HomeTrack.Core
 		public Account Credit { get; private set; }
 		public Account UnclassifedDestination { get; set; }
 
-		public IEnumerable<Transaction> Process(IImport import, IDictionary<string, ImportRowOptions> mappings = null)
+		public async Task<IEnumerable<Transaction>> Process(IImport import, IDictionary<string, ImportRowOptions> mappings = null)
 		{
 			Result.Date = DateTimeServer.Now;
 			Result.Name = import.Name;
@@ -29,18 +30,35 @@ namespace HomeTrack.Core
 
 			_mappings = mappings;
 
-			return BuildTransaction(import).Where(transaction => _context.General.Post(transaction));
+			var transactions = new List<Transaction>();
+			foreach (var transaction in await BuildTransactionAsync(import))
+			{
+				if (await _context.PostAsync(transaction))
+					transactions.Add(transaction);
+			}
+
+			return transactions;
 		}
 
-		private IEnumerable<Transaction> BuildTransaction(IImport import)
+		private async Task<IEnumerable<Transaction>> BuildTransactionAsync(IImport import)
 		{
-			return
-				from row in import.GetData()
-				where row.Amount != 0M
-				let account = GetAccount(row) ?? row.IdentifyAccount(_context.Patterns) ?? UnclassifedDestination
-				let description = GetDescription(row)
-				where account != null
-				select AsTransaction(row, account, description);
+			var transactions = new List<Transaction>();
+
+			foreach (var row in import.GetData())
+			{
+				if (row.Amount == 0M)
+					continue;
+
+				var account = await GetAccount(row) ?? row.IdentifyAccount(_context.Patterns) ?? UnclassifedDestination;
+				if (account == null)
+					continue;
+
+				var description = GetDescription(row);
+				var transaction = AsTransaction(row, account, description);
+				transactions.Add(transaction);
+			}
+
+			return transactions;
 		}
 
 		private string GetDescription(IImportRow row)
@@ -56,7 +74,7 @@ namespace HomeTrack.Core
 				: null;
 		}
 
-		private Account GetAccount(IImportRow row)
+		private async Task<Account> GetAccount(IImportRow row)
 		{
 			if ( _mappings == null )
 			{
@@ -65,7 +83,7 @@ namespace HomeTrack.Core
 
 			ImportRowOptions options;
 			return _mappings.TryGetValue(row.Id, out options) 
-				? _context.General[options.Account] 
+				? await _context.GetAccountAsync(options.Account) 
 				: null;
 		}
 

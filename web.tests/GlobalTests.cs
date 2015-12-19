@@ -43,7 +43,7 @@ namespace web.tests
 			var global = new StubMvcApplication();
 			global.Start(new GlobalFilterCollection(), new RouteCollection());
 			global.Container.Resolve<IMappingEngine>();
-			global.Container.Resolve<GeneralLedger>();
+			global.Container.Resolve<AsyncGeneralLedger>();
 			global.Container.Resolve<DirectoryExplorer>();
 			global.Container.Resolve<ImportDetector>();
 			global.Container.Resolve<TransactionImportContext>();

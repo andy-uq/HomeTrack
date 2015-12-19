@@ -17,13 +17,12 @@ namespace HomeTrack.Web.Tests
 	public class ImportControllerTests
 	{
 		private ImportController _controller;
-		private GeneralLedger _generalLedger;
 		private Account _bank;
 		private Account _groceries;
 		private Account _wow;
 		private Account _unclassifiedExpense;
-		private DirectoryExplorer _directoryExplorer;
 		private Mock<IImportDetector> _importDetector;
+		private DirectoryExplorer _directoryExplorer;
 
 		private static readonly string _directory = TestSettings.GetFilename(@"~/Test Data");
 		private IImportAsyncRepository _repository;
@@ -34,7 +33,8 @@ namespace HomeTrack.Web.Tests
 			yield return new AccountIdentifier { Pattern = new FieldPattern { Name = "Other Party", Pattern = "Blizzard" }, Account = _wow };
 		}
 
-		public ImportControllerTests()
+		[SetUp]
+		public void SetUp()
 		{
 			_bank = AccountFactory.Asset("bank", initialBalance: 100);
 			_groceries = AccountFactory.Asset("groceries");
@@ -45,18 +45,17 @@ namespace HomeTrack.Web.Tests
 			_repository = new InMemoryRepository();
 
 			_importDetector = new Mock<IImportDetector>(MockBehavior.Strict);
-			_generalLedger = new GeneralLedger(new InMemoryRepository())
-			{
-				_bank,
+
+			var asyncGeneralLedger = new AsyncGeneralLedger(new InMemoryRepository() { _bank,
 				_groceries,
 				_wow,
-				_unclassifiedExpense
-			};
+				_unclassifiedExpense});
 
-			var transactionContext = new TransactionImportContext(_generalLedger, GetAccountIdentifers(), _repository);
-			_controller = new ImportController(transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
+			var transactionContext = new TransactionImportContext(asyncGeneralLedger, GetAccountIdentifers(), _repository);
+			_controller = new ImportController(asyncGeneralLedger, transactionContext, _directoryExplorer, new ImportDetector(new[] {_importDetector.Object}));
 		}
 
+		[Test]
 		public void Directory()
 		{
 			var result = (ViewResult )_controller.Directory(null);
@@ -68,6 +67,7 @@ namespace HomeTrack.Web.Tests
 			Assert.That(model.GetDirectories().Select( x=>x.Name), Has.Member("Imports"));
 		}
 
+		[Test]
 		public void ChangeDirectory()
 		{
 			var result = (ViewResult )_controller.Directory("imports@asb");
@@ -79,7 +79,8 @@ namespace HomeTrack.Web.Tests
 			Assert.That(model.GetFiles().Select( x=>x.Name), Has.Member("Export20120825200829.csv"));
 		}
 
-		public void Preview()
+		[Test]
+		public async Task Preview()
 		{
 			var filename = "imports@asb@export20120825200829.csv";
 
@@ -91,7 +92,7 @@ namespace HomeTrack.Web.Tests
 			_importDetector.Setup(x => x.Matches(It.IsRegex("export20120825200829.csv$")))
 				.Returns(true);
 
-			var result = (ViewResult)_controller.Preview(filename);
+			var result = (ViewResult)await _controller.Preview(filename);
 			Assert.That(result.Model, Is.InstanceOf<ImportPreview>());
 
 			var model = (ImportPreview)result.Model;
@@ -101,6 +102,7 @@ namespace HomeTrack.Web.Tests
 			model.AccountIdentifiers.Should().NotBeEmpty();
 		}
 
+		[Test]
 		public async Task Import()
 		{
 			var filename = "imports@asb@export20120825200829.csv";
@@ -125,12 +127,13 @@ namespace HomeTrack.Web.Tests
 			var model = ((PartialViewResult)result).Model;
 			Assert.That(model, Is.InstanceOf<IEnumerable<Transaction>>());
 
-			var transactions = (IEnumerable<Transaction>) model;
+			var transactions = ((IEnumerable<Transaction>) model).ToArray();
 			transactions.Count().Should().Be(2);
 			transactions.First().Amount.Should().Be(10);
 			transactions.Last().Amount.Should().Be(20);
 		}
 
+		[Test]
 		public async Task History()
 		{
 			var result = await _controller.History();

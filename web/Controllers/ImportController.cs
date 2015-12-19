@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
+using HomeTrack.Collections;
 using HomeTrack.Core;
 using HomeTrack.Web.ViewModels;
 
@@ -11,12 +12,14 @@ namespace HomeTrack.Web.Controllers
 {
 	public class ImportController : Controller
 	{
+		private readonly AsyncGeneralLedger _generalLedger;
 		private readonly TransactionImportContext _transactionImportContext;
 		private readonly DirectoryExplorer _directoryExplorer;
 		private readonly ImportDetector _importDetector;
 
-		public ImportController(TransactionImportContext transactionImportContext, DirectoryExplorer directoryExplorer, ImportDetector importDetector)
+		public ImportController(AsyncGeneralLedger generalLedger, TransactionImportContext transactionImportContext, DirectoryExplorer directoryExplorer, ImportDetector importDetector)
 		{
+			_generalLedger = generalLedger;
 			_transactionImportContext = transactionImportContext;
 			_directoryExplorer = directoryExplorer;
 			_importDetector = importDetector;
@@ -35,7 +38,7 @@ namespace HomeTrack.Web.Controllers
 			return View(_directoryExplorer);
 		}
 
-		public ActionResult Preview(string filename)
+		public async Task<ActionResult> Preview(string filename)
 		{
 			var actualFilename = filename.Replace("@", "/");
 
@@ -61,10 +64,11 @@ namespace HomeTrack.Web.Controllers
 				return View("CouldNotDetectFileType");
 			}
 
+			var accounts = await _generalLedger.GetAccountsAsync();
 			var model = new ImportPreview
 			{
 				FileName = filename,
-				Accounts = _transactionImportContext.General.OrderBy(x => x.Type).ThenBy(x => x.Name),
+				Accounts = accounts.OrderBy(x => x.Type).ThenBy(x => x.Name).ToList(),
 				Import = import, 
 				AccountIdentifiers = _transactionImportContext.Patterns
 			};
@@ -96,13 +100,13 @@ namespace HomeTrack.Web.Controllers
 				var import = new Import(_importDetector);
 				import.Open(_directoryExplorer.GetFilename(name));
 
-				var source = _transactionImportContext.General[destinationAccountId];
-				var unclassifiedAccount = (unclassifiedAccountId == null)
+				var source = await _generalLedger.GetAccountAsync(destinationAccountId);
+				var unclassifiedAccount = unclassifiedAccountId == null
 				                          	? null
-				                          	: _transactionImportContext.General[unclassifiedAccountId];
+				                          	: await _generalLedger.GetAccountAsync(unclassifiedAccountId);
 
 				var transactionImport = _transactionImportContext.CreateImport(source, unclassifiedDestination: unclassifiedAccount);
-				var transactions = transactionImport.Process(import, importRowMapping).ToList();
+				var transactions = (await transactionImport.Process(import, importRowMapping)).AsList();
 
 				await _transactionImportContext.Repository.SaveAsync(transactionImport.Result, transactions);
 

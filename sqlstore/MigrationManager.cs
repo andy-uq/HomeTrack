@@ -10,7 +10,7 @@ using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Runner.Processors;
 using FluentMigrator.Runner.Processors.SqlServer;
 
-namespace HomeTrack.SqlStore.Tests
+namespace HomeTrack.SqlStore
 {
 	public class MigrationManager
 	{
@@ -94,15 +94,6 @@ namespace HomeTrack.SqlStore.Tests
 			{
 				throw new InvalidOperationException("Cannot open SQL database using connection string: " + connectionString, sqlEx);
 			}
-		}
-
-		public static void ApplyMigrations()
-		{
-			ConnectionStringSettings connectionString = ConfigurationManager.ConnectionStrings["Application"];
-			if (connectionString == null)
-				return;
-
-			CreateDatabase(connectionString.ConnectionString, typeof(MigrationManager).Assembly, showSql: true);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -19,11 +20,17 @@ namespace HomeTrack.Mapping
 
 		public static T Map<T>(this object source)
 		{
+			if (_mappingEngine == null)
+				throw new InvalidOperationException("Mapping engine is not initialised");
+
 			return _mappingEngine.Map<T>(source);
 		}
 
 		public static TTo Map<TFrom, TTo>(this TFrom source, TTo dest)
 		{
+			if (_mappingEngine == null)
+				throw new InvalidOperationException("Mapping engine is not initialised");
+
 			return _mappingEngine.Map(source, dest);
 		}
 
