@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Transactions;
 using System.Web.Mvc;
 
@@ -6,9 +7,9 @@ namespace HomeTrack.Web.Controllers
 {
 	public class AccountController : Controller
 	{
-		private readonly GeneralLedger _generalLedger;
+		private readonly AsyncGeneralLedger _generalLedger;
 
-		public AccountController(GeneralLedger generalLedger)
+		public AccountController(AsyncGeneralLedger generalLedger)
 		{
 			_generalLedger = generalLedger;
 		}
@@ -16,17 +17,19 @@ namespace HomeTrack.Web.Controllers
 		//
 		// GET: /Account/
 
-		public ActionResult Index()
+		public async Task<ActionResult> Index()
 		{
-			return View(_generalLedger);
+			var accounts = await _generalLedger.GetAccountsAsync();
+			return View(accounts);
 		}
 
 		//
 		// GET: /Account/Details/5
 
-		public ActionResult Details(string id)
+		public async Task<ActionResult> Details(string id)
 		{
-			return View(_generalLedger[id]);
+			var account = await _generalLedger.GetAccountAsync(id);
+			return View(account);
 		}
 
 		//
@@ -41,9 +44,9 @@ namespace HomeTrack.Web.Controllers
 		// POST: /Account/Create
 
 		[HttpPost]
-		public ActionResult Create(Account account)
+		public async Task<ActionResult> Create(Account account)
 		{
-			_generalLedger.Add(account);
+			await _generalLedger.AddAsync(account);
 			if ( Request.IsAjaxRequest() )
 			{
 				return Json(account);
@@ -57,32 +60,34 @@ namespace HomeTrack.Web.Controllers
 		//
 		// GET: /Account/Edit/5
 
-		public ActionResult Edit(string id)
+		public async Task<ActionResult> Edit(string id)
 		{
-			return View(_generalLedger[id]);
+			var account = await _generalLedger.GetAccountAsync(id);
+			return View(account);
 		}
 
 		//
 		// POST: /Account/Edit/5
 
 		[HttpPost]
-		public ActionResult Edit(string id, string name, string description)
+		public async Task<ActionResult> Edit(string id, string name, string description)
 		{
-			var account = _generalLedger[id];
+			var account = await _generalLedger.GetAccountAsync(id);
 			account.Name = name;
 			account.Description = description;
 			
-			_generalLedger.Add(account);
+			await _generalLedger.AddAsync(account);
 			return RedirectToAction("Index");
 		}
 
-		public ViewResult Delete()
+		public async Task<ActionResult> Delete()
 		{
-			return View(_generalLedger);
+			var accounts = await _generalLedger.GetAccountsAsync();
+			return View(accounts);
 		}
 
 		[AcceptVerbs(HttpVerbs.Post)]
-		public JsonResult Delete(string[] accountIds)
+		public async Task<ActionResult> Delete(string[] accountIds)
 		{
 			if (accountIds == null || accountIds.Length == 0)
 				return Json(null);
@@ -91,7 +96,7 @@ namespace HomeTrack.Web.Controllers
 			{
 				foreach (var accountId in accountIds)
 				{
-					_generalLedger.DeleteAccount(accountId);
+					await _generalLedger.DeleteAccount(accountId);
 				}
 
 				transaction.Complete();

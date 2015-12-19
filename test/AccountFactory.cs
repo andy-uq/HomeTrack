@@ -34,8 +34,7 @@ namespace HomeTrack.Tests
 				Balance = initialBalance
 			};
 
-			if (initialise != null)
-				initialise(account);
+			initialise?.Invoke(account);
 
 			return account;
 		}

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
 using System.Web.Routing;
 using FluentAssertions;
 using HomeTrack;
@@ -13,65 +14,74 @@ namespace web.tests
 	public class AccountControllerTests
 	{
 		private AccountController _controller;
-		private Mock<IGeneralLedgerRepository> _repository;
-		private GeneralLedger _generalLedger;
+		private Mock<IGeneralLedgerAsyncRepository> _repository;
+		private AsyncGeneralLedger _generalLedger;
 		private Account _bank;
 
 		[SetUp]
 		public void AccountController()
 		{
-			_repository = new Moq.Mock<IGeneralLedgerRepository>(MockBehavior.Strict);
+			_repository = new Moq.Mock<IGeneralLedgerAsyncRepository>(MockBehavior.Strict);
 			_bank = AccountFactory.Asset("bank", initialBalance:100);
-			_repository.Setup(x => x.GetAccount("bank"))
-				.Returns(_bank);
+			_repository.Setup(x => x.GetAccountAsync("bank"))
+				.ReturnsAsync(_bank);
 			
-			_generalLedger = new GeneralLedger(_repository.Object);
+			_generalLedger = new AsyncGeneralLedger(_repository.Object);
 			_controller = new AccountController(_generalLedger);
 		}
 
 		[Test]
-		public void Index()
+		public async Task Index()
 		{
-			var result = (ViewResult )_controller.Index();
+			var accounts = new[] { _bank };
+			_repository.Setup(x => x.GetAccountsAsync())
+				.ReturnsAsync(accounts);
+
+			var result = (ViewResult ) await _controller.Index();
 			result.ViewName.Should().Be(string.Empty);
-			result.Model.Should().Be(_generalLedger);
+			result.Model.Should().Be(accounts);
 		}
 
 		[Test]
-		public void Delete()
+		public async Task Delete()
 		{
-			var result = (ViewResult )_controller.Delete();
+			var accounts = new[] { _bank };
+			_repository.Setup(x => x.GetAccountsAsync())
+				.ReturnsAsync(accounts);
+
+			var result = (ViewResult ) await _controller.Delete();
 			result.ViewName.Should().Be(string.Empty);
-			result.Model.Should().Be(_generalLedger);
+			result.Model.Should().Be(accounts);
 		}
 
 		[Test]
-		public void DeletePostEmpty()
+		public async Task DeletePostEmpty()
 		{
-			var result = _controller.Delete(new string[0]);
+			var result = (JsonResult )await _controller.Delete(new string[0]);
 			result.Data.Should().BeNull();
 		}
 
 		[Test]
-		public void DeletePost()
+		public async Task DeletePost()
 		{
-			_repository.Setup(x => x.DeleteAccount(_bank.Id)).Returns(true).Verifiable();
+			_repository.Setup(x => x.DeleteAccountAsync(_bank.Id))
+				.ReturnsAsync(true);
 
-			var result = _controller.Delete(new[] { _bank.Id });
+			var result = (JsonResult )await _controller.Delete(new[] { _bank.Id });
 			Assert.That(result.Data, Has.Property("success").EqualTo(true));
 
-			_repository.Verify(x => x.DeleteAccount(_bank.Id));
+			_repository.Verify(x => x.DeleteAccountAsync(_bank.Id));
 		}
 
 		[Test]
-		public void Details()
+		public async Task Details()
 		{
 			var account = new Account();
 
-			_repository.Setup(x => x.GetAccount("bank"))
-				.Returns(account);
+			_repository.Setup(x => x.GetAccountAsync("bank"))
+				.ReturnsAsync(account);
 
-			var result = (ViewResult )_controller.Details("bank");
+			var result = (ViewResult )await _controller.Details("bank");
 			result.Model.Should().Be(account);
 			result.ViewName.Should().Be(string.Empty);
 		}
@@ -85,56 +95,56 @@ namespace web.tests
 		}
 
 		[Test]
-		public void CreateAccount()
+		public async Task CreateAccount()
 		{
 			_controller.SetFakeControllerContext("~/account/create");
 
 			var args = new Account() {Name = "Name", Description = "Description", Type = AccountType.Asset};
 
-			_repository.Setup(x => x.Add(args))
-				.Returns("name");
+			_repository.Setup(x => x.AddAsync(args))
+				.ReturnsAsync("name");
 
-			var result = (RedirectToRouteResult)_controller.Create(args);
+			var result = (RedirectToRouteResult)await _controller.Create(args);
 			AssertRouteData(result.RouteValues, controller: "account", action: "Index");
 		}
 
 		[Test]
-		public void CreateAccountAjax()
+		public async Task CreateAccountAjax()
 		{
 			_controller.SetFakeControllerContext("~/account/create", isAjax:true);
 
 			var args = new Account() {Name = "Name", Description = "Description", Type = AccountType.Asset};
 
-			_repository.Setup(x => x.Add(args))
-				.Returns("name");
+			_repository.Setup(x => x.AddAsync(args))
+				.ReturnsAsync("name");
 
-			var result = (JsonResult)_controller.Create(args);
+			var result = (JsonResult)await _controller.Create(args);
 			result.Data.Should().Be(args);
 		}
 
 		[Test]
-		public void Edit()
+		public async Task Edit()
 		{
 			var account = new Account();
 
-			_repository.Setup(x => x.GetAccount("bank"))
-				.Returns(account);
+			_repository.Setup(x => x.GetAccountAsync("bank"))
+				.ReturnsAsync(account);
 
-			var result = (ViewResult)_controller.Edit("bank");
+			var result = (ViewResult)await _controller.Edit("bank");
 			result.Model.Should().Be(account);
 			result.ViewName.Should().Be(string.Empty);
 		}
 
 		[Test]
-		public void EditAccount()
+		public async Task EditAccount()
 		{
 			var args = _bank;
 			Account updatedAccount = null;
-			_repository.Setup(x => x.Add(args))
+			_repository.Setup(x => x.AddAsync(args))
 				.Callback<Account>(b => updatedAccount = b)
-				.Returns("name");
+				.ReturnsAsync("name");
 
-			var result = (RedirectToRouteResult)_controller.Edit("bank", "Name", "Description");
+			var result = (RedirectToRouteResult)await _controller.Edit("bank", "Name", "Description");
 			AssertRouteData(result.RouteValues, null, action: "Index");
 
 			updatedAccount.Name.Should().Be("Name");

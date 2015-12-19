@@ -16,6 +16,7 @@ namespace HomeTrack
 
 		public Task<IEnumerable<Account>> GetDebitAccounts() { return _repository.GetDebitAccountsAsync(); }
 		public Task<IEnumerable<Account>> GetCreditAccounts() { return _repository.GetCreditAccountsAsync(); }
+		public Task<IEnumerable<Account>> GetAccountsAsync() { return _repository.GetAccountsAsync(); }
 
 		public async Task AddAsync(Account account)
 		{
@@ -46,7 +47,7 @@ namespace HomeTrack
 		public async Task<Account> GetAccountAsync(string accountId)
 		{
 			if (string.IsNullOrEmpty(accountId))
-				throw new ArgumentNullException("accountId");
+				throw new ArgumentNullException(nameof(accountId));
 
 			Account account = await _repository.GetAccountAsync(accountId);
 			if (account == null)
